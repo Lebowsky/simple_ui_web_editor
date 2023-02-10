@@ -2,6 +2,7 @@ import platform
 
 from tkinter import Tk
 from tkinter.filedialog import askopenfilename
+from utils import check_config_file
 
 
 def ask_file(file_type):
@@ -19,4 +20,5 @@ def ask_file(file_type):
         file_path = askopenfilename(parent=root, filetypes=file_types)
     root.update()
 
-    return file_path if bool(file_path) else None
+    result = check_config_file(file_path)
+    return result

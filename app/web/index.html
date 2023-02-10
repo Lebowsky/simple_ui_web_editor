@@ -1,19 +1,37 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>Simple UI editor</title>
-        <script type="text/javascript" src="/eel.js"></script>
-        <script type="text/javascript" src="js/initialise.js"></script>
-        <script type="text/javascript" src="js/staticEvents.js"></script>
-        <script type="text/javascript" src="js/utils.js"></script>
-    </head>
-    <body>
-        <div>
-            <h2>File Location</h2>
-            <div class="filepath-browse-layout">
-                <input id="entry-file" placeholder="Path to file">
-                <button id="entry-file-search">Browse</button>
-            </div>
+
+<head>
+    <title>Simple UI editor</title>
+    <script type="text/javascript" src="/eel.js"></script>
+    <script type="text/javascript" src="js/initialise.js"></script>
+    <script type="text/javascript" src="js/configuration.js"></script>
+    <script type="text/javascript" src="js/staticEvents.js"></script>
+    <script type="text/javascript" src="js/utils.js"></script>
+    <script type="text/javascript" src="js/importExport.js"></script>
+</head>
+
+<body>
+    <div>
+        <h2>File Location</h2>
+        <div class="filepath-browse-layout">
+            <input id="entry-file" placeholder="Path to file">
+            <button id="entry-file-search">Browse</button>
+            <button id="entry-file-save">Save</button>
         </div>
-    </body>
+    </div>
+    <div>
+        <h2>Configuration name</h2>
+        <input id="entry-title" placeholder="name">
+    </div>
+    <div>
+        <h2>Version</h2>
+        <input id="entry-version" placeholder="version">
+    </div>
+    <div>
+        <h2>Description</h2>
+        <input id="entry-description" placeholder="description">
+    </div>
+</body>
+
 </html>

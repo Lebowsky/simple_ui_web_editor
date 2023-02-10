@@ -16,6 +16,16 @@ eel.init(config.FRONTEND_ASSET_FOLDER)
 
 
 @eel.expose
+def save_configuration(data, file_path):
+    utils.save_config_to_file(data, file_path)
+
+
+@eel.expose
+def load_configuration(file_path):
+    return utils.get_config_from_file(file_path)
+
+
+@eel.expose
 def ask_file(file_type):
     """ Ask the user to select a file """
     return dialogs.ask_file(file_type)
