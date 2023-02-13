@@ -56,3 +56,10 @@ class ClientConfigurationModel(BaseConfigModel):
 
 class RootConfigModel(BaseConfigModel):
     ClientConfiguration: ClientConfigurationModel = ClientConfigurationModel()
+
+
+class QRCodeConfig(BaseModel):
+    RawConfigurationURL: str
+    RawConfigurationServiceAuth: str = ''
+    RawConfigurationServiceON: bool = True
+    OnlineSplitMode: bool = True

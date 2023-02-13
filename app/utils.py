@@ -1,12 +1,15 @@
 import os
-import socket
 import json
 from json import JSONDecodeError
+import io
 
 from eel import chrome
 from pydantic import ValidationError
+import qrcode
+import socket
+import base64
 
-from models import RootConfigModel
+from models import RootConfigModel, QRCodeConfig
 
 
 def can_use_chrome():
@@ -48,3 +51,18 @@ def check_config_file(file_path):
                 return {'error': 'ValidationError', 'message': e.json()}
             except Exception as e:
                 return {'error': 'UnknownError', 'message': str(e)}
+
+
+def get_qr_code_config():
+    host = socket.gethostbyname(socket.gethostname())
+    port = 5000
+    url = f'http://{host}:{port}/get_conf'
+
+    qr_config = QRCodeConfig(RawConfigurationURL=url)
+
+    img = qrcode.make(json.dumps(qr_config.json()))
+    buffer = io.BytesIO()
+    img.save(buffer, format="PNG")
+
+    base_64_mage = base64.b64encode(buffer.getvalue()).decode("utf-8")
+    return base_64_mage

@@ -3,6 +3,7 @@ import eel
 import utils
 import config
 import dialogs
+from utils import get_qr_code_config
 
 
 class UIOpenMode:
@@ -29,6 +30,15 @@ def load_configuration(file_path):
 def ask_file(file_type):
     """ Ask the user to select a file """
     return dialogs.ask_file(file_type)
+
+
+@eel.expose
+def get_qr_settings():
+    return str(get_qr_code_config())
+
+
+async def get_current_file_path():
+    return eel.get_current_file_path()()
 
 
 def start(open_mode):

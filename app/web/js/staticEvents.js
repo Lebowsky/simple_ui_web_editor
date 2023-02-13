@@ -16,12 +16,23 @@ const fileLocationSearch = async (event) => {
     };
 };
 
+const showQRSettings = async (event) => {
+    var img = document.getElementById("qr-preview");
+    var imgBase64 = await getQRByteArrayAsBase64();
+    var img_src = "data:image/png;base64, " + imgBase64;
+
+    img.src = img_src;
+    console.log(img.style.visibility)
+    img.style.visibility = (img.style.visibility=='visible' ? 'hidden': 'visible');
+    console.log(img.style.visibility)
+}
 
 const setupEvents = () => {
     // File location
     // document.getElementById('entry-file').addEventListener('input', fileLocationChange);
     document.getElementById('entry-file-search').addEventListener('click', fileLocationSearch);
     document.getElementById('entry-file-save').addEventListener('click', fileLocationSave);
+    document.getElementById('entry-file-qr').addEventListener('click', showQRSettings);
 };
 
 // Add configurationGetters
