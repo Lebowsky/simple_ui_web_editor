@@ -9,7 +9,7 @@ import qrcode
 import socket
 import base64
 
-from models import RootConfigModel, QRCodeConfig
+from models.root_config import RootConfigModel, QRCodeConfig
 
 
 def can_use_chrome():
