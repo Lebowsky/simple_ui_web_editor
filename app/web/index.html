@@ -1,39 +1,558 @@
 <!DOCTYPE html>
 <html>
-
 <head>
-    <title>Simple UI editor</title>
-    <script type="text/javascript" src="/eel.js"></script>
-    <script type="text/javascript" src="js/initialise.js"></script>
-    <script type="text/javascript" src="js/configuration.js"></script>
-    <script type="text/javascript" src="js/staticEvents.js"></script>
-    <script type="text/javascript" src="js/utils.js"></script>
-    <script type="text/javascript" src="js/importExport.js"></script>
+	<meta charset="utf-8">
+	<title>Simple UI</title>
+	<link rel="stylesheet" href="css/style.css">
+	<link href="https://use.fontawesome.com/releases/v5.0.8/css/all.css" rel="stylesheet">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+	<script type="text/javascript" src="js/jquery-3.5.0.min.js"></script>
+	<script type="text/javascript" src="js/conf.js"></script>
+	<script type="text/javascript" src="js/main.js"></script>
+	<script type="text/javascript" src="js/export.js"></script>
+	<script>
+		/*$(document).ready(function(){			
+			conf = $.parseJSON($(".hidden-conf-json").text());
+			//processes = conf.ClientConfiguration.Processes;
+			renderConfiguration(conf);
+		});*/
+	</script>
 </head>
-
 <body>
-    <div>
-        <h2>File Location</h2>
-        <div class="filepath-browse-layout">
-            <input id="entry-file" placeholder="Path to file">
-            <button id="entry-file-search">Browse</button>
-            <button id="entry-file-save">Save</button>
-            <button id="entry-file-qr">QR</button>
-        </div>
-        <img id="qr-preview" src="">
-    </div>
-    <div>
-        <h2>Configuration name</h2>
-        <input id="entry-title" placeholder="name">
-    </div>
-    <div>
-        <h2>Version</h2>
-        <input id="entry-version" placeholder="version">
-    </div>
-    <div>
-        <h2>Description</h2>
-        <input id="entry-description" placeholder="description">
-    </div>
+	<div class="content">
+	<div class="header"><div class="logo"><img src="logo.jpg" alt="Simple Logo"></div></div>
+		<section id="main-section">
+			<form action="#" class="form">
+				<label for="ConfigurationName">Configuration-name</label>
+				<input type="text" name="ConfigurationName" id="ConfigurationName">
+				<label for="ConfigurationVersion">Version</label>
+				<input type="text" name="ConfigurationVersion" id="ConfigurationVersion">
+				<label for="ConfigurationDescription">Description</label>
+				<input type="text" name="ConfigurationDescription" id="ConfigurationDescription">
+				<!--Other params-->
+				<!--
+				<label for=""></label>
+				<label for=""></label>
+				<label for=""></label>
+				<label for=""></label>
+				<label for=""></label>
+				<label for=""></label>
+				-->
+				<!--End Other Params-->
+			</form>
+		</section>
+		<section id="main-conf-process">
+			<div class="section-header">Processes</div>
+			<div class="left">
+				<div class="btn-group" id="process-btn">
+					<button id="btn-process-add" onclick="addSelect('processes', 'New Process')">Add Process</button>
+					<button id="btn-process-add-cv">Add Process ActiveCV</button>
+					<button id="btn-process-del">Delete Process</button>
+					<button id="btn-process-copy">Copy to Clipboard</button>
+					<button id="btn-process-paste">Paste</button>
+				</div>
+				<select name="processes" id="processes" size="7"></select>
+			</div>
+			<div class="center"></div>
+			<div class="right">
+				<form action="#" id="processes-form" class="form">
+					<label for="process-name">Process name</label>
+					<input type="text" name="process-name" id="process-name">
+					<label for="processes-display">Do not Display in Menu<input type="checkbox" value="1" id="processes-display"></label>
+					<label for="processes-DefineOnBackPressed">Override back button<input type="checkbox" value="1" id="processes-DefineOnBackPressed"></label>
+					<label for="processes-run">Run at startup<input type="checkbox" value="1" id="processes-run"></label>
+					<label for="process-plan-header">Plan/Fact Header</label>
+					<input type="text" name="process-plan-header" id="process-plan-header">
+					<label for="processes-indptnt">Idependent process<input type="checkbox" value="1" id="processes-indptnt"></label>
+				</form>
+			</div>
+		</section>
+		<section id="main-conf-screen">
+			<div class="section-header">Screens</div>
+			<div class="left">
+				<div class="btn-group" id="screen-btn">
+					<button id="screen-add">Add Screen</button>
+					<button id="screen-del">Delete Screen</button>
+					<button id="screen-copy">Copy to Clipboard</button>
+					<button id="screen-paste">Paste</button>
+				</div>
+				<select name="screen" id="screen" size="7"></select>
+			</div>
+			<div class="center"></div>
+			<div class="right">
+				<div class="btn-group" id="screen-conf">
+					<button id="btn-screen-common" data-tab-id="screen-common">Common</button>
+					<button id="btn-screen-structure" data-tab-id="screen-structure">Structure</button>
+					<button id="btn-screen-handlers" data-tab-id="screen-handlers">Screen Handlers</button>
+				</div>
+				<div class="screen-section-wrap active" id="screen-common">
+					<form action="#" id="screen-param-form" class="form">
+						<!--Screen Param-->
+						<label for="screen-name">Sreen name</label>
+						<input type="text" name="screen-name" id="screen-name">
+						<label for="screen-timer">Screen handler on timer<input type="checkbox" value="1" id="screen-timer"></label>
+						<label for="screen-noscroll">Disble scrolling for Root Layout<input type="checkbox" value="1" id="screen-noscroll"></label>
+						<label for="screen-hidebutton">Hide button bar<input type="checkbox" value="1" id="screen-hidebutton"></label>
+						<label for="screen-hidetop">Hide top bar<input type="checkbox" value="1" id="screen-hidetop"></label>
+						<label for="screen-noconfirmation">Close without confirmation<input type="checkbox" value="1" id="screen-noconfirmation"></label>
+						<label for="screen-handlekeyup">Attach a keyboard handler<input type="checkbox" value="1" id="screen-handlekeyup"></label>
+						<!--END Screen Param-->
+					</form>
+				</div>
+				<div class="screen-section-wrap" id="screen-structure" data-screen-index="0">
+					<div class="btn-group" id="screen-structure-conf">
+						<button class="add-element" id="btn-screen-del">Add Screen Element</button>
+						<button id="btn-screen-del">Delete screen element</button>
+						<button id="btn-screen-insert">Insert from clipboard</button>
+					</div>
+					<select name="elements" id="screen-elements" size="7"></select>
+				</div>
+				<div class="screen-section-wrap" id="screen-handlers">
+					<!--handlers Param-->
+					<!--END handlers Param-->
+				</div>
+		</div>
+		</section>
+	</div>
+	<div id="modals-wrap"></div>
+	<div class="hidden-conf-json">
+{
+    "ClientConfiguration": {
+        "ConfigurationName": "test_full_configuration",
+        "ConfigurationDescription": "Разработка новой конфигурации SimpleUI",
+        "ConfigurationVersion": "0.0.1",
+        "Processes": [
+            {
+                "type": "Process",
+                "ProcessName": "test_full_configuration_process",
+                "PlanFactHeader": "План-факт",
+                "DefineOnBackPressed": true,
+                "hidden": true,
+                "login_screen": true,
+                "SC": true,
+                "Operations": [
+                    {
+                        "type": "Operation",
+                        "Name": "test_full_configuration_operation",
+                        "Timer": true,
+                        "hideToolBarScreen": true,
+                        "noScroll": true,
+                        "handleKeyUp": true,
+                        "noConfirmation": true,
+                        "hideBottomBarScreen": true,
+                        "onlineOnStart": true,
+                        "send_when_opened": true,
+                        "onlineOnInput": true,
+                        "DefOnlineOnCreate": "test_handler_on_start_online",
+                        "DefOnlineOnInput": "test_handler_enter_online",
+                        "DefOnCreate": "test_handler_on_start_python",
+                        "DefOnInput": "test_handler_enter_python",
+                        "Elements": [
+                            {
+                                "Value": "asdasd123",
+                                "Variable": "",
+                                "type": "LinearLayout",
+                                "weight": "0",
+                                "height": "wrap_content",
+                                "width": "wrap_content",
+                                "orientation": "vertical",
+                                "Elements": [
+                                    {
+                                        "type": "LinearLayout",
+                                        "height": "wrap_content",
+                                        "width": "wrap_content",
+                                        "weight": "0",
+                                        "Value": "",
+                                        "Variable": "",
+                                        "orientation": "vertical",
+                                        "Elements": [
+                                            {
+                                                "type": "TextView",
+                                                "height": "wrap_content",
+                                                "width": "wrap_content",
+                                                "weight": "0",
+                                                "Value": "",
+                                                "Variable": ""
+                                            },
+                                            {
+                                                "type": "Button",
+                                                "height": "wrap_content",
+                                                "width": "wrap_content",
+                                                "weight": "0",
+                                                "Value": "",
+                                                "Variable": ""
+                                            },
+                                            {
+                                                "type": "LinearLayout",
+                                                "height": "wrap_content",
+                                                "width": "wrap_content",
+                                                "weight": "0",
+                                                "Value": "",
+                                                "Variable": "",
+                                                "orientation": "vertical",
+                                                "Elements": [
+                                                    {
+                                                        "type": "EditTextText",
+                                                        "height": "wrap_content",
+                                                        "width": "wrap_content",
+                                                        "weight": "0",
+                                                        "Value": "",
+                                                        "Variable": ""
+                                                    }
+                                                ],
+                                                "BackgroundColor": "",
+                                                "StrokeWidth": "",
+                                                "Padding": ""
+                                            }
+                                        ],
+                                        "BackgroundColor": "",
+                                        "StrokeWidth": "",
+                                        "Padding": ""
+                                    },
+                                    {
+                                        "type": "TextView",
+                                        "height": "wrap_content",
+                                        "width": "wrap_content",
+                                        "weight": "0",
+                                        "Value": "",
+                                        "Variable": ""
+                                    },
+                                    {
+                                        "type": "Button",
+                                        "height": "wrap_content",
+                                        "width": "wrap_content",
+                                        "weight": "0",
+                                        "Value": "",
+                                        "Variable": ""
+                                    }
+                                ],
+                                "BackgroundColor": "",
+                                "StrokeWidth": "",
+                                "Padding": ""
+                            },
+                            {
+                                "Value": "",
+                                "Variable": "",
+                                "type": "barcode"
+                            },
+                            {
+                                "Value": "",
+                                "Variable": "",
+                                "type": "LinearLayout",
+                                "weight": "0",
+                                "height": "wrap_content",
+                                "width": "wrap_content",
+                                "orientation": "vertical",
+                                "Elements": [
+                                    {
+                                        "type": "Button",
+                                        "height": "wrap_content",
+                                        "width": "wrap_content",
+                                        "weight": "0",
+                                        "Value": "",
+                                        "Variable": ""
+                                    },
+                                    {
+                                        "type": "LinearLayout",
+                                        "height": "wrap_content",
+                                        "width": "wrap_content",
+                                        "weight": "0",
+                                        "Value": "",
+                                        "Variable": "",
+                                        "orientation": "vertical",
+                                        "Elements": [
+                                            {
+                                                "type": "Button",
+                                                "height": "wrap_content",
+                                                "width": "wrap_content",
+                                                "weight": "0",
+                                                "Value": "",
+                                                "Variable": ""
+                                            }
+                                        ],
+                                        "BackgroundColor": "",
+                                        "StrokeWidth": "",
+                                        "Padding": ""
+                                    }
+                                ],
+                                "BackgroundColor": "",
+                                "StrokeWidth": "",
+                                "Padding": ""
+                            }
+                        ],
+                        "onlineOnAfterStart": false
+                    },
+                    {
+                        "Name": "test_full_configuration_operation2",
+                        "type": "Operation",
+                        "Elements": [
+                            {
+                                "Value": "",
+                                "Variable": "",
+                                "type": "LinearLayout",
+                                "weight": "0",
+                                "height": "wrap_content",
+                                "width": "wrap_content",
+                                "orientation": "vertical",
+                                "Elements": [
+                                    {
+                                        "type": "Button",
+                                        "height": 0,
+                                        "width": "wrap_content",
+                                        "weight": "0",
+                                        "Value": "",
+                                        "Variable": ""
+                                    },
+                                    {
+                                        "type": "EditTextText",
+                                        "height": "wrap_content",
+                                        "width": "wrap_content",
+                                        "weight": "0",
+                                        "Value": "",
+                                        "Variable": ""
+                                    },
+                                    {
+                                        "type": "EditTextNumeric",
+                                        "height": "wrap_content",
+                                        "width": "wrap_content",
+                                        "weight": "0",
+                                        "Value": "",
+                                        "Variable": ""
+                                    },
+                                    {
+                                        "type": "EditTextPass",
+                                        "height": "wrap_content",
+                                        "width": "wrap_content",
+                                        "weight": "0",
+                                        "Value": "",
+                                        "Variable": ""
+                                    },
+                                    {
+                                        "type": "EditTextAuto",
+                                        "height": "wrap_content",
+                                        "width": "wrap_content",
+                                        "weight": "0",
+                                        "Value": "",
+                                        "Variable": ""
+                                    },
+                                    {
+                                        "type": "EditTextAutocomplete",
+                                        "height": "wrap_content",
+                                        "width": "wrap_content",
+                                        "weight": "0",
+                                        "Value": "",
+                                        "Variable": ""
+                                    },
+                                    {
+                                        "type": "ModernEditText",
+                                        "height": "wrap_content",
+                                        "width": "wrap_content",
+                                        "weight": "0",
+                                        "Value": "",
+                                        "Variable": ""
+                                    },
+                                    {
+                                        "type": "Picture",
+                                        "height": "wrap_content",
+                                        "width": "wrap_content",
+                                        "weight": "0",
+                                        "Value": "",
+                                        "Variable": ""
+                                    },
+                                    {
+                                        "type": "CheckBox",
+                                        "height": "wrap_content",
+                                        "width": "wrap_content",
+                                        "weight": "0",
+                                        "Value": "",
+                                        "Variable": ""
+                                    },
+                                    {
+                                        "type": "Gauge",
+                                        "height": "wrap_content",
+                                        "width": "wrap_content",
+                                        "weight": "0",
+                                        "Value": "",
+                                        "Variable": ""
+                                    },
+                                    {
+                                        "type": "Chart",
+                                        "height": "wrap_content",
+                                        "width": "wrap_content",
+                                        "weight": "0",
+                                        "Value": "",
+                                        "Variable": ""
+                                    },
+                                    {
+                                        "type": "SpinnerLayout",
+                                        "height": "wrap_content",
+                                        "width": "wrap_content",
+                                        "weight": "0",
+                                        "Value": "",
+                                        "Variable": ""
+                                    },
+                                    {
+                                        "type": "TableLayout",
+                                        "height": "wrap_content",
+                                        "width": "wrap_content",
+                                        "weight": "0",
+                                        "Value": "",
+                                        "Variable": ""
+                                    },
+                                    {
+                                        "type": "Cart",
+                                        "height": "wrap_content",
+                                        "width": "wrap_content",
+                                        "weight": "0",
+                                        "Value": "",
+                                        "Variable": ""
+                                    },
+                                    {
+                                        "type": "MultilineText",
+                                        "height": "wrap_content",
+                                        "width": "wrap_content",
+                                        "weight": "0",
+                                        "Value": "",
+                                        "Variable": ""
+                                    },
+                                    {
+                                        "type": "CardsLayout",
+                                        "height": "wrap_content",
+                                        "width": "wrap_content",
+                                        "weight": "0",
+                                        "Value": "",
+                                        "Variable": ""
+                                    },
+                                    {
+                                        "type": "CButtons",
+                                        "height": "wrap_content",
+                                        "width": "wrap_content",
+                                        "weight": "0",
+                                        "Value": "",
+                                        "Variable": ""
+                                    }
+                                ]
+                            },
+                            {
+                                "Value": "",
+                                "Variable": "",
+                                "type": "LinearLayout",
+                                "weight": 0,
+                                "height": "wrap_content",
+                                "width": "wrap_content",
+                                "orientation": "vertical",
+                                "Elements": []
+                            }
+                        ],
+                        "Timer": false,
+                        "hideToolBarScreen": false,
+                        "noScroll": false,
+                        "handleKeyUp": false,
+                        "hideBottomBarScreen": false,
+                        "onlineOnStart": true,
+                        "onlineOnInput": false,
+                        "onlineOnAfterStart": false,
+                        "DefOnlineOnCreate": "dfdhfkj",
+                        "send_when_opened": true
+                    }
+                ]
+            },
+            {
+                "CVOperationName": "ActiveCV_operation",
+                "type": "CVOperation",
+                "CVFrames": [
+                    {
+                        "Name": "test_step_ActiveCV",
+                        "type": "CVFrame",
+                        "CVOnline": true,
+                        "CVDetector": "Barcode",
+                        "CVResolution": "HD1080",
+                        "CVMode": "list_only",
+                        "CVActionButtons": "btns",
+                        "CVAction": "title",
+                        "CVInfo": "info",
+                        "CVCameraDevice": "Back",
+                        "CVDetectorMode": "train",
+                        "CVFrameOnlineOnCreate": "on_start_online",
+                        "CVFrameDefOnCreate": "on_start_python",
+                        "CVFrameOnlineOnNewObject": "new_object_online",
+                        "CVFrameDefOnNewObject": "new_object_python",
+                        "CVFrameDefOnTouch": "press_object_python",
+                        "CVFrameOnlineOnTouch": "press_object_online",
+                        "CVFrameOnlineAction": "action_online",
+                        "CVFrameDefAction": "action_python"
+                    }
+                ]
+            },
+            {
+                "ProcessName": "New process",
+                "type": "Process",
+                "Operations": []
+            }
+        ],
+        "ConfigurationSettings": {
+            "uid": "18557c10b163471b93346561ba8da41c",
+            "vendor": "test_dev",
+            "vendor_url": "url_dev",
+            "vendor_auth": "Basic bG9naW5fZGV2OnBhc3N3b3JkX2Rldg==",
+            "handler_split_mode": true,
+            "handler_code": "client_code",
+            "handler_url": "url_handlers",
+            "handler_auth": "str_auth_handlers",
+            "dictionaries": "dictionaries"
+        },
+        "ConfigurationTags": "Py,off-line,Online,ActiveCV®",
+        "RunPython": true,
+        "OnKeyboardMain": true,
+        "ForegroundService": true,
+        "BroadcastIntent": "broadcast_intent",
+        "BroadcastVariable": "broadcast_dynamic",
+        "FaceRecognitionURL": "url_face",
+        "OfflineOnCreate": [
+            {
+                "Query": "SELECT * FROM VERSION"
+            }
+        ],
+        "MainMenu": [
+            {
+                "MenuItem": "1",
+                "MenuTitle": "main_menu",
+                "MenuId": "1",
+                "MenuTop": true
+            }
+        ],
+        "Launch": "Tiles",
+        "LaunchProcess": "process",
+        "LaunchVar": "field",
+        "PyHandlers": "ZnJvbSBmbGFzayBpbXBvcnQgRmxhc2sKZnJvbSBmbGFzayBpbXBvcnQgcmVxdWVzdAppbXBvcnQganNvbgphcHAgPSBGbGFzayhfX25hbWVfXykKCmdvb2RzX3NhbXBsZSA9IFt7ImJhcmNvZGUiOiI3NDA2MTczMDM1MDYiLCJza3UiOiJLaW5nc3RvbiBTU0QgTTIgNTEyTWIifSx7ImJhcmNvZGUiOiI4OTAxMDQzMDAwNDI3Iiwic2t1IjoiU2lsaWNvbmVQb3dlciBTU0QgMjU2TWIifSx7ImJhcmNvZGUiOiI0MDA5OTMyNTU5MTMyIiwic2t1IjoiU2Ftc3VuZyBTU0QgMTAyNCBNYiJ9XQoKZGVmIGJhcmNvZGVfb25faW5wdXQoKToKICAgICNoYW5kbGVycyBjb2RlCiAgICBpZiBoYXNoTWFwLmdldCgibGlzdGVuZXIiKT09J2JhcmNvZGUnOiAjY2hlY2sgc2NhbiBldmVudAogICAgICAgIGIgPSBoYXNoTWFwLmdldCgnYmFyY29kZScpICNiYXJjb2RlIHZhcmlhYmxlCiAgICAgICAgbm9tID0gbmV4dCgoaXRlbSBmb3IgaXRlbSBpbiBnb29kc19zYW1wbGUgaWYgaXRlbVsiYmFyY29kZSJdID09IGIpLCBOb25lKSAjc2VhcmNoIGJ5IGJhcmNvZGUgdmFsdWUKICAgICAgICAKICAgICAgICAjaW5zZXJ0aW5nIGRpc3BsYXlpbmcgdmFsdWUKICAgICAgICBpZiBiPT1Ob25lOgogICAgICAgICAgICBoYXNoTWFwLnB1dCgnbm9tJywiPNCd0LXQuNC30LLQtdGB0YLQvdGL0Lkg0YjRgtGA0LjRhdC60L7QtD4iKSAgICAKICAgICAgICBlbHNlOiAgICAKICAgICAgICAgICAgaGFzaE1hcC5wdXQoJ25vbScsbm9tWydza3UnXSkKCiAgICAgICAgI2NvbW1hbmQgdG8gc2hvdyBhIHNwZWNpZmljIHNjcmVlbgogICAgICAgIGhhc2hNYXAucHV0KCdTaG93U2NyZWVuJywn0JLQstC+0LQg0LrQvtC70LjRh9C10YHRgtCy0LAnKQoKCkBhcHAucm91dGUoJy9zZXRfaW5wdXRfZGlyZWN0LzxtZXRob2Q+JywgbWV0aG9kcz1bJ1BPU1QnXSkKZGVmIHNldF9pbnB1dChtZXRob2QpOgogICAgZnVuYyA9IG1ldGhvZAogICAgamRhdGEgPSBqc29uLmxvYWRzKHJlcXVlc3QuZGF0YS5kZWNvZGUoInV0Zi04IikpCiAgICBmID0gZ2xvYmFscygpW2Z1bmNdCiAgICBoYXNoTWFwLmQ9amRhdGFbJ2hhc2htYXAnXQogICAgZigpCiAgICBqZGF0YVsnaGFzaG1hcCddID0gaGFzaE1hcC5leHBvcnQoKQogICAgamRhdGFbJ3N0b3AnXSA9RmFsc2UKICAgIGpkYXRhWydFcnJvck1lc3NhZ2UnXT0iIgogICAgamRhdGFbJ1Jvd3MnXT1bXQoKICAgIHJldHVybiBqc29uLmR1bXBzKGpkYXRhKQoKQGFwcC5yb3V0ZSgnL3Bvc3Rfc2NyZWVuc2hvdCcsIG1ldGhvZHM9WydQT1NUJ10pCmRlZiBwb3N0X3NjcmVlbnNob3QoKToKICAgIGQgPSByZXF1ZXN0LmRhdGEKICAgIHJldHVybiAiMSIKCmNsYXNzIGhhc2hNYXA6CiAgICBkID0ge30KICAgIGRlZiBwdXQoa2V5LHZhbCk6CiAgICAgICAgaGFzaE1hcC5kW2tleV09dmFsCiAgICBkZWYgZ2V0KGtleSk6CiAgICAgICAgcmV0dXJuIGhhc2hNYXAuZC5nZXQoa2V5KQogICAgZGVmIHJlbW92ZShrZXkpOgogICAgICAgIGlmIGtleSBpbiBoYXNoTWFwLmQ6CiAgICAgICAgICAgIGhhc2hNYXAuZC5wb3Aoa2V5KQogICAgZGVmIGNvbnRhaW5zS2V5KGtleSk6CiAgICAgICAgcmV0dXJuICBrZXkgaW4gaGFzaE1hcC5kCiAgICBkZWYgZXhwb3J0KCk6CiAgICAgICAgZXhfaGFzaE1hcCA9IFtdCiAgICAgICAgZm9yIGtleSBpbiBoYXNoTWFwLmQua2V5cygpOgogICAgICAgICAgICBleF9oYXNoTWFwLmFwcGVuZCh7ImtleSI6a2V5LCJ2YWx1ZSI6aGFzaE1hcC5kW2tleV19KQogICAgICAgIHJldHVybiBleF9oYXNoTWFwCgppZiBfX25hbWVfXyA9PSAnX19tYWluX18nOgogICAgCiAgICBhcHAucnVuKGhvc3Q9JzAuMC4wLjAnLCBwb3J0PTIwNzUsZGVidWc9VHJ1ZSk=",
+        "DefServiceConfiguration": "handler_python",
+        "OnlineServiceConfiguration": "handler_online",
+        "PyTimerTask": [
+            {
+                "PyTimerTaskKey": "on_start",
+                "PyTimerTaskDef": "on_start_event",
+                "PyTimerTaskPeriod": "-1",
+                "PyTimerTaskBuilIn": true
+            }
+        ],
+        "PyFiles": [
+            {
+                "PyFileKey": "extra_module",
+                "PyFileData": "ZnJvbSBmbGFzayBpbXBvcnQgRmxhc2sKZnJvbSBmbGFzayBpbXBvcnQgcmVxdWVzdAppbXBvcnQganNvbgphcHAgPSBGbGFzayhfX25hbWVfXykKCmdvb2RzX3NhbXBsZSA9IFt7ImJhcmNvZGUiOiI3NDA2MTczMDM1MDYiLCJza3UiOiJLaW5nc3RvbiBTU0QgTTIgNTEyTWIifSx7ImJhcmNvZGUiOiI4OTAxMDQzMDAwNDI3Iiwic2t1IjoiU2lsaWNvbmVQb3dlciBTU0QgMjU2TWIifSx7ImJhcmNvZGUiOiI0MDA5OTMyNTU5MTMyIiwic2t1IjoiU2Ftc3VuZyBTU0QgMTAyNCBNYiJ9XQoKZGVmIGJhcmNvZGVfb25faW5wdXQoKToKICAgICNoYW5kbGVycyBjb2RlCiAgICBpZiBoYXNoTWFwLmdldCgibGlzdGVuZXIiKT09J2JhcmNvZGUnOiAjY2hlY2sgc2NhbiBldmVudAogICAgICAgIGIgPSBoYXNoTWFwLmdldCgnYmFyY29kZScpICNiYXJjb2RlIHZhcmlhYmxlCiAgICAgICAgbm9tID0gbmV4dCgoaXRlbSBmb3IgaXRlbSBpbiBnb29kc19zYW1wbGUgaWYgaXRlbVsiYmFyY29kZSJdID09IGIpLCBOb25lKSAjc2VhcmNoIGJ5IGJhcmNvZGUgdmFsdWUKICAgICAgICAKICAgICAgICAjaW5zZXJ0aW5nIGRpc3BsYXlpbmcgdmFsdWUKICAgICAgICBpZiBiPT1Ob25lOgogICAgICAgICAgICBoYXNoTWFwLnB1dCgnbm9tJywiPNCg0ZzQoMK10KDRkdCgwrfQoNCG0KDCtdCh0IPQoeKAmtCg0IXQoeKAudCg4oSWINCh4oKs0KHigJrQodCC0KDRkdCh4oCm0KDRlNCg0ZXQoNKRPiIpICAgIAogICAgICAgIGVsc2U6ICAgIAogICAgICAgICAgICBoYXNoTWFwLnB1dCgnbm9tJyxub21bJ3NrdSddKQoKICAgICAgICAjY29tbWFuZCB0byBzaG93IGEgc3BlY2lmaWMgc2NyZWVuCiAgICAgICAgaGFzaE1hcC5wdXQoJ1Nob3dTY3JlZW4nLCfQoOKAmdCg0IbQoNGV0KDSkSDQoNGU0KDRldCgwrvQoNGR0KHigKHQoMK10KHQg9Ch4oCa0KDQhtCgwrAnKQoKCkBhcHAucm91dGUoJy9zZXRfaW5wdXRfZGlyZWN0LzxtZXRob2Q+JywgbWV0aG9kcz1bJ1BPU1QnXSkKZGVmIHNldF9pbnB1dChtZXRob2QpOgogICAgZnVuYyA9IG1ldGhvZAogICAgamRhdGEgPSBqc29uLmxvYWRzKHJlcXVlc3QuZGF0YS5kZWNvZGUoInV0Zi04IikpCiAgICBmID0gZ2xvYmFscygpW2Z1bmNdCiAgICBoYXNoTWFwLmQ9amRhdGFbJ2hhc2htYXAnXQogICAgZigpCiAgICBqZGF0YVsnaGFzaG1hcCddID0gaGFzaE1hcC5leHBvcnQoKQogICAgamRhdGFbJ3N0b3AnXSA9RmFsc2UKICAgIGpkYXRhWydFcnJvck1lc3NhZ2UnXT0iIgogICAgamRhdGFbJ1Jvd3MnXT1bXQoKICAgIHJldHVybiBqc29uLmR1bXBzKGpkYXRhKQoKQGFwcC5yb3V0ZSgnL3Bvc3Rfc2NyZWVuc2hvdCcsIG1ldGhvZHM9WydQT1NUJ10pCmRlZiBwb3N0X3NjcmVlbnNob3QoKToKICAgIGQgPSByZXF1ZXN0LmRhdGEKICAgIHJldHVybiAiMSIKCmNsYXNzIGhhc2hNYXA6CiAgICBkID0ge30KICAgIGRlZiBwdXQoa2V5LHZhbCk6CiAgICAgICAgaGFzaE1hcC5kW2tleV09dmFsCiAgICBkZWYgZ2V0KGtleSk6CiAgICAgICAgcmV0dXJuIGhhc2hNYXAuZC5nZXQoa2V5KQogICAgZGVmIHJlbW92ZShrZXkpOgogICAgICAgIGlmIGtleSBpbiBoYXNoTWFwLmQ6CiAgICAgICAgICAgIGhhc2hNYXAuZC5wb3Aoa2V5KQogICAgZGVmIGNvbnRhaW5zS2V5KGtleSk6CiAgICAgICAgcmV0dXJuICBrZXkgaW4gaGFzaE1hcC5kCiAgICBkZWYgZXhwb3J0KCk6CiAgICAgICAgZXhfaGFzaE1hcCA9IFtdCiAgICAgICAgZm9yIGtleSBpbiBoYXNoTWFwLmQua2V5cygpOgogICAgICAgICAgICBleF9oYXNoTWFwLmFwcGVuZCh7ImtleSI6a2V5LCJ2YWx1ZSI6aGFzaE1hcC5kW2tleV19KQogICAgICAgIHJldHVybiBleF9oYXNoTWFwCgppZiBfX25hbWVfXyA9PSAnX19tYWluX18nOgogICAgCiAgICBhcHAucnVuKGhvc3Q9JzAuMC4wLjAnLCBwb3J0PTIwNzUsZGVidWc9VHJ1ZSk="
+            }
+        ],
+        "Mediafile": [
+            {
+                "MediafileKey": "media",
+                "MediafileData": "iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAD5ElEQVR4nO2bTWjTYBjH/0m3tXXidhmTwbDiB7oJfm2dQ/SmXtqDoMi8zCp4KutOXhQPOmQHhVV2mocyPemGl07EL5xTlLVzItKiTN3cYTAQ3WHapGydh7Yub5I2TZP2TUh/UMbzvnmfvPvzfOSjZdbW1lAMXl9APNQNoCXzKSd/AMQzn9FCF4VDQQBAlU6b6AfQqpMvtdQCaM98dgO4rmYxq8MGukHvnxfjBnBFzQI9BCh3yCvRARUi6JEChADhUNAjtFdTKR1OIUBUsm4O3cWbyIcx0VFZEfqU3OkRAVTh+SSOuPd7ZKYKioQqmWpuGhgm/ZfLiPC6iEgwfQRk4YqMBGENKLaPtwuNawNDxOTvpSXCrq+rI2x7TQ2amzajuakRnQf3qjoxA4awi4mEbAT0AzgFChWdTybxdW4eL99GMTL2VNVahpGOKUTCZfEgCwP18ZnZeYyMPdPsJy3CATkRDkEkAguD9fGZ2R86icAXJALjOdcTFs7S6OMcx0sO27F1C057juV1ZWNZ9N2+k/cYp8OOiclpcU0AgHfhUPAG9S7A80k4HXbJuF6RkOB4HO2QjYROry9wkqoAwj5OSYQW6hGQJZ8Io49yiCDTBXKRQ4QWxXuBSCRC2G1t7TmOVI9cH3c67OD4JDE+MzuPh49f4Iz3uMTH1d6Lqs45MTktNDcZIgWEcHwSDnuNZPzLtzk8CKu7TigEw6SAkLQI0nT4XAIRDCkAkO7j5RBBsQa8n5oi7FLWADEcz8PpsCMhuE6ILowjugDc+zQAbPuOrlY/sebsnnU7lUqBkcszAYaNgCwJjpftDliqBxYbNfs3vABAHhGWazX7piuAyj4uEWF5o+YtqH4mWF1lI+yfh7cT9obzPaR9gbTFqO7jl56sGyv5t8+yLFZT+d97mCIFSklFANoboI0kiYTvCpV6aDF47+8ibK19XIlVhXm93g0alhrW5BdCpcbyAkhSYEXwCLDaJp4tL4X0cc3nKKl3EyCJgGqb/pXfyFQigPYGlBD38Yaki7B/jZPzkb/kM0y3253Xv+EFUOrjWrF8ClheAMOngBiXy0XYfr+65wliLB8BFQFob4A2qmvA4OAgOdDVS9oJyQLCPAHy/l9rH9eK5SOgIgDtDdBGsQb4/X6lQ0yN5SOgIgDtDdDGdPcC0Y+xRaHt9QWiGtzFrR4BlhYgFg4Fh02XAjoQBxAPh4LDgAlrAABxznu1OLNyCgAwZwQQZH8BWiyVCEC6KPz/0YTXF5D7br1RiWt1wOrhhCK6CDAMIKZ9L2Unlm1lWrDt3NcBAM8BZL+i3aDVaYmJA3gVDgVv6eHsHxFGM6oZCDdCAAAAAElFTkSuQmCC",
+                "MediafileExt": ".png"
+            }
+        ]
+    }
+}
+	</div>
+	<footer></footer>
 </body>
-
 </html>
