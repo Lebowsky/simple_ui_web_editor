@@ -88,18 +88,23 @@ class BaseElement(BaseModel):
 
 class BaseContainerElement(BaseElement):
     type: ContainerElementType
+
     height: Union[DimensionsType, str] = DimensionsType.wrap_content
     width: Union[DimensionsType, str] = DimensionsType.wrap_content
     weight: str = '0'
-    text_bold: bool = Field(default=False, alias='TextBold')
-    text_italic: bool = Field(default=False, alias='TextItalic')
     height_value: Optional[str]
     width_value: Optional[str]
-    text_size: str = Field(default='', alias="TextSize")
     gravity_horizontal: Optional[GravityEnum]
+
+    text_size: str = Field(default='', alias="TextSize")
+    text_color = Field(default='', alias='TextColor')
+    text_bold: bool = Field(default=False, alias='TextBold')
+    text_italic: bool = Field(default=False, alias='TextItalic')
+
     drawable: ElementsIcon = None
     number_precision = Field(default=0, alias="NumberPrecision")
     background_color = Field(default='', alias='BackgroundColor')
+
 
     @validator('background_color')
     def check_color(cls, v: str):
@@ -130,6 +135,9 @@ class RootContainer(BaseElement):
     weight: str = '0'
     orientation: OrientationType = OrientationType.horizontal
     elements: List[Union['RootContainer', BaseContainerElement]] = Field(default=[], alias='Elements')
+    background_color: Optional[str] = Field(default='', alias='BackgroundColor')
+    stroke_width: Optional[str] = Field(default='', alias='StrokeWidth')
+    padding: Optional[str] = Field(default='', alias='Padding')
 
     @validator('weight')
     def check_int_value(cls, v):
