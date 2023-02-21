@@ -166,12 +166,12 @@ class ClientConfigurationModel(BaseConfigModel):
         alias='ConfigurationSettings')
 
     tags: str = Field(default='', alias='ConfigurationTags')
-    broadcast_intent: Optional[str] = Field(alias='BroadcastIntent')
-    broadcast_variable: Optional[str] = Field(alias='BroadcastVariable')
-    face_recognition_url: Optional[str] = Field(alias='FaceRecognitionURL')
-    foreground_service: Optional[bool] = Field(alias='ForegroundService')
-    on_keyboard_main: Optional[bool] = Field(alias='OnKeyboardMain')
-    stop_foreground_service_on_exit: Optional[bool] = Field(alias='StopForegroundServiceOnExit')
+    broadcast_intent: Optional[str] = Field(default='', alias='BroadcastIntent')
+    broadcast_variable: Optional[str] = Field(default='', alias='BroadcastVariable')
+    face_recognition_url: Optional[str] = Field(default='', alias='FaceRecognitionURL')
+    foreground_service: Optional[bool] = Field(default=False, alias='ForegroundService')
+    on_keyboard_main: Optional[bool] = Field(default=False, alias='OnKeyboardMain')
+    stop_foreground_service_on_exit: Optional[bool] = Field(default=False, alias='StopForegroundServiceOnExit')
     run_python: Optional[bool] = Field(default=True, alias='RunPython')
     def_service_configuration: str = Field(default='', alias='DefServiceConfiguration')
     launch: str = Field(default='', alias='Launch')  # Tiles
