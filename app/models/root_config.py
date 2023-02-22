@@ -107,7 +107,7 @@ class OperationsModel(BaseConfigModel):
     def_on_input: Optional[str] = Field(alias='DefOnInput')
     def_on_after_create: Optional[str] = Field(alias='DefOnAfterCreate')
     elements: List[Element] = Field(default=[], alias='Elements')
-    handlers: List[Handler] = Field(default=[], alias='Handlers')
+    handlers: Optional[List[Handler]] = Field(alias='Handlers')
 
 
 class CVFrames(BaseConfigModel):
@@ -194,7 +194,7 @@ class ClientConfigurationModel(BaseConfigModel):
     py_timer_task: Optional[List[PyTimerTaskModel]] = Field(alias='PyTimerTask')
     py_files: Optional[List[PyFilesModel]] = Field(alias='PyFiles')
     arch2: Optional[bool]
-    common_handlers: List[CommonHandler] = Field(default=[], alias='CommonHandlers')
+    common_handlers: Optional[List[CommonHandler]] = Field(alias='CommonHandlers')
 
 
 class RootConfigModel(BaseConfigModel):
