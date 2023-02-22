@@ -14,6 +14,58 @@ class BaseElement(BaseModel):
         use_enum_values = True
 
 
+class DimensionElement(BaseModel):
+    height: Optional[Union[DimensionsType, str]]
+    width: Optional[Union[DimensionsType, str]]
+    weight: Optional[str]
+    height_value: Optional[str]
+    width_value: Optional[str]
+    gravity_horizontal: Optional[GravityEnum]
+    padding: Optional[str] = Field(alias='Padding')
+    stroke_width: Optional[str] = Field(alias='StrokeWidth')
+    orientation: Optional[OrientationType]
+
+
+class Barcode(BaseElement):
+    type: ElementType.barcode.value
+
+
+class HorizontalGallery(BaseElement):
+    type: ElementType.horizontal_gallery.value
+
+
+class Voice(BaseElement):
+    type: ElementType.voice.value
+
+
+class Photo(BaseElement):
+    type: ElementType.photo.value
+
+
+class PhotoGallery(BaseElement):
+    type: ElementType.photo_gallery.value
+
+
+class Signature(BaseElement):
+    type: ElementType.signature.value
+
+
+class Vision(BaseElement):
+    type: ElementType.vision.value
+
+
+class Cart(BaseElement):
+    type: ElementType.cart.value
+
+
+class ImageSlider(BaseElement):
+    type: ElementType.image_slider.value
+
+
+class MenuItem(BaseElement):
+    type: ElementType.menu_item.value
+
+
 class BaseContainerElement(BaseElement):
     type: ContainerElementType
 

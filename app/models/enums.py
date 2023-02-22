@@ -1,19 +1,21 @@
+from typing import Literal
+
 from enum import Enum
 
 
-class ElementType(str, Enum):
-    linear_layout: str = 'LinearLayout'
-    barcode: str = 'barcode'
-    horizontal_gallery: str = 'HorizontalGallery'
-    voice: str = 'voice'
-    photo: str = 'photo'
-    photo_gallery: str = 'photoGallery'
-    signature: str = 'signature'
-    vision: str = 'Vision'
-    cart: str = 'Cart'
-    tiles: str = 'Tiles'
-    image_slider: str = 'ImageSlider'
-    menu_item: str = 'MenuItem'
+class ElementType(Enum):
+    linear_layout = Literal['LinearLayout']
+    barcode = Literal['barcode']
+    horizontal_gallery = Literal['HorizontalGallery']
+    voice = Literal['voice']
+    photo = Literal['photo']
+    photo_gallery = Literal['photoGallery']
+    signature = Literal['signature']
+    vision = Literal['Vision']
+    cart = Literal['Cart']
+    tiles = Literal['Tiles']
+    image_slider = Literal['ImageSlider']
+    menu_item = Literal['MenuItem']
 
 
 class ContainerElementType(str, Enum):
@@ -72,3 +74,12 @@ class DimensionsType(str, Enum):
 class OrientationType(str, Enum):
     vertical = 'vertical'
     horizontal = 'horizontal'
+
+
+class CVDetectorType(str, Enum):
+    barcode: str = 'Barcode'
+    ocr: str = 'OCR'
+    objects_full: str = 'Objects_Full'
+    objects_ocr: str = 'Objects_OCR'
+    objects_barcode: str = 'Objects_Barcode'
+    objects_f1: str = 'Objects_f1'
