@@ -1,6 +1,7 @@
 import os
 import json
 from json import JSONDecodeError
+import jsonref
 import io
 
 from eel import chrome
@@ -9,7 +10,8 @@ import qrcode
 import socket
 import base64
 
-from models.root_config import RootConfigModel, QRCodeConfig
+from models.root_config import RootConfigModel, QRCodeConfig, OperationsModel
+
 
 
 def can_use_chrome():
@@ -66,3 +68,48 @@ def get_qr_code_config():
 
     base_64_mage = base64.b64encode(buffer.getvalue()).decode("utf-8")
     return base_64_mage
+
+
+def get_config_ui_elements(Model) -> dict:
+    scheme = jsonref.loads(Model.schema_json(indent=2, ensure_ascii=True))
+    result = {}
+
+    for k, v in scheme['definitions'].items():
+        config_item = {}
+        props = v.get('properties', None)
+        if not props:
+            continue
+
+        for prop, value in props.items():
+            if prop == 'type':
+                continue
+
+            required = v.get('required', None)
+
+            if value.get('enum', None):
+                config_item[prop] = {
+                    'type': 'select',
+                    'options': value.get('enum')
+                }
+            elif value.get('anyOf', None):
+                options = []
+                for item in value.get('anyOf'):
+                    if 'enum' in item.keys():
+                        options.extend(item['enum'])
+
+                if len(options) > 0:
+                    config_item[prop] = {
+                        'type': 'text',
+                    }
+                else:
+                    config_item[prop] = {
+                        'type': 'select',
+                        'options': options
+                    }
+            else:
+                config_item[prop] = {
+                    'type': 'text',
+                }
+            config_item[prop]['required'] = required and prop in required
+        result[v['title']] = config_item
+    return result
