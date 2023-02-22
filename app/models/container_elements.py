@@ -102,10 +102,19 @@ class ProgressButton(BaseElement, DimensionElement, TextElement):
 class HTML(BaseElement, DimensionElement, TextElement):
     type: Literal['html']
 
+    class Config:
+        title = 'html'
+
 
 class Map(BaseElement, DimensionElement, TextElement):
     type: Literal['map']
 
+    class Config:
+        title = 'map'
+
 
 class File(BaseElement, DimensionElement, TextElement):
     type: Literal['file']
+
+    class Config:
+        title = 'file'
