@@ -10,6 +10,7 @@ from models.elements import Barcode, HorizontalGallery, Voice, Photo, PhotoGalle
     Signature, Vision, Cart, ImageSlider, MenuItem
 from models.enums import CVDetectorType
 from models.containers import Container, Tiles
+from models.handlers import CommonHandler, Handler
 
 
 class BaseConfigModel(BaseModel):
@@ -104,7 +105,9 @@ class OperationsModel(BaseConfigModel):
     def_online_on_input: Optional[str] = Field(alias='DefOnlineOnInput')
     def_on_create: Optional[str] = Field(alias='DefOnCreate')
     def_on_input: Optional[str] = Field(alias='DefOnInput')
+    def_on_after_create: Optional[str] = Field(alias='DefOnAfterCreate')
     elements: List[Element] = Field(default=[], alias='Elements')
+    handlers: List[Handler] = Field(default=[], alias='Handlers')
 
 
 class CVFrames(BaseConfigModel):
@@ -114,24 +117,25 @@ class CVFrames(BaseConfigModel):
     cv_detector: CVDetectorType = Field(default='', alias='CVDetector')
     cv_resolution: str = Field(default='', alias='CVResolution')  # HD1080
     cv_mode: str = Field(default='', alias='CVMode')  # list_only
-    cv_action_buttons: str = Field(default='', alias='CVActionButtons')
-    cv_action: str = Field(default='', alias='CVAction')  # Title
-    cv_info: str = Field(default='', alias='CVInfo')
+    cv_action_buttons: Optional[str] = Field(alias='CVActionButtons')
+    cv_action: Optional[str] = Field(alias='CVAction')  # Title
+    cv_info: Optional[str] = Field(alias='CVInfo')
     cv_camera_device: str = Field(default='', alias='CVCameraDevice')  # "Back"/Front,
     cv_detector_mode: str = Field(default='', alias='CVDetectorMode')  # "train"/predict,
-    cv_frame_online_on_create: str = Field(default='', alias='CVFrameOnlineOnCreate')
-    cv_frame_def_on_create: str = Field(default='', alias='CVFrameDefOnCreate')
-    cv_frame_online_on_new_object: str = Field(default='', alias='CVFrameOnlineOnNewObject')
-    cv_frame_def_on_new_object: str = Field(default='', alias='CVFrameDefOnNewObject')
-    cv_frame_def_on_touch = Field(default='', alias='CVFrameDefOnTouch')
-    cv_frame_online_on_touch: str = Field(default='', alias='CVFrameOnlineOnTouch')
-    cv_frame_online_action: str = Field(default='', alias='CVFrameOnlineAction')
-    cv_frame_def_action = Field(default='', alias='CVFrameDefAction')
+    cv_frame_online_on_create: Optional[str] = Field(alias='CVFrameOnlineOnCreate')
+    cv_frame_def_on_create: Optional[str] = Field(alias='CVFrameDefOnCreate')
+    cv_frame_online_on_new_object: Optional[str] = Field(alias='CVFrameOnlineOnNewObject')
+    cv_frame_def_on_new_object: Optional[str] = Field(alias='CVFrameDefOnNewObject')
+    cv_frame_def_on_touch: Optional[str] = Field(alias='CVFrameDefOnTouch')
+    cv_frame_online_on_touch: Optional[str] = Field(alias='CVFrameOnlineOnTouch')
+    cv_frame_online_action: Optional[str] = Field(alias='CVFrameOnlineAction')
+    cv_frame_def_action: Optional[str] = Field(alias='CVFrameDefAction')
 
 
 class CVOperationModel(BaseConfigModel):
     name: str = Field(alias='CVOperationName')
     type: str = 'CVOperation'
+    hidden: Optional[bool]
     cv_frames: List[CVFrames] = Field(default=[], alias='CVFrames')
 
 
@@ -190,6 +194,7 @@ class ClientConfigurationModel(BaseConfigModel):
     py_timer_task: Optional[List[PyTimerTaskModel]] = Field(alias='PyTimerTask')
     py_files: Optional[List[PyFilesModel]] = Field(alias='PyFiles')
     arch2: Optional[bool]
+    common_handlers: List[CommonHandler] = Field(default=[], alias='CommonHandlers')
 
 
 class RootConfigModel(BaseConfigModel):
