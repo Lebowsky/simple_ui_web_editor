@@ -1,12 +1,12 @@
-from typing import List, Optional, Union
+from typing import List, Optional, Union, Literal
 
-from pydantic import BaseModel, Field, validator, root_validator
+from pydantic import BaseModel, Field
 
-from models.enums import ElementType, ContainerElementType, ElementsIcon, GravityEnum, DimensionsType, OrientationType
+from models.enums import GravityEnum, DimensionsType, OrientationType
 
 
 class BaseElement(BaseModel):
-    type: ElementType
+    type: str
     value: str = Field(default='', alias='Value')
     variable: str = Field(default='', alias='Variable')
 
@@ -25,103 +25,51 @@ class DimensionElement(BaseModel):
     stroke_width: Optional[str] = Field(alias='StrokeWidth')
     orientation: Optional[OrientationType]
 
+    background_color: Optional[str] = Field(alias='BackgroundColor')
+
+
+class TextElement(BaseModel):
+    text_size: Optional[str] = Field(alias="TextSize")
+    text_color: Optional[str] = Field(alias='TextColor')
+    text_bold: Optional[bool] = Field(alias='TextBold')
+    text_italic: Optional[bool] = Field(alias='TextItalic')
+
 
 class Barcode(BaseElement):
-    type: ElementType.barcode.value
+    type: Literal['barcode']
 
 
 class HorizontalGallery(BaseElement):
-    type: ElementType.horizontal_gallery.value
+    type: Literal['HorizontalGallery']
 
 
 class Voice(BaseElement):
-    type: ElementType.voice.value
+    type: Literal['voice']
 
 
 class Photo(BaseElement):
-    type: ElementType.photo.value
+    type: Literal['photo']
 
 
 class PhotoGallery(BaseElement):
-    type: ElementType.photo_gallery.value
+    type: Literal['photoGallery']
 
 
 class Signature(BaseElement):
-    type: ElementType.signature.value
+    type: Literal['signature']
 
 
 class Vision(BaseElement):
-    type: ElementType.vision.value
+    type: Literal['Vision']
 
 
-class Cart(BaseElement):
-    type: ElementType.cart.value
+class Cart(BaseElement, DimensionElement):
+    type: Literal['Cart']
 
 
 class ImageSlider(BaseElement):
-    type: ElementType.image_slider.value
+    type: Literal['ImageSlider']
 
 
 class MenuItem(BaseElement):
-    type: ElementType.menu_item.value
-
-
-class BaseContainerElement(BaseElement):
-    type: ContainerElementType
-
-    height: Union[DimensionsType, str] = DimensionsType.wrap_content
-    width: Union[DimensionsType, str] = DimensionsType.wrap_content
-    weight: str = '0'
-    height_value: Optional[str]
-    width_value: Optional[str]
-    gravity_horizontal: Optional[GravityEnum]
-
-    text_size: str = Field(default='', alias="TextSize")
-    text_color = Field(default='', alias='TextColor')
-    text_bold: bool = Field(default=False, alias='TextBold')
-    text_italic: bool = Field(default=False, alias='TextItalic')
-
-    drawable: ElementsIcon = None
-    number_precision = Field(default=0, alias="NumberPrecision")
-    background_color = Field(default='', alias='BackgroundColor')
-
-    # @validator('background_color')
-    # def check_color(cls, v: str):
-    #     if not isinstance(v, str) or not v.upper().startswith('#'):
-    #         raise ValueError('Color must start with "#"')
-    #     return v
-
-    @validator('weight', 'text_size', 'height_value', 'width_value')
-    def check_int_value(cls, v):
-        try:
-            int(v)
-        except Exception:
-            raise ValueError('Value must be int')
-        return v
-
-    @root_validator
-    def check_dimensions(cls, values):
-        for key in ['height', 'width']:
-            if not isinstance(values.get(key, None), DimensionsType) and not values.get('width_value', None):
-                values[f'{key}_value'] = values.get(key, None)
-        return values
-
-
-class RootContainer(BaseElement):
-    type: ElementType = ElementType.linear_layout
-    height: DimensionsType = DimensionsType.wrap_content
-    width: DimensionsType = DimensionsType.wrap_content
-    weight: str = '0'
-    orientation: OrientationType = OrientationType.horizontal
-    elements: List[Union['RootContainer', BaseContainerElement]] = Field(default=[], alias='Elements')
-    background_color: Optional[str] = Field(default='', alias='BackgroundColor')
-    stroke_width: Optional[str] = Field(default='', alias='StrokeWidth')
-    padding: Optional[str] = Field(default='', alias='Padding')
-
-    @validator('weight')
-    def check_int_value(cls, v):
-        try:
-            int(v)
-        except Exception:
-            raise ValueError('Value must be int')
-        return v
+    type: Literal['MenuItem']

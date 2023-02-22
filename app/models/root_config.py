@@ -25,15 +25,24 @@ class MainMenuModel(BaseConfigModel):
     menu_title: str = Field(default='', alias='MenuTitle')
     menu_top: bool = Field(default=False, alias='MenuTop')
 
+    class Config:
+        title = 'MainMenu'
+
 
 class MediaFileModel(BaseConfigModel):
     media_file_data: str = Field(default='', alias='MediafileData')
     media_file_ext: str = Field(default='', alias='MediafileExt')
     media_file_key: str = Field(default='', alias='MediafileKey')  # media
 
+    class Config:
+        title = 'MediaFile'
+
 
 class SQLQueryModel(BaseConfigModel):
     Query: str
+
+    class Config:
+        title = 'SQLQuery'
 
 
 class PyTimerTaskModel(BaseConfigModel):
@@ -50,10 +59,16 @@ class PyTimerTaskModel(BaseConfigModel):
             raise ValueError('Value must be int')
         return v
 
+    class Config:
+        title = 'PyTimerTask'
+
 
 class PyFilesModel(BaseConfigModel):
     py_file_key: str = Field(alias='PyFileKey')
     py_file_data: str = Field(alias='PyFileData')
+
+    class Config:
+        title = 'PyFiles'
 
 
 class ConfigurationSettingsModel(BaseConfigModel):
@@ -66,6 +81,9 @@ class ConfigurationSettingsModel(BaseConfigModel):
     handler_url: Optional[str]
     handler_auth: Optional[str]
     dictionaries: Optional[str]
+
+    class Config:
+        title = 'ConfigurationSettings'
 
 
 Element = Annotated[
@@ -109,6 +127,9 @@ class OperationsModel(BaseConfigModel):
     elements: List[Element] = Field(default=[], alias='Elements')
     handlers: Optional[List[Handler]] = Field(alias='Handlers')
 
+    class Config:
+        title = 'Operation'
+
 
 class CVFrames(BaseConfigModel):
     name: str = Field(alias='Name')
@@ -131,12 +152,18 @@ class CVFrames(BaseConfigModel):
     cv_frame_online_action: Optional[str] = Field(alias='CVFrameOnlineAction')
     cv_frame_def_action: Optional[str] = Field(alias='CVFrameDefAction')
 
+    class Config:
+        title = 'CVFrame'
+
 
 class CVOperationModel(BaseConfigModel):
     name: str = Field(alias='CVOperationName')
     type: str = 'CVOperation'
     hidden: Optional[bool]
     cv_frames: List[CVFrames] = Field(default=[], alias='CVFrames')
+
+    class Config:
+        title = 'CVOperation'
 
 
 class ProcessesModel(BaseConfigModel):
@@ -148,6 +175,9 @@ class ProcessesModel(BaseConfigModel):
     login_screen: Optional[bool]
     sc: Optional[bool] = Field(alias='SC')
     operations: List[OperationsModel] = Field(alias='Operations')
+
+    class Config:
+        title = 'Process'
 
 
 class QRCodeConfig(BaseModel):
@@ -195,6 +225,9 @@ class ClientConfigurationModel(BaseConfigModel):
     py_files: Optional[List[PyFilesModel]] = Field(alias='PyFiles')
     arch2: Optional[bool]
     common_handlers: Optional[List[CommonHandler]] = Field(alias='CommonHandlers')
+
+    class Config:
+        title = 'ClientConfiguration'
 
 
 class RootConfigModel(BaseConfigModel):
