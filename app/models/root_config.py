@@ -1,20 +1,15 @@
 from typing import List, Optional, Union
+from typing_extensions import Annotated
 import uuid
-from enum import Enum
 
 from pydantic import BaseModel, Field, validator
 
 from config import su_settings
-from models.elements import BaseElement, RootContainer
-
-
-class CVDetectorType(str, Enum):
-    barcode: str = 'Barcode'
-    ocr: str = 'OCR'
-    objects_full: str = 'Objects_Full'
-    objects_ocr: str = 'Objects_OCR'
-    objects_barcode: str = 'Objects_Barcode'
-    objects_f1: str = 'Objects_f1'
+# from models.elements import BaseElement
+from models.elements import Barcode, HorizontalGallery, Voice, Photo, PhotoGallery, \
+    Signature, Vision, Cart, ImageSlider, MenuItem
+from models.enums import CVDetectorType
+from models.containers import Container, Tiles
 
 
 class BaseConfigModel(BaseModel):
@@ -62,14 +57,33 @@ class PyFilesModel(BaseConfigModel):
 
 class ConfigurationSettingsModel(BaseConfigModel):
     uid: str = uuid.uuid4().hex
-    vendor: str = ''
-    vendor_url: str = ''
-    vendor_auth: str = ''
-    handler_split_mode: bool = False
-    handler_code: str = ''
-    handler_url: str = ''
-    handler_auth: str = ''
-    dictionaries: str = ''
+    vendor: Optional[str]
+    vendor_url: Optional[str]
+    vendor_auth: Optional[str]
+    handler_split_mode: Optional[bool]
+    handler_code: Optional[str]
+    handler_url: Optional[str]
+    handler_auth: Optional[str]
+    dictionaries: Optional[str]
+
+
+Element = Annotated[
+    Union[
+        Container,
+        Tiles,
+        Barcode,
+        HorizontalGallery,
+        Voice,
+        Photo,
+        PhotoGallery,
+        Signature,
+        Vision,
+        Cart,
+        ImageSlider,
+        MenuItem
+
+    ], Field(discriminator='type')
+]
 
 
 class OperationsModel(BaseConfigModel):
@@ -78,26 +92,19 @@ class OperationsModel(BaseConfigModel):
     timer: bool = Field(default=False, alias='Timer')
     hide_toolbar_screen: bool = Field(default=False, alias='hideToolBarScreen')
     no_scroll: bool = Field(default=False, alias='noScroll')
-    online_on_after_start: Optional[bool] = Field(default=False, alias='onlineOnAfterStart')
+    online_on_after_start: Optional[bool] = Field(alias='onlineOnAfterStart')
     handle_key_up: bool = Field(default=False, alias='handleKeyUp')
-    no_confirmation: bool = Field(default=False, alias='noConfirmation')
+    no_confirmation: Optional[bool] = Field(alias='noConfirmation')
     hide_bottom_bar_screen: bool = Field(default=False, alias='hideBottomBarScreen')
     online_on_start: bool = Field(default=False, alias='onlineOnStart')
-    send_when_opened: bool = False
-    send_after_opened: Optional[bool] = False
+    send_when_opened: Optional[bool]
+    send_after_opened: Optional[bool]
     online_on_input: bool = Field(default=False, alias='onlineOnInput')
-    def_online_on_create: str = Field(default='', alias='DefOnlineOnCreate')
-    def_online_on_input: str = Field(default='', alias='DefOnlineOnInput')
-    def_on_create: str = Field(default='', alias='DefOnCreate')
-    def_on_input: str = Field(default='', alias='DefOnInput')
-    elements: List[Union[RootContainer, BaseElement]] = Field(default=[], alias='Elements')
-
-    @validator('elements', pre=False)
-    def change_type_element(cls, v, values, **kwargs):
-        for index, item in enumerate(v):
-            if getattr(item, 'type', '') != 'LinearLayout':
-                v[index] = BaseElement(**item.dict(by_alias=True))
-        return v
+    def_online_on_create: Optional[str] = Field(alias='DefOnlineOnCreate')
+    def_online_on_input: Optional[str] = Field(alias='DefOnlineOnInput')
+    def_on_create: Optional[str] = Field(alias='DefOnCreate')
+    def_on_input: Optional[str] = Field(alias='DefOnInput')
+    elements: List[Element] = Field(default=[], alias='Elements')
 
 
 class CVFrames(BaseConfigModel):
@@ -131,11 +138,11 @@ class CVOperationModel(BaseConfigModel):
 class ProcessesModel(BaseConfigModel):
     type: str = 'Process'
     process_name: str = Field(default=su_settings.locale.get('new_process'), alias='ProcessName')
-    plan_fact_header: str = Field(default=su_settings.locale.get('plan_fact'), alias='PlanFactHeader')
-    define_on_back_pressed: bool = Field(default=False, alias='DefineOnBackPressed')
-    hidden: bool = False
-    login_screen: bool = False
-    sc: bool = Field(default=False, alias='SC')
+    plan_fact_header: Optional[str] = Field(alias='PlanFactHeader')
+    define_on_back_pressed: Optional[bool] = Field(alias='DefineOnBackPressed')
+    hidden: Optional[bool]
+    login_screen: Optional[bool]
+    sc: Optional[bool] = Field(alias='SC')
     operations: List[OperationsModel] = Field(alias='Operations')
 
 
@@ -151,9 +158,7 @@ class ClientConfigurationModel(BaseConfigModel):
         default=su_settings.locale.get('new_configuration'),
         alias='ConfigurationName')
 
-    description: str = Field(
-        default=su_settings.locale.get('new_configuration_decription'),
-        alias='ConfigurationDescription')
+    description: Optional[str] = Field(alias='ConfigurationDescription')
 
     version: str = Field(default='0.0.1', alias='ConfigurationVersion')
 
@@ -166,24 +171,25 @@ class ClientConfigurationModel(BaseConfigModel):
         alias='ConfigurationSettings')
 
     tags: str = Field(default='', alias='ConfigurationTags')
-    broadcast_intent: Optional[str] = Field(default='', alias='BroadcastIntent')
-    broadcast_variable: Optional[str] = Field(default='', alias='BroadcastVariable')
-    face_recognition_url: Optional[str] = Field(default='', alias='FaceRecognitionURL')
-    foreground_service: Optional[bool] = Field(default=False, alias='ForegroundService')
-    on_keyboard_main: Optional[bool] = Field(default=False, alias='OnKeyboardMain')
-    stop_foreground_service_on_exit: Optional[bool] = Field(default=False, alias='StopForegroundServiceOnExit')
-    run_python: Optional[bool] = Field(default=True, alias='RunPython')
-    def_service_configuration: str = Field(default='', alias='DefServiceConfiguration')
-    launch: str = Field(default='', alias='Launch')  # Tiles
-    launch_process: str = Field(default='', alias='LaunchProcess')  # process
-    launch_var: str = Field(default='', alias='LaunchVar')  # field
-    main_menu: List[MainMenuModel] = Field(default=[], alias='MainMenu')
-    media_file: List[MediaFileModel] = Field(default=[], alias='Mediafile')
-    offline_on_create: List[SQLQueryModel] = Field(default=[], alias='OfflineOnCreate')
-    online_service_configuration: str = Field(default='', alias='OnlineServiceConfiguration')
-    py_handlers: str = Field(default='', alias='PyHandlers')
-    PyTimerTask: List[PyTimerTaskModel] = Field(default=[], alias='PyTimerTask')
-    PyFiles: List[PyFilesModel] = Field(default=[], alias='PyFiles')
+    broadcast_intent: Optional[str] = Field(alias='BroadcastIntent')
+    broadcast_variable: Optional[str] = Field(alias='BroadcastVariable')
+    face_recognition_url: Optional[str] = Field(alias='FaceRecognitionURL')
+    foreground_service: Optional[bool] = Field(alias='ForegroundService')
+    on_keyboard_main: Optional[bool] = Field(alias='OnKeyboardMain')
+    stop_foreground_service_on_exit: Optional[bool] = Field(alias='StopForegroundServiceOnExit')
+    run_python: Optional[bool] = Field(alias='RunPython')
+    def_service_configuration: Optional[str] = Field(alias='DefServiceConfiguration')
+    launch: Optional[str] = Field(alias='Launch')  # Tiles
+    launch_process: Optional[str] = Field(alias='LaunchProcess')  # process
+    launch_var: Optional[str] = Field(alias='LaunchVar')  # field
+    main_menu: Optional[List[MainMenuModel]] = Field(alias='MainMenu')
+    media_file: Optional[List[MediaFileModel]] = Field(alias='Mediafile')
+    offline_on_create: Optional[List[SQLQueryModel]] = Field(alias='OfflineOnCreate')
+    online_service_configuration: Optional[str] = Field(alias='OnlineServiceConfiguration')
+    py_handlers: Optional[str] = Field(alias='PyHandlers')
+    py_timer_task: Optional[List[PyTimerTaskModel]] = Field(alias='PyTimerTask')
+    py_files: Optional[List[PyFilesModel]] = Field(alias='PyFiles')
+    arch2: Optional[bool]
 
 
 class RootConfigModel(BaseConfigModel):
