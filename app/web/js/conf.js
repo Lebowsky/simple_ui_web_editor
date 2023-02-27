@@ -95,3 +95,116 @@ const confElementParams = {
 		]
 	},
 }
+
+const elementParams = {
+	Process: {
+		"ProcessName": {
+			type: "text",
+			text: "Process Name"
+		},
+		"hidden": {
+			type: "checkbox",
+			text: "Do not Display in Menu"
+		},
+		"DefineOnBackPressed": {
+			type: "checkbox",
+			text: "Override back button"
+		},
+		"login_screen": {
+			type: "checkbox",
+			text: "Run at startup"
+		},
+		"PlanFactHeader": {
+			type: "text",
+			text: "Plan/Fact Header"
+		},
+		"SC": {
+			type: "checkbox",
+			text: "Idependent process"
+		}
+	},
+	Operation: {
+		"Name": {
+			type: "text",
+			text: "Screen name"
+		},
+		"Timer": {
+			type: "checkbox",
+			text: "Screen handler on timer"
+		},
+		"noScroll": {
+			type: "checkbox",
+			text: "Disble scrolling for Root Layout"
+		},
+		"hideBottomBarScreen": {
+			type: "checkbox",
+			text: "Hide button bar"
+		},
+		"hideToolBarScreen": {
+			type: "checkbox",
+			text: "Hide top bar"
+		},
+		"noConfirmation": {
+			type: "checkbox",
+			text: "Close without confirmation"
+		},
+		"handleKeyUp": {
+			type: "checkbox",
+			text: "Attach a keyboard handler"
+		},
+		"Elements": {
+			type: "Elements",
+			text: "Elements"
+		}
+	},
+	LinearLayout: {
+		"type": {
+			type: "select",
+			text: "Type",
+			class: "type",
+			options: [
+				"LinearLayout",
+				"barcode",
+			]
+		},
+		"Value": {
+			type: "text",
+			text: "Value"
+		},
+		"Variable": {
+			type: "text",
+			text: "Variable"
+		},
+		"orientation": {
+			type: "select",
+			text: "Orientation",
+			options: [
+				"vertical",
+				"horizontal",
+			]
+		},
+		"Elements": {
+			type: "Elements",
+			text: "Elements"
+		}
+	},
+	barcode: {
+		"type": {
+			type: "select",
+			text: "Type",
+			class: "type",
+			options: [
+				"LinearLayout",
+				"barcode",
+			]
+		},
+		"Value": {
+			type: "text",
+			text: "Value"
+		},
+		"Variable": {
+			type: "text",
+			text: "Variable"
+		},
+	}
+}
