@@ -33,8 +33,20 @@ def ask_file(file_type):
 
 
 @eel.expose
+def ask_save_file(file_type):
+    """ Ask the user to select a save file """
+    file_name = dialogs.ask_save_file(file_type)
+    return file_name
+
+
+@eel.expose
 def get_qr_settings():
     return str(get_qr_code_config())
+
+
+@eel.expose
+def get_config_ui_elements():
+    return utils.get_config_ui_elements()
 
 
 async def get_current_file_path():

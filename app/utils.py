@@ -32,7 +32,7 @@ def get_port():
 def save_config_to_file(config_data, file_path):
     config = RootConfigModel(**config_data)
     with open(file_path, 'w', encoding="utf-8") as f:
-        json.dump(config.dict(), f, ensure_ascii=False, indent=4, separators=(',', ': '))
+        json.dump(config.dict(by_alias=True, exclude_none=True), f, ensure_ascii=False, indent=4, separators=(',', ': '))
 
 
 def get_config_from_file(file_path):
@@ -61,8 +61,7 @@ def get_qr_code_config():
     url = f'http://{host}:{port}/get_conf'
 
     qr_config = QRCodeConfig(RawConfigurationURL=url)
-
-    img = qrcode.make(json.dumps(qr_config.json()))
+    img = qrcode.make(qr_config.json(by_alias=True, exclude_none=True))
     buffer = io.BytesIO()
     img.save(buffer, format="PNG")
 
@@ -70,7 +69,7 @@ def get_qr_code_config():
     return base_64_mage
 
 
-def get_config_ui_elements(Model) -> dict:
+def get_config_ui_elements(Model=RootConfigModel) -> dict:
     scheme = jsonref.loads(Model.schema_json(indent=2, ensure_ascii=True))
     result = {}
 
