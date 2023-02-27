@@ -50,7 +50,7 @@ def get_config_ui_elements():
 
 
 async def get_current_file_path():
-    return eel.get_current_file_path()()
+    return eel.getCurrentFilePath()()
 
 
 def start(open_mode):
