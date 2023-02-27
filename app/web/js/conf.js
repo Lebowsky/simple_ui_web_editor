@@ -157,11 +157,48 @@ const elementParams = {
 			text: "Elements"
 		}
 	},
-	LinearLayout: {
+	CommonHandlers: {
 		"type": {
 			type: "select",
 			text: "Type",
 			class: "type",
+			options: [
+				"pyton",
+				"online",
+			]
+		},
+		"action": {
+			type: "select",
+			text: "Action",
+			class: "action",
+			options: [
+				"run",
+				"runasync",
+			]
+		},
+		"event": {
+			type: "select",
+			text: "Event",
+			class: "event",
+			options: [
+				"onLaunch",
+				"onWebServiceSyncCommand",
+			]
+		},
+		"postExecute": {
+			type: "postExecute",
+			text: "postExecute"
+		},
+		"alias": {
+			type: "text",
+			text: "postExecute"
+		},
+	},
+	LinearLayout: {
+		"type": {
+			type: "select",
+			text: "Type",
+			class: "element-type",
 			options: [
 				"LinearLayout",
 				"barcode",
