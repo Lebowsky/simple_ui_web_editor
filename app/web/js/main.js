@@ -1,141 +1,86 @@
 $(document).ready(function(){
-	var main = Object.create(Main);
+	$(document).on('click', '.list-item .edit', function(){
+		let type   = $(this).parents(".list-item").attr('data-type'),
+			path   = $(this).parents(".list-item").attr('data-path'),
+			modals = $(".modal");
 
-	main.conf = $.parseJSON($(".hidden-conf-json").text());
-	main.renderConfiguration();
+		modal = addModal("", type, path);
+		modals.removeClass("active");
+		modal.addClass("active");
+		main.renderModalParams(modal, type, path);
+	})
 
-	$(document).on('click', '#processes option', function(){
-		main.renderProcessesParams($(this).val())
-	});
+	$(document).on('click', '.list-item .delete', function(){
+		let listNode = $(this).parents(".list"),
+			type = $(this).parents(".list-item").attr('data-type'),
+			path = $(this).parents(".list-item").attr('data-path');
 
-	$(document).on('click', '#screen option', function(){
-		main.renderOperationParam($('#processes').val(), $(this).val())
-	});
-
-	$("#screen-conf button").click(function(){
-		let tabID = "#"+$(this).data("tab-id");
-		$(".screen-section-wrap").removeClass("active");
-		$(tabID).addClass("active");
-	});
-
-	$(document).on('click', '#screen-elements option', function(){
-		let processIndex = $("#processes").val(),
-			screenIndex = $("#screen").val();
-
-		var modal = addModal("", $(this).val());
-		main.renderElementParam(modal, $(this).val(), processIndex, screenIndex, $(this).val());
-	});
-
-	$(document).on('click', '.layout-elements option', function(){
-		let processIndex = $("#processes").val(),
-			screenIndex = $("#screen").val(),
-			path = String($(this).parent(".layout-elements").data("layout-index")) + "-" + $(this).val();
-
-		var modal = addModal("element-modal", path);
-		main.renderElementParam(modal, $(this).val(), processIndex, screenIndex, path);
-	});
+		main.deleteElement(listNode, type, path);
+	})
 
 	$(document).on('click', '.save-element', function(){
-		let modalNode = $(this).parents(".modal"),
-			processIndex = $("#processes").val(),
-			screenIndex = $("#screen").val(),
-			path = modalNode.data("path");
+		let modal       = $(this).parents(".modal"),
+			type        = modal.attr('data-type'),
+			path        = modal.attr('data-path'),
+			parentModal = modal.prev();
 
-		main.saveElement(modalNode, processIndex, screenIndex, path);
-		closeModal($(this).parents(".modal"));
-	});
+		params = main.getElementParamsByForm(modal);
+		main.saveElement(params, type, path);
+		
+		if (parentModal.length > 0) {
+			main.renderElementsList(parentModal.find(".elements"), "", parentModal.attr("data-path"));
+
+		} else if (type == "Process") {
+			main.renderElementsList($("#processes"), "Process", "");
+
+		} else if (type == "Operation") {
+			path = main.pathPop(path);
+			main.renderElementsList($("#operations"), "Operation", path);
+		}
+
+		closeModal(modal);
+	})
+
+	$(document).on('click', '.btn-add', function(e){
+		let listNode = $(this).parents(".btn-group").siblings(".list"),
+			type     = $(this).attr("data-type"),
+			path     = $(this).attr("data-path");
+
+		main.addElement(type, path);
+		main.renderElementsList(listNode, type, path);
+	})
+
+	$(document).on('click', '#processes .list-item', function(e){
+		if ($(e.target).is(this) || $(e.target).is($(this).children("span"))) {
+			let path = $(this).attr("data-path");
+
+			main.renderElementsList($("#operations"), "Operation", path);
+			$("#screen-btn").find(".btn-add").attr("data-path", $(this).attr("data-path"));
+		}
+	})
+
+	$(document).on('change', 'select.type', function(){
+		let modal = $(this).parents(".modal"),
+			type  = $(this).val(),
+			path  = modal.attr("data-path");
+
+		main.renderModalParams(modal, type, path);
+	})
 
 	$(document).on('click', '.close-modal', function(){
+		let	modal       = $(this).parents(".modal"),
+			parentModal = modal.prev();
+			
 		closeModal($(this).parents(".modal"));
-	});
 
-	$(document).on('change', '.form.configuration :input', function(){
-		let parentNode = $(this).parents(".form"),
-			processIndex = parentNode.data("process-index"),
-			screenIndex = parentNode.data("screen-index");
-
-		if (typeof processIndex == "undefined") {
-			processIndex = false;
-		}
-		if (typeof screenIndex == "undefined") {
-			screenIndex = false;
-		}
-
-		main.saveElement(parentNode, processIndex, screenIndex);
-		//closeModal($(this).parents(".modal"));
+		if (parentModal.length > 0)
+			parentModal.addClass("active");
 	});
 });
 
-function addModal (className, path = "") {
-	let processIndex = $("#processes").val(),
-		operationIndex = $("#screen").val();
-
-	$("#modals-wrap").addClass("active");
-	modal = $("<div class='modal "+className+"' data-path='"+path+"' data-process='"+processIndex+"' data-operation='"+operationIndex+"'></div>").appendTo("#modals-wrap");
-
-	return modal;
-}
-
-function closeModal (modalNode) {
-	if (modalNode.siblings(".modal").length == 0) {
-		modalNode.parents("#modals-wrap").removeClass("active");
-	}
-	modalNode.remove();
-}
-
 var Main = {
-	conf: {},
-	saveElement: function (modalNode, processIndex = false, operationIndex = false, path = false) {
-		let element = this.getElementByPath(processIndex, operationIndex, path);
-		params = this.getParamValue(modalNode);
-
-		$.each(element, function(paramName, paramValue) {
-			if (typeof params[paramName] != "undefined")
-				element[paramName] = params[paramName];
-		});
-
-		this.updateConfig();
-
-		console.log(this.conf);
-	},
-	updateConfig: function () {
-		let confJson = JSON.stringify(this.conf);
-		$(".hidden-conf-json").text(confJson);
-	},
-	getParamValue: function (formNode) {
-		params = {};
-		paramsNodes = formNode.find("[data-param-name]");
-
-		for (var i = 0; i < paramsNodes.length; i++) {
-			paramName = $(paramsNodes[i]).data("param-name");
-			paramValue = $(paramsNodes[i]).val();
-
-			params[paramName] = paramValue;
-		}
-
-		return params;
-	},
-	getElementByPath: function (processIndex, operationIndex, path) {
-		let configuration   = this.conf.ClientConfiguration,
-			processes       = configuration.Processes,
-			processParams   = processes[processIndex],
-			operations      = processParams.Operations,
-			operationParams = operations[operationIndex],
-			element         = operationParams,
-			arrPath         = String(path).split("-");
-
-		for (var i = 0; i < arrPath.length; i++) {
-			element = element.Elements[arrPath[i]];
-		}
-
-		return element;
-	},
 	renderConfiguration: function () {
-		let configuration  = this.conf.ClientConfiguration,
-			processes      = configuration.Processes,
-			processOptions = {};
-
-		$(configurationParams.ConfigurationName).val(configuration.ConfigurationName);
+		let configuration = this.conf.ClientConfiguration;
 
 		$.each(configuration, function(confParamName, confParamValue){
 			if (typeof confParamValue !== 'object') {
@@ -147,268 +92,319 @@ var Main = {
 			}
 		})
 
-		processes.forEach((processParams, procesIndex) => {
-			let processName = processParams.ProcessName;
-
-			if (typeof processName !== 'undefined')
-				processOptions[procesIndex] = processName
-		});
-
-		this.renderSelectOptions(configurationParams.Processes, processOptions);
+		this.renderElementsList($("#processes"), "Process", "");
 	},
-	renderProcessesParams: function (processIndex = 0) {
-		processes      = this.conf.ClientConfiguration.Processes;
-		processParams  = processes[processIndex];
-		operations     = processParams.Operations;
-		operationssOptions = {};
-		
-		Main.clearParams("Process");
+	renderElementsList: function (listNode, type, path) {
+		let elementsItems = {},
+			nameProp      = "type",
+			elements      = this.getElementByPath(type, path).elements;
 
-		$.each(configurationParams.Process, function(processParamName, processNodeSelector){
-			fieldValue = processParams[processParamName];
-			Main.renderParamValue(fieldValue, processNodeSelector);
-		});
+		if (type == "Process")
+			nameProp = "ProcessName";
 
-		operations.forEach((operationParams, operationIndex) => {
-			let operationName = operationParams.Name;
+		if (type == "Operation")
+			nameProp = "Name";
 
-			if (typeof operationName !== 'undefined')
-				operationssOptions[operationIndex] = operationName
-		});
+		if (path != "")
+			path = String(path)+"-";
 
-		this.renderSelectOptions(configurationParams.Operations, operationssOptions);
-	},
-	renderOperationParam: function (processIndex = 0, operationIndex = 0) {
-		processes       = this.conf.ClientConfiguration.Processes;
-		processParams   = processes[processIndex];
-		operations      = processParams.Operations;
-		operationParams = operations[operationIndex];
-		elemnts         = operationParams.Elements;
-		elementssOptions = {};
-		
-		Main.clearParams("Operation");
+		$.each(elements, function(elementIndex, elementParams){
+			let elementName = elementParams[nameProp],
+				elementType = elementParams.type;
 
-		$.each(configurationParams.Operation, function(operationParamName, operationParamSelector){
-			fieldValue = operationParams[operationParamName];
-			Main.renderParamValue(fieldValue, operationParamSelector);
-		});
-
-		elemnts.forEach((elemetParams, elemetIndex) => {
-			let elemetType = elemetParams.type;
-
-			if (typeof elemetType !== 'undefined')
-				elementssOptions[elemetIndex] = elemetType
-		});
-
-		this.renderSelectOptions(configurationParams.ScreenElements, elementssOptions);
-	},
-	renderElementParam: function (modal, elementIndex = 0, processIndex = 0, operationIndex = 0, path = "0") {
-		let html    = "<div class='close-modal'><i class='fa fa-times' aria-hidden='true'></i></div><div class='form'>",
-			element = this.getElementByPath(processIndex, operationIndex, path);
-
-		$.each(element, function(elemntParamName, elemntParamValue){
-			if (typeof confElementParams[elemntParamName] !== 'undefined') {
-				if (confElementParams[elemntParamName]["type"] == "text") {
-					html += "<label>"+elemntParamName+"</label><input data-param-name='"+elemntParamName+"' type='text' value='"+elemntParamValue+"'>";
-				}
-				if (confElementParams[elemntParamName]["type"] == "select") {
-					html += "<label>"+elemntParamName+"</label><select data-param-name='"+elemntParamName+"' name='"+elemntParamName+"'>";
-
-					$.each(confElementParams[elemntParamName]["options"], function(optionIndex, option) {
-						html += "<option value='"+option+"' "+(elemntParamValue == option ? 'selected' : '')+">"+option+"</option>";
-					});
-
-					html += "</select>";
-				}
+			if (typeof elementName !== 'undefined') {
+				elementsItems[elementIndex] = {
+					itemName: elementName,
+					dataAttr: {
+						"type": elementType,
+						"path": path+String(elementIndex),
+					}
+				};
 			}
 		});
 
-		html += "</div>";
-
-		if (element["type"] == "LinearLayout") {
-			var layuotElements = element.Elements,
-				layuotElementssOptions = {};
-
-			html += "<div class='btn-group'>";
-
-			$.each(confElementParams["layoutButtons"]["buttons"], function(buttonIndex, buttonParam) {
-				html += "<button class='"+buttonParam.class+"'>"+buttonParam.text+"</button>";
-			});
-
-			html += "</div>";
-			html += '<select name="elements" class="layout-elements" data-layout-index="'+path+'" size="7">';
-
-			layuotElements.forEach((elemetParams, elemetIndex) => {
-				let elemetType = elemetParams.type;
-
-				if (typeof elemetType !== 'undefined')
-					layuotElementssOptions[elemetIndex] = elemetType
-			});
-
-			html += '</select>';
-		}
-
-		html += "<div class='btn-group'><button class='save-element'>Save</button></div>"
-
-		modal.html(html);
-		if (typeof layuotElementssOptions !== 'undefined') {
-			this.renderSelectOptions(configurationParams.LayoutElements, layuotElementssOptions, modal);
-		}
+		this.renderList(listNode, elementsItems);
 	},
-	renderSelectOptions: function (selectID, options, parentNode = false) {
-		if (parentNode) {
-			selectNode = parentNode.find(selectID);
+	renderList: function (parentNode, items) {
+		html = "";
+
+		if (Object.keys(items).length > 0) {
+			$.each(items, function (itemIndex, item) {
+				html += '<li class="list-item" ';
+	
+				$.each(item["dataAttr"], function (attrName, attrValue) {
+					html += 'data-'+attrName+'="'+attrValue+'"';
+				})
+	
+				html += '><span class="item-name">'+item["itemName"]+'</span><div class="item-btn"><span class="edit">edit</span><span class="delete">delete</span></div></li>';
+			});
 		} else {
-			selectNode = $(document).find(selectID);
+			html += "No Items";
 		}
 
-		selectNode.html("");
-		$.each(options, function(optionValue, optionName){
-			selectNode.append("<option value='"+optionValue+"'>"+optionName+"</option>");
-		});
+		$(parentNode).html(html);
 	},
-	clearParams: function (params) {
-		$.each(configurationParams[params], function(paramName, paramSelector){
-			Main.renderParamValue("", paramSelector);
-		});
-	},
-	renderParamValue: function (paramValue, paramSelector) {
-		if (typeof paramValue !== 'undefined') {
-			if (paramValue == "") {
-				if ($(paramSelector).attr("type") == "checkbox")
-					$(paramSelector).prop('checked', false);
+	renderModalParams: function (modalNode, type, path) {
+		html     = '<div class="params">';
+		element  = this.getElementByPath(type, path).element;
+		elements = {};
 
-				if ($(paramSelector).attr("type") == "text") 
-					$(paramSelector).val("");
-			} else {
-				if (paramValue === true) {
-					$(paramSelector).prop('checked', true);
-				} else if (paramValue === false) {
-					$(paramSelector).prop('checked', false);
+		$.each(elementParams[type], function (configName, paramFields) {
+			value = "";
+			html += '<div class="param">';
+
+			if (paramFields["type"] == "text") {
+				if (typeof element[configName] != 'undefined') {
+					value = element[configName];
+				}
+
+				html += '<label for="'+configName+'">'+paramFields["text"]+'</label>';
+				html += '<input type="text" name="'+configName+'" id="'+configName+'" data-param-name="'+configName+'" value="'+value+'">';
+			}
+
+			if (paramFields["type"] == "checkbox") {
+				if (typeof element[configName] != 'undefined') {
+					value = element[configName] == true ? 'checked' : '';
+				}
+
+				html += '<label for="'+configName+'">'+paramFields["text"]+'</label>';
+				html += '<input type="checkbox" name="'+configName+'" id="'+configName+'" data-param-name="'+configName+'" '+value+'>';
+			}
+
+			if (paramFields["type"] == "select") {
+				html += '<label>'+paramFields["text"]+'</label>';
+				
+				if (typeof element[configName] != 'undefined') {
+					value = element[configName];
+				}
+
+				if (typeof paramFields["class"] != "undefined") {
+					html += '<select data-param-name="'+configName+'" class="'+paramFields["class"]+'">';	
 				} else {
-					$(paramSelector).val(paramValue);
-				}	
+					html += '<select data-param-name="'+configName+'">';
+				}
+
+				$.each(paramFields["options"], function (optionIndex, optionValue) {
+					if (optionValue == type) {
+						html += '<option value="'+optionValue+'" selected>'+optionValue+'</option>'	;
+					} else {
+						html += '<option value="'+optionValue+'">'+optionValue+'</option>';
+					}
+				})
+
+				html += '</select>';
+			}
+
+			if (paramFields["type"] == "Elements") {
+				html += '<label>'+paramFields["text"]+'</label>';
+
+				if (typeof element[configName] != 'undefined') {
+					elements = element[configName];
+				}
+
+				html += '<div class="btn-group" id="process-btn"><button class="btn-add" data-type="Elements" data-path="'+path+'">Add Element</button></div>';
+				html += '<ul class="list elements">No elements</ul>';
+			}
+
+			html += '</div>';
+		})
+
+		html += '<div class="btn-group"><button class="save-element">Save</button></div></div>';
+
+		modalNode.find(".modal-content").html(html);
+
+		if (Object.keys(elements).length > 0)
+			this.renderElementsList(modalNode.find('.elements'), "", path);
+	},
+	saveElement: function (params, type, path) {
+		element = this.getElementByPath(type, path).element;
+
+		$.each(params, function (paramName, paramValue) {
+			element[paramName] = paramValue;
+		})
+
+	},
+	deleteElement: function (listNode, type, path) {
+		let parent       = this.getElementByPath(type, path).parent,
+			arrPath      = String(path).split('-'),
+			elementIndex = arrPath[arrPath.length - 1],
+			newPath         = this.pathPop(path);
+
+		parent.splice(elementIndex, 1);
+		this.renderElementsList(listNode, type, newPath);
+	},
+	addElement: function (type, path) {
+		parent = this.getElementByPath(type, path).parent;
+		console.log("asd")
+		if (type == "Process") {
+			elementName = "New Process";
+			element = {
+	            type: "Process",
+	            ProcessName: elementName,
+	            PlanFactHeader: "",
+	            DefineOnBackPressed: false,
+	            hidden: false,
+	            login_screen: false,
+	            SC: false,
+		        Operations: []
 			}
 		}
-	}
-}
-
-function addSelect (selectID, optionText) {
-	//$("body").find("#"+selectID).append("<option value='#'>"+optionText+"</option>");
-
-	if (selectID == "processes") {
-		index = $("#"+selectID+" option").length - 1;
-		renderProcessesSelect(optionText, index, "selected");
-	}
-}
-
-function renderAddElementModal (modalNode) {
-	modalNode.find(".element-params").remove();
-	modalNode.append("<label for='element-type'>Type:</label><select class='element-type'></select>");
-
-	$.each(elementParams.type.options, function(optionIndex, option){
-		modalNode.find(".element-type").append("<option value='"+option+"'>"+option+"</option>");
-	});
-
-	modalNode.append("<div class='element-params'></div>");
-
-	element = modalNode.find(".element-type").val();
-
-	renderElementParams(modalNode, element);
-}
-
-function renderElementParams (modalNode, elementType) {
-	let html = "",
-		elementParamsList = elements[elementType];
-
-	$.each(elementParamsList, function(index, param) {
-		if (elementParams[param]["type"] == "text") {
-			html += "<label>"+param+"</label><input type='text'>";
-		}
-		if (elementParams[param]["type"] == "select") {
-			html += "<label>"+param+"</label><select name='"+param+"'>";
-
-			$.each(elementParams[param]["options"], function(optionIndex, option) {
-				html += "<option value='"+option+"'>"+option+"</option>";
-			});
-
-			html += "</select>";
-		}
-		if (elementParams[param]["type"] == "buttons") {
-			html += "<div class='btn-group'>";
-
-			$.each(elementParams[param]["buttons"], function(buttonIndex, buttonParam) {
-				html += "<button class='"+buttonParam.class+"'>"+buttonParam.text+"</button>";
-			});
-
-			html += "</div>";
-		}
-	});
-
-	modalNode.find(".element-params").html(html);
-}
-
-/*function addProcess (processParams) {
-	//$.parseJSON(processParams);
-	console.log(ClientConfiguration);
-}*/
-
-/*function renderConfiguration(configuration) {
-	var conf = configuration.ClientConfiguration;
-
-	$.each(conf, function(confParamName, confParamValue){
-		if (typeof confParamValue !== 'object') {
-			inputNode = $("#"+confParamName);
-
-			if (inputNode.length > 0) {
-				inputNode.val(confParamValue);
+		if (type == "Operation") {
+			elementName = "New Screen";
+			element = {
+                type: "Operation",
+                Name: elementName,
+                Timer: false,
+                hideToolBarScreen: false,
+                noScroll: false,
+                handleKeyUp: false,
+                noConfirmation: false,
+                hideBottomBarScreen: false,
+                onlineOnStart: false,
+                send_when_opened: false,
+                onlineOnInput: false,
+                DefOnlineOnCreate: "",
+                DefOnlineOnInput: "",
+                DefOnCreate: "",
+                DefOnInput: "",
+                Elements: [],
+                onlineOnAfterStart: false
 			}
-			//console.log(confParamName + ': ' + confParamValue);
-		} else {
-			//$.each(confParamValue, function(paramName, paramValue){
-				//console.log(confParamValue);
-			//});
 		}
-	});
-}*/
-
-/*function renderConfiguration (configuration) {
-	let conf = configuration.ClientConfiguration,
-		processes = conf.Processes;
-
-	$(configurationParams.ConfigurationName).val(conf.ConfigurationName);
-
-	processes.forEach((processObj, procesIndex) => {
-		let processParams = processObj,
-			selected = "";
-
-		if (procesIndex == 0)
-			selected = "selected";
-
-		if (typeof processParams.ProcessName !== 'undefined')
-			$("#processes").append("<option "+selected+" value='"+procesIndex+"'>"+processParams.ProcessName+"</option>");
-	});
-
-	//renderProcessesParams(processes, 0);
-}*/
-
-/*function renderProcessesParams (processes, processIndex) {
-	let processParams = processes[processIndex];
-
-	$.each(configurationParams.Process, function(processParamName, processNodeSelector){
-		fieldValue = processParams[processParamName];
-		renderParamValue(fieldValue, processNodeSelector);
-	});
-}*/
-
-/*function renderParamValue (paramValue, paramSelector) {
-	if (typeof paramValue !== 'undefined') {
-		if (paramValue === true) {
-			$(paramSelector).attr("checked", "");
-		} else if (paramValue === false) {
-			$(paramSelector).removeAttr("checked");
-		} else {
-			$(paramSelector).val(paramValue);
+		if (type == "Elements") {
+			element = {
+                Value: "",
+                Variable: "",
+                type: "LinearLayout",
+                weight: "",
+                height: "",
+                width: "",
+                orientation: "",
+                Elements: [],
+                BackgroundColor: "",
+                StrokeWidth: "",
+                Padding: ""
+            }
 		}
+
+		length = parent.push(element);
+	},
+	getElementParamsByForm: function (elemntParamsNode) {
+		inputs = elemntParamsNode.find(":input");
+		params = {};
+
+		for (var i = 0; i < inputs.length; i++) {
+			paramValue = $(inputs[i]).val();
+			paramName  = $(inputs[i]).attr("data-param-name");
+
+			if (typeof paramName != 'undefined') {
+				if ($(inputs[i]).attr("type") == "checkbox") {
+					if ($(inputs[i]).is(':checked')) {
+						paramValue = true;
+					} else {
+						paramValue = false;
+					}
+				}
+
+				params[paramName] = paramValue;
+			}
+		}
+
+		return params;
+	},
+	getElementByPath: function (type, path) {
+		let res = {
+				element: this.conf.ClientConfiguration,
+				parent: {},
+				elements: {}
+			}
+
+		arrPath = String(path).split('-');
+
+		if (type == "Process") {
+			res.parent    = res.element.Processes;
+			res.elements  = res.parent;
+			res.element   = res.element.Processes[arrPath[0]];
+
+		} else if (type == "Operation") {
+			processIndex   = arrPath[0];
+			operationIndex = arrPath[1];
+			res.parent     = res.element.Processes[processIndex].Operations;
+			res.elements   = res.parent;
+			res.element    = res.element.Processes[processIndex].Operations[operationIndex];
+
+		} else {
+			processIndex   = arrPath[0];
+			operationIndex = arrPath[1];
+			res.parent     = res.element.Processes[processIndex].Operations[operationIndex].Elements;
+			res.elements   = res.parent;
+			res.element    = res.element.Processes[processIndex].Operations[operationIndex];
+
+			arrPath.splice(0, 2);
+
+			for (var i = 0; i < arrPath.length; i++) {
+				if (i == arrPath.length - 1)
+					res.parent = res.element.Elements;
+
+				res.elements = res.elements[arrPath[i]].Elements;
+				res.element  = res.element.Elements[arrPath[i]];
+			}
+		}
+
+		return res;
+	},
+	pathPop: function (path) {
+		arrPath = String(path).split('-');
+		arrPath.pop();
+		path    = arrPath.join("-");
+
+		return path;
 	}
-}*/
+}
+
+async function pick_file() {
+	await eel.ask_file('simple_ui')().then(async (result) => {
+		filePath = result.file_path;
+
+		await eel.load_configuration(filePath)().then(conf => {
+			$(".hidden-conf-json").text(JSON.stringify(conf));
+			main.conf = conf;
+			main.renderConfiguration();
+			$(".file-path").text(filePath);
+		});
+	});
+}
+const showQRSettings = async (event) => {
+    let img = document.getElementById("qr-preview"),
+    	imgBase64 = await getQRByteArrayAsBase64(),
+    	img_src = "data:image/png;base64, " + imgBase64;
+
+    modal = addModal('qr', '', '');
+    modal.append("<img src='"+img_src+"'>");
+}
+
+const getQRByteArrayAsBase64 = async () => {
+    result = await eel.get_qr_settings()();
+    return result
+};
+
+const fileLocationSave = async (event) => {
+	console.log(main.conf)
+    const data = main.conf;
+    filePath = $('.file-path').text();
+    await eel.save_configuration(data, filePath)();
+};
+
+function addModal (className, type, path = "") {
+	$("#modals-wrap").addClass("active");
+	modal = $("<div class='modal "+className+"' data-type='"+type+"' data-path='"+path+"'><div class='close-modal'><i class='fa fa-times' aria-hidden='true'></i></div><div class='modal-content'></div></div>").appendTo("#modals-wrap");
+
+	return modal;
+}
+
+function closeModal (modalNode) {
+	if (modalNode.siblings(".modal").length == 0) {
+		modalNode.parents("#modals-wrap").removeClass("active");
+	}
+	modalNode.remove();
+}
