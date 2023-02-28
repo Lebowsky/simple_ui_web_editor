@@ -155,6 +155,10 @@ const elementParams = {
 		"Elements": {
 			type: "Elements",
 			text: "Elements"
+		},
+		"Handlers": {
+			type: "Handlers",
+			text: "Handlers"
 		}
 	},
 	CommonHandlers: {
@@ -186,10 +190,46 @@ const elementParams = {
 			]
 		},
 		"postExecute": {
-			type: "postExecute",
+			type: "text",
 			text: "postExecute"
 		},
 		"alias": {
+			type: "text",
+			text: "alias"
+		},
+	},
+	Handlers: {
+		"type": {
+			type: "select",
+			text: "Type",
+			class: "type",
+			options: [
+				"pyton",
+				"online",
+			]
+		},
+		"action": {
+			type: "select",
+			text: "Action",
+			class: "action",
+			options: [
+				"run",
+				"runasync",
+			]
+		},
+		"event": {
+			type: "select",
+			text: "Event",
+			class: "event",
+			options: [
+				"onLaunch",
+				"onWebServiceSyncCommand",
+				"onPostStart",
+				"onInput",
+				"onStart",
+			]
+		},
+		"postExecute": {
 			type: "text",
 			text: "postExecute"
 		},
