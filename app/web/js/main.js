@@ -507,6 +507,21 @@ const fileLocationSave = async (event) => {
     await eel.save_configuration(data, filePath)();
 };
 
+async function pickNewFileProject() {
+	await eel.ask_save_file('simple_ui')().then(async (result) => {
+		filePath = result.file_path;
+
+		await eel.get_new_configuration()().then(conf => {
+			$(".hidden-conf-json").text(JSON.stringify(conf));
+			main.conf = conf;
+			main.renderConfiguration();
+			main.renderElementsList($("#processes"), "Process", "");
+			main.renderElementsList($("#handlers"), "CommonHandlers", "");
+			$(".file-path").text(filePath);
+		});
+	});
+}	
+
 eel.expose(get_current_file_path);
 
 function get_current_file_path () {

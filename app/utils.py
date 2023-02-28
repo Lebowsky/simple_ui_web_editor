@@ -36,23 +36,31 @@ def save_config_to_file(config_data, file_path):
 
 
 def get_config_from_file(file_path):
-    if check_config_file(file_path):
+    check_result = check_config_file(file_path)
+    if check_result and check_result.get('error', None) is None:
         with open(file_path, encoding='utf-8') as json_file:
             return json.load(json_file)
+    else:
+        raise Exception(check_result)
+
+
+def get_new_config():
+    return RootConfigModel().dict(by_alias=True, exclude_none=True)
 
 
 def check_config_file(file_path):
-    if file_path:
+    try:
         with open(file_path, encoding='utf-8') as json_file:
-            try:
-                config = RootConfigModel(**json.load(json_file))
-                return {'file_path': file_path}
-            except JSONDecodeError as e:
-                return {'error': 'JSONDecodeError', 'message': e.msg}
-            except ValidationError as e:
-                return {'error': 'ValidationError', 'message': e.json()}
-            except Exception as e:
-                return {'error': 'UnknownError', 'message': str(e)}
+            config = RootConfigModel(**json.load(json_file))
+            return {'file_path': file_path}
+    except JSONDecodeError as e:
+        return {'error': 'JSONDecodeError', 'message': e.msg}
+    except ValidationError as e:
+        return {'error': 'ValidationError', 'message': e.json()}
+    except FileNotFoundError as e:
+        return {'error': 'FileNotFoundError', 'message': e.winerror}
+    except Exception as e:
+        return {'error': 'UnknownError', 'message': str(e)}
 
 
 def get_qr_code_config():
@@ -104,7 +112,7 @@ def get_config_ui_elements(Model=RootConfigModel) -> dict:
                             'parent': v['title'],
                             'type': 'select',
                             'options': elements,
-                            }]
+                        }]
 
             if value.get('enum', None):
                 config_item[prop] = {

@@ -192,7 +192,7 @@ class ClientConfigurationModel(BaseConfigModel):
         default=su_settings.locale.get('new_configuration'),
         alias='ConfigurationName')
 
-    description: Optional[str] = Field(alias='ConfigurationDescription')
+    description: Optional[str] = Field(default='', alias='ConfigurationDescription')
 
     version: str = Field(default='0.0.1', alias='ConfigurationVersion')
 
@@ -224,7 +224,7 @@ class ClientConfigurationModel(BaseConfigModel):
     py_timer_task: Optional[List[PyTimerTaskModel]] = Field(alias='PyTimerTask')
     py_files: Optional[List[PyFilesModel]] = Field(alias='PyFiles')
     arch2: Optional[bool]
-    common_handlers: Optional[List[CommonHandler]] = Field(alias='CommonHandlers')
+    common_handlers: Optional[List[CommonHandler]] = Field(default=[], alias='CommonHandlers')
 
     class Config:
         title = 'ClientConfiguration'

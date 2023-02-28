@@ -27,6 +27,11 @@ def load_configuration(file_path):
 
 
 @eel.expose
+def get_new_configuration():
+    return utils.get_new_config()
+
+
+@eel.expose
 def ask_file(file_type):
     """ Ask the user to select a file """
     return dialogs.ask_file(file_type)
