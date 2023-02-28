@@ -13,7 +13,6 @@ import base64
 from models.root_config import RootConfigModel, QRCodeConfig, OperationsModel
 
 
-
 def can_use_chrome():
     """ Identify if Chrome is available for Eel to use """
     chrome_instance_path = chrome.find_path()
@@ -32,7 +31,8 @@ def get_port():
 def save_config_to_file(config_data, file_path):
     config = RootConfigModel(**config_data)
     with open(file_path, 'w', encoding="utf-8") as f:
-        json.dump(config.dict(by_alias=True, exclude_none=True), f, ensure_ascii=False, indent=4, separators=(',', ': '))
+        json.dump(config.dict(by_alias=True, exclude_none=True), f, ensure_ascii=False, indent=4,
+                  separators=(',', ': '))
 
 
 def get_config_from_file(file_path):
@@ -79,11 +79,32 @@ def get_config_ui_elements(Model=RootConfigModel) -> dict:
         if not props:
             continue
 
+        required = v.get('required', None)
+
         for prop, value in props.items():
             if prop == 'type':
                 continue
 
-            required = v.get('required', None)
+            if prop == 'Elements':
+                elements = _get_elements_items(value)
+                for el in elements:
+                    curr = result.get(el, None)
+                    if curr:
+                        if curr.get('type', None) is None:
+                            curr['type'] = []
+
+                        curr['type'].append(
+                            {
+                                'parent': v['title'],
+                                'type': 'select',
+                                'options': elements,
+                            })
+                    else:
+                        config_item['type'] = [{
+                            'parent': v['title'],
+                            'type': 'select',
+                            'options': elements,
+                            }]
 
             if value.get('enum', None):
                 config_item[prop] = {
@@ -111,4 +132,16 @@ def get_config_ui_elements(Model=RootConfigModel) -> dict:
                 }
             config_item[prop]['required'] = required and prop in required
         result[v['title']] = config_item
+    return result
+
+
+def _get_elements_items(value):
+    result = []
+
+    if value.get('items', None):
+        if value['items'].get('oneOf', None):
+            result = [element['title'] for element in value['items']['oneOf']]
+        elif value['items'].get('anyOf', None):
+            result = [element['title'] for element in value['items']['anyOf']]
+
     return result

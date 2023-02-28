@@ -11,7 +11,7 @@ class Container(BaseElement, DimensionElement):
     type: Literal['LinearLayout']
     BackgroundColor: Optional[str]
 
-    elements: List[Union['Element']] = Field(default=[], alias='Elements')
+    elements: List['Element'] = Field(default=[], alias='Elements')
 
     class Config:
         title = 'LinearLayout'
