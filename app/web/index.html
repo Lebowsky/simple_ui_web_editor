@@ -19,7 +19,7 @@
 </head>
 <body>
 	<div class="content">
-	<div class="header"><div class="logo"><img src="logo.jpg" alt="Simple Logo"></div></div>
+    	<div class="header"><div class="logo"><img src="logo.jpg" alt="Simple Logo"></div></div>
         <div class="btn-group main">
             <button id="open-project" onclick="pick_file(main)">Open Project</button>
             <button id="open-project" onclick="fileLocationSave()">Save Project</button>
@@ -49,9 +49,15 @@
 				<button class="btn-add" data-type="Operation" data-path="">Add Screen</button>
 			</div>
 			<ul class="list" id="operations">Select process</ul>
-		</div>
+        </section>
+        <section id="main-conf-handlers">
+            <div class="section-header">Handlers</div>
+            <div class="btn-group" id="handlers-btn">
+                <button class="btn-add" data-type="CommonHandlers" data-path="">Add Handler</button>
+            </div>
+            <ul class="list" id="handlers">No Items</ul>
 		</section>
-	</div>
+    </div>
 	<div id="modals-wrap"></div>
 	<div class="hidden-conf-json"></div>
 	<footer></footer>
