@@ -18,8 +18,11 @@ eel.init(config.FRONTEND_ASSET_FOLDER)
 
 @eel.expose
 def save_configuration(data, file_path):
-    utils.save_config_to_file(data, file_path)
-
+    try:
+        utils.save_config_to_file(data, file_path)
+        return {'result': 'success'}
+    except Exception as e:
+        return {'result': 'error', 'msg': str(e)}
 
 @eel.expose
 def load_configuration(file_path):

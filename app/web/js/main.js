@@ -504,21 +504,28 @@ const getQRByteArrayAsBase64 = async () => {
 const fileLocationSave = async (event) => {
     const data = main.conf;
     filePath = $('.file-path').text();
-    await eel.save_configuration(data, filePath)();
+    result_save = await eel.save_configuration(data, filePath)();
+
+	if (result_save.result == 'success') {
+		notificate('Файл успешно сохранен', 'success')
+	}else{
+		notificate('Ошибка сохранения файла: ' + result_save.msg, 'danger')
+	}
 };
 
 async function pickNewFileProject() {
 	await eel.ask_save_file('simple_ui')().then(async (result) => {
 		filePath = result.file_path;
-
-		await eel.get_new_configuration()().then(conf => {
-			$(".hidden-conf-json").text(JSON.stringify(conf));
-			main.conf = conf;
-			main.renderConfiguration();
-			main.renderElementsList($("#processes"), "Process", "");
-			main.renderElementsList($("#handlers"), "CommonHandlers", "");
-			$(".file-path").text(filePath);
-		});
+		if (filePath.trim() != ''){
+			await eel.get_new_configuration()().then(conf => {
+				$(".hidden-conf-json").text(JSON.stringify(conf));
+				main.conf = conf;
+				main.renderConfiguration();
+				main.renderElementsList($("#processes"), "Process", "");
+				main.renderElementsList($("#handlers"), "CommonHandlers", "");
+				$(".file-path").text(filePath);
+			});
+		}
 	});
 }	
 

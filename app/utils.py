@@ -29,6 +29,8 @@ def get_port():
 
 
 def save_config_to_file(config_data, file_path):
+    if not file_path:
+        raise FileNotFoundError('Не указан файл конфигурации')
     config = RootConfigModel(**config_data)
     with open(file_path, 'w', encoding="utf-8") as f:
         json.dump(config.dict(by_alias=True, exclude_none=True), f, ensure_ascii=False, indent=4,
