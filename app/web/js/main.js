@@ -559,3 +559,9 @@ function showList (node) {
 		$(node).find("i").removeClass("fa-angle-up").addClass("fa-angle-down");
 	}
 }
+
+window.onbeforeunload = function (e) {
+	var dialogText = 'Dialog text here';
+	e.returnValue = dialogText;
+	return dialogText;
+};
