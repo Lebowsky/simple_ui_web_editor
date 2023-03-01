@@ -1,10 +1,7 @@
-import threading
-import uvicorn
-
 import ui
 import config
 
-from api.app import app
+from api.app import server
 
 
 def start_ui():
@@ -12,12 +9,12 @@ def start_ui():
 
 
 def start_api():
-    threading.Thread(target=uvicorn.run, kwargs=dict(app=app, host="0.0.0.0", port=5000)).start()
+    with server.run_in_thread():
+        start_ui()
 
 
 def run():
     start_api()
-    start_ui()
 
 
 if __name__ == '__main__':
