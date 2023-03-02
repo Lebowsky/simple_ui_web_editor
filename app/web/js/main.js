@@ -138,6 +138,7 @@ var Main = {
 	renderElementsList: function (listNode, type, path) {
 		let elementsItems = {},
 			nameProp      = "type",
+			btnType       = type,
 			elementInfo   = this.getElementByPath(type, path),
 			elementPath   = "";
 
@@ -155,6 +156,7 @@ var Main = {
 			elements = elementInfo.parent.Operations;
 		} else {
 			elements = elementInfo.element.Elements;
+			btnType = "Elements";
 		}
 
 		if (path != "") 
@@ -181,7 +183,7 @@ var Main = {
 			}
 		});
 
-		this.renderList(listNode, elementsItems, type, path);
+		this.renderList(listNode, elementsItems, btnType, path);
 	},
 	renderList: function (parentNode, items, type, path) {
 		html = '<div class="btn-group"><button class="btn-add" data-type="'+type+'" data-path="'+path+'">Add</button></div>';
@@ -551,7 +553,7 @@ const getQRByteArrayAsBase64 = async () => {
     return result
 };
 
-//get_config_ui_elements();
+get_config_ui_elements();
 
 async function get_config_ui_elements() {
 	await eel.get_config_ui_elements()().then(async (result) => {
