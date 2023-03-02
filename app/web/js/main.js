@@ -512,6 +512,7 @@ async function pick_file() {
 		await eel.load_configuration(filePath)().then(conf => {
 			$(".hidden-conf-json").text(JSON.stringify(conf));
 			main.conf = conf;
+			clearMainSection();
 			main.renderConfiguration();
 			main.renderElementsList($("#processes"), "Process", "");
 			main.renderElementsList($("#handlers"), "CommonHandlers", "");
@@ -527,6 +528,7 @@ async function pickNewFileProject() {
 			await eel.get_new_configuration()().then(conf => {
 				$(".hidden-conf-json").text(JSON.stringify(conf));
 				main.conf = conf;
+				clearMainSection();
 				main.renderConfiguration();
 				main.renderElementsList($("#processes"), "Process", "");
 				main.renderElementsList($("#handlers"), "CommonHandlers", "");
@@ -575,6 +577,12 @@ function get_current_file_path () {
     return $('.file-path').text();
 };
 
+function clearMainSection () {
+	$("#processes").html("No processes");
+	$("#operations").html("No operations");
+	$("#handlers").html("No handlers");
+}
+
 function addModal (className, type, path = "") {
 	$("#modals-wrap").addClass("active");
 	modal = $("<div class='modal "+className+"' data-type='"+type+"' data-path='"+path+"'><div class='close-modal'><i class='fa fa-times' aria-hidden='true'></i></div><div class='modal-head'><h2 class='modal-title'></h2><span class='path'></span></div><div class='modal-content'></div></div>").appendTo("#modals-wrap");
@@ -608,8 +616,8 @@ function showList (node, direction = "toggle") {
 	}
 }
 
-/*window.onbeforeunload = function (e) {
+window.onbeforeunload = function (e) {
 	var dialogText = 'Dialog text here';
 	e.returnValue = dialogText;
 	return dialogText;
-};*/
+};
