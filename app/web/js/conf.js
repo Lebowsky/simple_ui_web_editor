@@ -269,7 +269,7 @@ const elementParams = {
 		"type": {
 			type: "select",
 			text: "Type",
-			class: "type",
+			class: "element-type",
 			options: [
 				"LinearLayout",
 				"barcode",
