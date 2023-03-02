@@ -151,8 +151,8 @@ label input[type=checkbox] {
 section[id|=main-conf] {
     border: 1px #333 solid;
     margin-top: 60px;
-    padding-top: 40px;
-    padding-bottom: 40px;
+    padding-top: 20px;
+    padding-bottom: 20px;
     position: relative;
 }
 #main-section {
@@ -211,6 +211,7 @@ footer {
 }
 .list {
     text-align: center;
+    padding-bottom: 20px;
 }
 .param input[type=text] {
     width: 100%;
@@ -250,12 +251,20 @@ span.path {
 .content.blur {
     filter: blur(5px);
 }
-label i {
+label i,
+.section-header i {
     vertical-align: middle;
     color: #f47d3b;
     cursor: pointer;
-    padding: 0 10px;
+    padding-left: 10px;
 }
-.param label {
+.param label,
+.section-header {
     cursor: pointer;
+}
+.list-wrap {
+    display: none;
+}
+.list-wrap.show {
+    display: block;
 }

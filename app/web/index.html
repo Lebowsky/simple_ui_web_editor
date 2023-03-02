@@ -30,36 +30,45 @@
             <button id="open-project" onclick="showQRSettings()">Show QR</button>
         </div>
         <span class="file-path"></span>
-		<section id="main-section">
-			<form action="#" class="form configuration">
-				<label for="ConfigurationName">Configuration-name</label>
-				<input type="text" name="ConfigurationName" id="ConfigurationName" data-param-name="ConfigurationName">
-				<label for="ConfigurationVersion">Version</label>
-				<input type="text" name="ConfigurationVersion" id="ConfigurationVersion" data-param-name="ConfigurationVersion">
-				<label for="ConfigurationDescription">Description</label>
-				<input type="text" name="ConfigurationDescription" id="ConfigurationDescription" data-param-name="ConfigurationDescription">
-			</form>
+		<section id="main-conf">
+			<div class="section-header" onclick="showList(this)">Main<i class="fa fa-angle-up" aria-hidden="true"></i></div>
+			<div class="list-wrap show">
+				<form action="#" class="form configuration">
+					<label for="ConfigurationName">Configuration-name</label>
+					<input type="text" name="ConfigurationName" id="ConfigurationName" data-param-name="ConfigurationName">
+					<label for="ConfigurationVersion">Version</label>
+					<input type="text" name="ConfigurationVersion" id="ConfigurationVersion" data-param-name="ConfigurationVersion">
+					<label for="ConfigurationDescription">Description</label>
+					<input type="text" name="ConfigurationDescription" id="ConfigurationDescription" data-param-name="ConfigurationDescription">
+				</form>
+			</div>
 		</section>
 		<section id="main-conf-process">
-			<div class="section-header">Processes</div>
-			<div class="btn-group" id="process-btn">
-				<button class="btn-add" data-type="Process" data-path="">Add Process</button>
+			<div class="section-header" onclick="showList(this)">Processes<i class="fa fa-angle-up" aria-hidden="true"></i></div>
+			<div class="list-wrap show">
+				<div class="btn-group" id="process-btn">
+					<button class="btn-add" data-type="Process" data-path="">Add Process</button>
+				</div>
+				<ul class="list" id="processes">No process</ul>
 			</div>
-			<ul class="list" id="processes">No process</ul>
 		</section>
 		<section id="main-conf-screen">
-			<div class="section-header">Screens</div>
-			<div class="btn-group" id="screen-btn">
-				<button class="btn-add" data-type="Operation" data-path="">Add Screen</button>
+			<div class="section-header" onclick="showList(this)">Screens<i class="fa fa-angle-up" aria-hidden="true"></i></div>
+			<div class="list-wrap">
+				<div class="btn-group" id="screen-btn">
+					<button class="btn-add" data-type="Operation" data-path="">Add Screen</button>
+				</div>
+				<ul class="list" id="operations">Select process</ul>
 			</div>
-			<ul class="list" id="operations">Select process</ul>
         </section>
         <section id="main-conf-handlers">
-            <div class="section-header">Handlers</div>
-            <div class="btn-group" id="handlers-btn">
-                <button class="btn-add" data-type="CommonHandlers" data-path="">Add Handler</button>
+            <div class="section-header" onclick="showList(this)">Handlers<i class="fa fa-angle-up" aria-hidden="true"></i></div>
+			<div class="list-wrap">
+	            <div class="btn-group" id="handlers-btn">
+	                <button class="btn-add" data-type="CommonHandlers" data-path="">Add Handler</button>
+	            </div>
+	            <ul class="list" id="handlers">No Items</ul>
             </div>
-            <ul class="list" id="handlers">No Items</ul>
 		</section>
     </div>
 	<div id="modals-wrap"></div>
