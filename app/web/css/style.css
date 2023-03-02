@@ -267,3 +267,6 @@ label i,
 .list-wrap.show {
     display: block;
 }
+.modal-btn {
+    margin-top: 20px;
+}

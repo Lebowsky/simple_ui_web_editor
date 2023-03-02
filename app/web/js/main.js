@@ -212,8 +212,6 @@ var Main = {
 	},
 	renderModalParams: function (modalNode, type, path) {
 		element  = this.getElementByPath(type, path).element;
-		elements = {};
-		handlers = {};
 		html     = '<div class="params">';
 
 		if (type == "Process") {
@@ -279,36 +277,23 @@ var Main = {
 
 			if (paramFields["type"] == "Elements") {
 				html += '<label onclick="showList(this)">'+paramFields["text"]+'<i class="fa fa-angle-down" aria-hidden="true"></i></label><div class="list-wrap" style="display: none;">';
-
-				if (typeof element[configName] != 'undefined') {
-					elements = element[configName];
-				}
-
 				html += '<ul class="list elements">No elements</ul></div>';
 			}
 
 			if (paramFields["type"] == "Handlers") {
 				html += '<label onclick="showList(this)">'+paramFields["text"]+'<i class="fa fa-angle-down" aria-hidden="true"></i></label><div class="list-wrap" style="display: none;">';
-
-				if (typeof element[configName] != 'undefined') {
-					handlers = element[configName];
-				}
-
 				html += '<ul class="list handlers">No Handlers</ul></div>';
 			}
 
 			html += '</div>';
 		})
 
-		html += '<div class="btn-group"><button class="save-element">Save</button></div></div>';
+		html += '<div class="btn-group modal-btn"><button class="save-element">Save</button></div></div>';
 
 		modalNode.find(".modal-content").html(html);
 
-		if (Object.keys(elements).length > 0)
-			this.renderElementsList(modalNode.find('.elements'), "Elements", path);
-
-		if (Object.keys(handlers).length > 0)
-			this.renderElementsList(modalNode.find('.handlers'), "Handlers", path);
+		this.renderElementsList(modalNode.find('.elements'), "Elements", path);
+		this.renderElementsList(modalNode.find('.handlers'), "Handlers", path);
 	},
 	saveElement: function (params, type, path) {
 		element = this.getElementByPath(type, path).element;
@@ -370,6 +355,7 @@ var Main = {
                 DefOnCreate: "",
                 DefOnInput: "",
                 Elements: [],
+                Handlers: [],
                 onlineOnAfterStart: false
 			}
 		}
