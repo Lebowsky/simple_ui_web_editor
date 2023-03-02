@@ -10,12 +10,32 @@ $(document).ready(function(){
 		main.renderModalParams(modal, type, path);
 	})
 
-	$(document).on('click', '.list-item .delete', function(){
-		let listNode = $(this).parents(".list"),
-			type = $(this).parents(".list-item").attr('data-type'),
-			path = $(this).parents(".list-item").attr('data-path');
+	$(document).on('click', '.list-item', function(){
+		$(this).parents(".list").find(".list-item").removeClass("active");
+		$(this).addClass("active");
+	})
 
-		main.deleteElement(listNode, type, path);
+	$(document).on('click', '.list-item .delete', function(){
+		if (confirm('Вы уверены?')) {
+			let listNode = $(this).parents(".list"),
+				type = $(this).parents(".list-item").attr('data-type'),
+				path = $(this).parents(".list-item").attr('data-path'),
+				newPath = main.pathPop(path);
+
+			main.deleteElement(type, path);
+			main.renderElementsList(listNode, type, newPath);
+			listNode.find(".list-item").removeClass("active");
+
+			if (type == "Process") {
+				if ($("#processes .list-item").length > 0) {
+					main.renderElementsList($("#operations"), "Operation", "0");
+					listNode.find(".list-item").removeClass("active");
+					listNode.find(".list-item").first().addClass("active");
+				} else {
+					$("#operations").html("Select process");
+				}
+			}
+		}
 	})
 
 	$(document).on('click', '.save-element', function(){
@@ -62,6 +82,7 @@ $(document).ready(function(){
 			let path = $(this).attr("data-path");
 
 			main.renderElementsList($("#operations"), "Operation", path);
+			showList($("#main-conf-screen .section-header"), "down");
 			$("#screen-btn").find(".btn-add").attr("data-path", $(this).attr("data-path"));
 		}
 	})
@@ -116,16 +137,23 @@ var Main = {
 	renderElementsList: function (listNode, type, path) {
 		let elementsItems = {},
 			nameProp      = "type",
-			elements      = this.getElementByPath(type, path).elements;
+			elementInfo   = this.getElementByPath(type, path);
 
-		if (type == "Process")
+		if (type == "Process" || type == "Configuration") {
 			nameProp = "ProcessName";
-
-		if (type == "CommonHandlers" || type == "Handlers")
+			elements = elementInfo.parent.Processes;
+		} else if (type == "CommonHandlers") {
 			nameProp = "event";
-
-		if (type == "Operation")
+			elements = elementInfo.parent.CommonHandlers;
+		} else if (type == "Handlers") {
+			nameProp = "event";
+			elements = elementInfo.parent.Handlers;
+		} else if (type == "Operation") {
 			nameProp = "Name";
+			elements = elementInfo.parent.Operations;
+		} else {
+			elements = elementInfo.element.Elements;
+		}
 
 		if (path != "")
 			path = String(path)+"-";
@@ -156,9 +184,17 @@ var Main = {
 	renderList: function (parentNode, items) {
 		html = "";
 
+		//console.log($(parentNode))
+
 		if (Object.keys(items).length > 0) {
+			activeNodePath = String(parentNode.find(".list-item.active").attr("data-path"));
+
 			$.each(items, function (itemIndex, item) {
-				html += '<li class="list-item" ';
+				if (activeNodePath == item.dataAttr.path) {
+					html += '<li class="list-item active" ';
+				} else {
+					html += '<li class="list-item" ';
+				}
 	
 				$.each(item["dataAttr"], function (attrName, attrValue) {
 					html += 'data-'+attrName+'="'+attrValue+'"';
@@ -170,7 +206,7 @@ var Main = {
 			html += "No Items";
 		}
 
-		$(parentNode).html(html);
+		parentNode.html(html);
 	},
 	renderModalParams: function (modalNode, type, path) {
 		element  = this.getElementByPath(type, path).element;
@@ -282,20 +318,29 @@ var Main = {
 		})
 
 	},
-	deleteElement: function (listNode, type, path) {
-		let parent       = this.getElementByPath(type, path).parent,
+	deleteElement: function (type, path) {
+		let parent     = this.getElementByPath(type, path).parent,
 			arrPath      = String(path).split('-'),
-			elementIndex = arrPath[arrPath.length - 1],
-			newPath         = this.pathPop(path);
+			elementIndex = arrPath[arrPath.length - 1];
 
-		parent.splice(elementIndex, 1);
-		this.renderElementsList(listNode, type, newPath);
+		if (type == "Process") {
+			parent.Processes.splice(elementIndex, 1);
+		} else if (type == "Operation") {
+			parent.Operations.splice(elementIndex, 1);
+		} else if (type == "CommonHandlers") {
+			parent.CommonHandlers.splice(elementIndex, 1);
+		} else if (type == "Handlers") {
+			parent.Handlers.splice(elementIndex, 1);
+		} else {
+			parent.Elements.splice(elementIndex, 1);
+		}
 	},
 	addElement: function (type, path) {
-		parent = this.getElementByPath(type, path).parent;
+		elementInfo = this.getElementByPath(type, path);
+
 		if (type == "Process") {
 			elementName = "New Process";
-			element = {
+			newElement = {
 	            type: "Process",
 	            ProcessName: elementName,
 	            PlanFactHeader: "",
@@ -308,7 +353,7 @@ var Main = {
 		}
 		if (type == "Operation") {
 			elementName = "New Screen";
-			element = {
+			newElement = {
                 type: "Operation",
                 Name: elementName,
                 Timer: false,
@@ -329,7 +374,7 @@ var Main = {
 			}
 		}
 		if (type == "Elements") {
-			element = {
+			newElement = {
                 Value: "",
                 Variable: "",
                 type: "LinearLayout",
@@ -344,7 +389,7 @@ var Main = {
             }
 		}
 		if (type == "CommonHandlers") {
-			element = {
+			newElement = {
                 type: "",
                 action: "",
                 event: "onLaunch",
@@ -354,7 +399,7 @@ var Main = {
             }
 		}
 		if (type == "Handlers") {
-			element = {
+			newElement = {
                 type: "",
                 action: "",
                 event: "onLaunch",
@@ -363,7 +408,19 @@ var Main = {
             }
 		}
 
-		length = parent.push(element);
+		if (type == "Process") {
+			elements = elementInfo.parent.Processes;
+		} else if (type == "Operation") {
+			elements = elementInfo.parent.Operations;
+		}  else if (type == "CommonHandlers") {
+			elements = elementInfo.parent.CommonHandlers;
+		}  else if (type == "Handlers") {
+			elements = elementInfo.parent.Handlers;
+		} else {
+			elements = elementInfo.element.Elements;
+		}
+
+		length = elements.push(newElement);
 	},
 	getElementParamsByForm: function (elemntParamsNode) {
 		inputs = elemntParamsNode.find(":input");
@@ -403,54 +460,37 @@ var Main = {
 		}
 
 		if (type == "Process") {
-			res.parent    = res.element.Processes;
-			res.elements  = res.parent;
+			res.parent    = res.element;
 			res.element   = res.element.Processes[arrPath[0]];
-			if (typeof res.element != "undefined")
-				res.path      = res.element.ProcessName;
 
 		} else if (type == "CommonHandlers") {
-			res.parent    = res.element.CommonHandlers;
-			res.elements  = res.parent;
+			res.parent    = res.element;
 			res.element   = res.element.CommonHandlers[arrPath[0]];
-			if (typeof res.element != "undefined")
-				res.path      = res.element.event;
 
 		} else if (type == "Handlers") {
 			processIndex   = arrPath[0];
 			operationIndex = arrPath[1];
 			handlersIndex  = arrPath[2];
-			res.path       = res.element.Processes[processIndex].ProcessName + " / " + res.element.Processes[processIndex].Operations[operationIndex].Name + " / " + res.element.Processes[processIndex].Operations[operationIndex].Handlers[handlersIndex];
-			res.parent     = res.element.Processes[processIndex].Operations[operationIndex].Handlers;
-			res.elements   = res.parent;
+			res.parent     = res.element.Processes[processIndex].Operations[operationIndex];
 			res.element    = res.element.Processes[processIndex].Operations[operationIndex].Handlers[handlersIndex];
 
 		} else if (type == "Operation") {
 			processIndex   = arrPath[0];
 			operationIndex = arrPath[1];
-			if (typeof operationIndex != "undefined")
-				res.path       = res.element.Processes[processIndex].ProcessName + " / " + res.element.Processes[processIndex].Operations[operationIndex].Name;
-			res.parent     = res.element.Processes[processIndex].Operations;
-			res.elements   = res.parent;
+			res.parent     = res.element.Processes[processIndex];
 			res.element    = res.element.Processes[processIndex].Operations[operationIndex];
 
 		} else {
 			processIndex   = arrPath[0];
 			operationIndex = arrPath[1];
-			res.path       = res.element.Processes[processIndex].ProcessName + " / " + res.element.Processes[processIndex].Operations[operationIndex].Name;
-			res.parent     = res.element.Processes[processIndex].Operations[operationIndex].Elements;
-			res.elements   = res.parent;
+			res.parent     = res.element.Processes[processIndex].Operations[operationIndex];
 			res.element    = res.element.Processes[processIndex].Operations[operationIndex];
 
 			arrPath.splice(0, 2);
 
 			for (var i = 0; i < arrPath.length; i++) {
-				if (i == arrPath.length - 1)
-					res.parent = res.element.Elements;
-
-				res.elements = res.elements[arrPath[i]].Elements;
-				res.element  = res.element.Elements[arrPath[i]];
-				res.path    += " / " + res.element.type;
+				res.parent  = res.element;
+				res.element = res.element.Elements[arrPath[i]];
 			}
 		}
 
@@ -472,6 +512,7 @@ async function pick_file() {
 		await eel.load_configuration(filePath)().then(conf => {
 			$(".hidden-conf-json").text(JSON.stringify(conf));
 			main.conf = conf;
+			clearMainSection();
 			main.renderConfiguration();
 			main.renderElementsList($("#processes"), "Process", "");
 			main.renderElementsList($("#handlers"), "CommonHandlers", "");
@@ -480,13 +521,35 @@ async function pick_file() {
 	});
 }
 
-//get_config_ui_elements();
-
-async function get_config_ui_elements() {
-	await eel.get_config_ui_elements()().then(async (result) => {
-		console.log(result);
+async function pickNewFileProject() {
+	await eel.ask_save_file('simple_ui')().then(async (result) => {
+		filePath = result.file_path;
+		if (filePath.trim() != ''){
+			await eel.get_new_configuration()().then(conf => {
+				$(".hidden-conf-json").text(JSON.stringify(conf));
+				main.conf = conf;
+				clearMainSection();
+				main.renderConfiguration();
+				main.renderElementsList($("#processes"), "Process", "");
+				main.renderElementsList($("#handlers"), "CommonHandlers", "");
+				$(".file-path").text(filePath);
+			});
+		}
 	});
 }
+
+const fileLocationSave = async (event) => {
+    const data = main.conf;
+    filePath = $('.file-path').text();
+    result_save = await eel.save_configuration(data, filePath)();
+
+	if (result_save.result == 'success') {
+		notificate('Файл успешно сохранен', 'success')
+	}else{
+		notificate('Ошибка сохранения файла: ' + result_save.msg, 'danger')
+	}
+};
+
 const showQRSettings = async (event) => {
     let img = document.getElementById("qr-preview"),
     	imgBase64 = await getQRByteArrayAsBase64(),
@@ -501,39 +564,24 @@ const getQRByteArrayAsBase64 = async () => {
     return result
 };
 
-const fileLocationSave = async (event) => {
-    const data = main.conf;
-    filePath = $('.file-path').text();
-    result_save = await eel.save_configuration(data, filePath)();
+//get_config_ui_elements();
 
-	if (result_save.result == 'success') {
-		notificate('Файл успешно сохранен', 'success')
-	}else{
-		notificate('Ошибка сохранения файла: ' + result_save.msg, 'danger')
-	}
-};
-
-async function pickNewFileProject() {
-	await eel.ask_save_file('simple_ui')().then(async (result) => {
-		filePath = result.file_path;
-		if (filePath.trim() != ''){
-			await eel.get_new_configuration()().then(conf => {
-				$(".hidden-conf-json").text(JSON.stringify(conf));
-				main.conf = conf;
-				main.renderConfiguration();
-				main.renderElementsList($("#processes"), "Process", "");
-				main.renderElementsList($("#handlers"), "CommonHandlers", "");
-				$(".file-path").text(filePath);
-			});
-		}
+async function get_config_ui_elements() {
+	await eel.get_config_ui_elements()().then(async (result) => {
+		console.log(result);
 	});
-}	
+}
 
 eel.expose(get_current_file_path);
-
 function get_current_file_path () {
     return $('.file-path').text();
 };
+
+function clearMainSection () {
+	$("#processes").html("No processes");
+	$("#operations").html("No operations");
+	$("#handlers").html("No handlers");
+}
 
 function addModal (className, type, path = "") {
 	$("#modals-wrap").addClass("active");
@@ -550,13 +598,21 @@ function closeModal (modalNode) {
 	modalNode.remove();
 }
 
-function showList (node) {
-	$(node).siblings(".list-wrap").slideToggle();
-
-	if ($(node).find("i").hasClass("fa-angle-down")) {
-		$(node).find("i").removeClass("fa-angle-down").addClass("fa-angle-up");
-	} else if ($(node).find("i").hasClass("fa-angle-up")) {
+function showList (node, direction = "toggle") {
+	if (direction == "up") {
+		$(node).siblings(".list-wrap").slideUp();
 		$(node).find("i").removeClass("fa-angle-up").addClass("fa-angle-down");
+	} else if (direction == "down") {
+		$(node).siblings(".list-wrap").slideDown();
+		$(node).find("i").removeClass("fa-angle-down").addClass("fa-angle-up");
+	} else {
+		$(node).siblings(".list-wrap").slideToggle();
+
+		if ($(node).find("i").hasClass("fa-angle-down")) {
+			$(node).find("i").removeClass("fa-angle-down").addClass("fa-angle-up");
+		} else if ($(node).find("i").hasClass("fa-angle-up")) {
+			$(node).find("i").removeClass("fa-angle-up").addClass("fa-angle-down");
+		}
 	}
 }
 
