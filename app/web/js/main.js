@@ -215,6 +215,9 @@ var Main = {
 	renderModalParams: function (modalNode, type, path) {
 		element  = this.getElementByPath(type, path).element;
 		html     = '<div class="params">';
+		renderElements = false;
+		renderHandlers = false;
+		elementParams = this.elementParams;
 
 		if (type == "Process") {
 			elementName = element.ProcessName;
@@ -280,11 +283,13 @@ var Main = {
 			if (paramFields["type"] == "Elements") {
 				html += '<label onclick="showList(this)">'+paramFields["text"]+'<i class="fa fa-angle-down" aria-hidden="true"></i></label><div class="list-wrap" style="display: none;">';
 				html += '<ul class="list elements">No elements</ul></div>';
+				renderElements = true;
 			}
 
 			if (paramFields["type"] == "Handlers") {
 				html += '<label onclick="showList(this)">'+paramFields["text"]+'<i class="fa fa-angle-down" aria-hidden="true"></i></label><div class="list-wrap" style="display: none;">';
 				html += '<ul class="list handlers">No Handlers</ul></div>';
+				renderHandlers = true;
 			}
 
 			html += '</div>';
@@ -294,8 +299,11 @@ var Main = {
 
 		modalNode.find(".modal-content").html(html);
 
-		this.renderElementsList(modalNode.find('.elements'), "Elements", path);
-		this.renderElementsList(modalNode.find('.handlers'), "Handlers", path);
+		if (renderElements)
+			this.renderElementsList(modalNode.find('.elements'), "Elements", path);
+
+		if (renderHandlers)
+			this.renderElementsList(modalNode.find('.handlers'), "Handlers", path);
 	},
 	saveElement: function (params, type, path) {
 		element = this.getElementByPath(type, path).element;
@@ -558,6 +566,7 @@ get_config_ui_elements();
 async function get_config_ui_elements() {
 	await eel.get_config_ui_elements()().then(async (result) => {
 		console.log(result);
+		main.elementParams = result;
 	});
 }
 

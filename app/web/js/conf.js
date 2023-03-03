@@ -96,7 +96,7 @@ const confElementParams = {
 	},
 }
 
-const elementParams = {
+const elementParamsTest = {
 	Process: {
 		"ProcessName": {
 			type: "text",
