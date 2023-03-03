@@ -1,9 +1,9 @@
 $(document).ready(function(){
-	$(document).on('click', '.list-item .edit', function(){
-		let type   = $(this).parents(".list-item").attr('data-type'),
-			parentType = $(this).parents(".list-item").attr('data-parent-type'),
-			path   = $(this).parents(".list-item").attr('data-path'),
-			modals = $(".modal");
+	$(document).on('click', selectors.btnEdit, function(){
+		let type   = $(this).parents(selectors.listItem).attr('data-type'),
+			parentType = $(this).parents(selectors.listItem).attr('data-parent-type'),
+			path   = $(this).parents(selectors.listItem).attr('data-path'),
+			modals = $(selectors.modal);
 
 		modal = addModal("", type, path, parentType);
 		modals.removeClass("active");
@@ -11,36 +11,36 @@ $(document).ready(function(){
 		main.renderModalParams(modal, type, path, parentType);
 	})
 
-	$(document).on('click', '.list-item', function(){
-		$(this).parents(".list").find(".list-item").removeClass("active");
+	$(document).on('click', selectors.listItem, function(){
+		$(this).parents(selectors.list).find(selectors.listItem).removeClass("active");
 		$(this).addClass("active");
 	})
 
-	$(document).on('click', '.list-item .delete', function(){
+	$(document).on('click', selectors.btnDelete, function(){
 		if (confirm('Вы уверены?')) {
-			let listNode = $(this).parents(".list"),
-				type = $(this).parents(".list-item").attr('data-type'),
-				path = $(this).parents(".list-item").attr('data-path'),
+			let listNode = $(this).parents(selectors.list),
+				type = $(this).parents(selectors.listItem).attr('data-type'),
+				path = $(this).parents(selectors.listItem).attr('data-path'),
 				newPath = main.pathPop(path);
 
 			main.deleteElement(type, path);
 			main.renderElementsList(listNode, type, newPath);
-			listNode.find(".list-item").removeClass("active");
+			listNode.find(selectors.listItem).removeClass("active");
 
 			if (type == "Process") {
 				if ($("#processes .list-item").length > 0) {
-					main.renderElementsList($("#operations"), "Operation", "0");
-					listNode.find(".list-item").removeClass("active");
-					listNode.find(".list-item").first().addClass("active");
+					main.renderElementsList($(selectors.operationsList), "Operation", "0");
+					listNode.find(selectors.listItem).removeClass("active");
+					listNode.find(selectors.listItem).first().addClass("active");
 				} else {
-					$("#operations").html("Select process");
+					$(selectors.operationsList).html("Select process");
 				}
 			}
 		}
 	})
 
-	$(document).on('click', '.save-element', function(){
-		let modal       = $(this).parents(".modal"),
+	$(document).on('click', selectors.btnSave, function(){
+		let modal       = $(this).parents(selectors.modal),
 			type        = modal.attr('data-type'),
 			path        = modal.attr('data-path'),
 			parentModal = modal.prev();
@@ -54,13 +54,13 @@ $(document).ready(function(){
 			parentModal.addClass("active");
 
 		} else if (type == "Process") {
-			main.renderElementsList($("#processes"), "Process", "");
+			main.renderElementsList($(selectors.processList), "Process", "");
 
 		} else if (type == "Operation") {
 			path = main.pathPop(path);
-			main.renderElementsList($("#operations"), "Operation", path);
+			main.renderElementsList($(selectors.operationsList), "Operation", path);
 		} else if (type == "CommonHandler") {
-			main.renderElementsList($("#handlers"), "CommonHandler", path);
+			main.renderElementsList($(selectors.handlersList), "CommonHandler", path);
 		}
 		if (parentModal.length == 0) {
 			$('.content').removeClass("blur");
@@ -69,8 +69,8 @@ $(document).ready(function(){
 		closeModal(modal);
 	})
 
-	$(document).on('click', '.btn-add', function(e){
-		let listNode = $(this).parents(".list"),
+	$(document).on('click', selectors.btnAdd, function(e){
+		let listNode = $(this).parents(selectors.list),
 			type     = $(this).attr("data-type"),
 			path     = $(this).attr("data-path");
 
@@ -82,14 +82,14 @@ $(document).ready(function(){
 		if ($(e.target).is(this) || $(e.target).is($(this).children("span"))) {
 			let path = $(this).attr("data-path");
 
-			main.renderElementsList($("#operations"), "Operation", path);
+			main.renderElementsList($(selectors.operationsList), "Operation", path);
 			showList($("#main-conf-screen .section-header"), "down");
-			$("#operations").find(".btn-add").attr("data-path", $(this).attr("data-path"));
+			$(selectors.operationsList).find(selectors.btnAdd).attr("data-path", $(this).attr("data-path"));
 		}
 	})
 
 	$(document).on('change', 'select.element-type', function(){
-		let modal = $(this).parents(".modal"),
+		let modal = $(this).parents(selectors.modal),
 			type  = $(this).val(),
 			parentType = modal.attr('data-parent-type'),
 			path  = modal.attr("data-path");
@@ -108,11 +108,11 @@ $(document).ready(function(){
 		main.saveElement(params, "Configuration", "");
 	})
 
-	$(document).on('click', '.close-modal', function(){
-		let	modal       = $(this).parents(".modal"),
+	$(document).on('click', selectors.btnCloseModal, function(){
+		let	modal       = $(this).parents(selectors.modal),
 			parentModal = modal.prev();
 			
-		closeModal($(this).parents(".modal"));
+		closeModal($(this).parents(selectors.modal));
 
 		if (parentModal.length > 0) {
 			parentModal.addClass("active");
@@ -233,7 +233,7 @@ var Main = {
 
 		pathText = this.getElementByPath(type, path).path;
 
-		modalNode.find(".modal-title").text(elementName);
+		modalNode.find(selectors.modalTitle).text(elementName);
 		modalNode.find(".path").text(pathText);
 
 		$.each(elementParams[type], function (configName, paramFields) {
@@ -329,7 +329,7 @@ var Main = {
 
 		html += '<div class="btn-group modal-btn"><button class="save-element">Save</button></div></div>';
 
-		modalNode.find(".modal-content").html(html);
+		modalNode.find(selectors.modalContent).html(html);
 
 		if (renderElements)
 			this.renderElementsList(modalNode.find('.elements'), "Elements", path);
@@ -542,8 +542,8 @@ async function pick_file() {
 			main.conf = conf;
 			clearMainSection();
 			main.renderConfiguration();
-			main.renderElementsList($("#processes"), "Process", "");
-			main.renderElementsList($("#handlers"), "CommonHandler", "");
+			main.renderElementsList($(selectors.processList), "Process", "");
+			main.renderElementsList($(selectors.handlersList), "CommonHandler", "");
 			$(".file-path").text(filePath);
 		});
 	});
@@ -558,8 +558,8 @@ async function pickNewFileProject() {
 				main.conf = conf;
 				clearMainSection();
 				main.renderConfiguration();
-				main.renderElementsList($("#processes"), "Process", "");
-				main.renderElementsList($("#handlers"), "CommonHandler", "");
+				main.renderElementsList($(selectors.processList), "Process", "");
+				main.renderElementsList($(selectors.handlersList), "CommonHandler", "");
 				$(".file-path").text(filePath);
 			});
 		}
@@ -594,6 +594,7 @@ const getQRByteArrayAsBase64 = async () => {
 
 async function get_config_ui_elements() {
 	await eel.get_config_ui_elements()().then(async (result) => {
+		console.log(result)
 		main.elementParams = result;
 	});
 }
@@ -604,9 +605,9 @@ function get_current_file_path () {
 };
 
 function clearMainSection () {
-	$("#processes").html("No processes");
-	$("#operations").html("No operations");
-	$("#handlers").html("No handlers");
+	$(selectors.processList).html("No processes");
+	$(selectors.operationsList).html("No operations");
+	$(selectors.handlersList).html("No handlers");
 }
 
 function addModal (className, type, path = "", parentType = "") {
@@ -618,7 +619,7 @@ function addModal (className, type, path = "", parentType = "") {
 }
 
 function closeModal (modalNode) {
-	if (modalNode.siblings(".modal").length == 0) {
+	if (modalNode.siblings(selectors.modal).length == 0) {
 		modalNode.parents("#modals-wrap").removeClass("active");
 	}
 	modalNode.remove();
@@ -626,13 +627,13 @@ function closeModal (modalNode) {
 
 function showList (node, direction = "toggle") {
 	if (direction == "up") {
-		$(node).siblings(".list-wrap").slideUp();
+		$(node).siblings(selectors.listWrap).slideUp();
 		$(node).find("i").removeClass("fa-angle-up").addClass("fa-angle-down");
 	} else if (direction == "down") {
-		$(node).siblings(".list-wrap").slideDown();
+		$(node).siblings(selectors.listWrap).slideDown();
 		$(node).find("i").removeClass("fa-angle-down").addClass("fa-angle-up");
 	} else {
-		$(node).siblings(".list-wrap").slideToggle();
+		$(node).siblings(selectors.listWrap).slideToggle();
 
 		if ($(node).find("i").hasClass("fa-angle-down")) {
 			$(node).find("i").removeClass("fa-angle-down").addClass("fa-angle-up");
