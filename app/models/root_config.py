@@ -125,7 +125,7 @@ class OperationsModel(BaseConfigModel):
     def_on_input: Optional[str] = Field(alias='DefOnInput')
     def_on_after_create: Optional[str] = Field(alias='DefOnAfterCreate')
     elements: List[Element] = Field(default=[], alias='Elements')
-    handlers: Optional[List[Handler]] = Field(alias='Handlers')
+    handlers: Optional[List[Handler]] = Field(default=[], alias='Handlers')
 
     class Config:
         title = 'Operation'

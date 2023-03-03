@@ -38,12 +38,13 @@ def save_config_to_file(config_data, file_path):
 
 
 def get_config_from_file(file_path):
-    check_result = check_config_file(file_path)
-    if check_result and check_result.get('error', None) is None:
-        with open(file_path, encoding='utf-8') as json_file:
-            return json.load(json_file)
-    else:
-        raise Exception(check_result)
+    if file_path:
+        check_result = check_config_file(file_path)
+        if check_result and check_result.get('error', None) is None:
+            with open(file_path, encoding='utf-8') as json_file:
+                return json.load(json_file)
+        else:
+            raise Exception(check_result)
 
 
 def get_new_config():
