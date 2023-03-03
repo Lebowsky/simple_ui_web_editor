@@ -138,7 +138,11 @@ def get_config_ui_elements(Model=RootConfigModel) -> dict:
                         'options': options
                     }
             else:
-                if value.get('type', None) and value['type'] == 'boolean':
+                if value.get('title', None) and value['title'] in ['Operations', 'Elements', 'Handlers']:
+                    config_item[prop] = {
+                        'type': value['title'].lower(),
+                    }
+                elif value.get('type', None) and value['type'] == 'boolean':
                     config_item[prop] = {
                         'type': 'checkbox',
                     }
