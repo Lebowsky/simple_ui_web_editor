@@ -16,10 +16,11 @@
 section {
 	padding: 20px;
 }
-.form {
+.list.form {
     display: flex;
     flex-direction: column;
     width: 100%;
+    text-align-last: left;
 }
 .form label {
     padding: 10px 0;
@@ -44,9 +45,6 @@ section .right {
 }
 .btn-group.main {
     justify-content: center;
-}
-.modal .btn-group {
-	margin: 20px 0 0 0;
 }
 button,
 a.btn {
@@ -151,9 +149,10 @@ label input[type=checkbox] {
 section[id|=main-conf] {
     border: 1px #333 solid;
     margin-top: 60px;
-    padding-top: 20px;
-    padding-bottom: 20px;
+    padding-top: 0;
+    padding-bottom: 0;
     position: relative;
+    min-height: 30px;
 }
 #main-section {
     padding: 0 20px 0 20px;
@@ -211,7 +210,7 @@ footer {
 }
 .list {
     text-align: center;
-    padding-bottom: 20px;
+    padding: 20px 0;
 }
 .param input[type=text] {
     width: 100%;
@@ -267,4 +266,7 @@ label i,
 }
 .list-wrap.show {
     display: block;
+}
+.modal-btn {
+    margin-top: 20px;
 }

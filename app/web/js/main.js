@@ -69,7 +69,7 @@ $(document).ready(function(){
 	})
 
 	$(document).on('click', '.btn-add', function(e){
-		let listNode = $(this).parents(".btn-group").siblings(".list"),
+		let listNode = $(this).parents(".list"),
 			type     = $(this).attr("data-type"),
 			path     = $(this).attr("data-path");
 
@@ -83,7 +83,7 @@ $(document).ready(function(){
 
 			main.renderElementsList($("#operations"), "Operation", path);
 			showList($("#main-conf-screen .section-header"), "down");
-			$("#screen-btn").find(".btn-add").attr("data-path", $(this).attr("data-path"));
+			$("#operations").find(".btn-add").attr("data-path", $(this).attr("data-path"));
 		}
 	})
 
@@ -94,6 +94,7 @@ $(document).ready(function(){
 
 		params = main.getElementParamsByForm(modal);
 		main.saveElement(params, type, path);
+		console.log(type)
 		main.renderModalParams(modal, type, path);
 	})
 
@@ -137,7 +138,9 @@ var Main = {
 	renderElementsList: function (listNode, type, path) {
 		let elementsItems = {},
 			nameProp      = "type",
-			elementInfo   = this.getElementByPath(type, path);
+			btnType       = type,
+			elementInfo   = this.getElementByPath(type, path),
+			elementPath   = "";
 
 		if (type == "Process" || type == "Configuration") {
 			nameProp = "ProcessName";
@@ -153,10 +156,11 @@ var Main = {
 			elements = elementInfo.parent.Operations;
 		} else {
 			elements = elementInfo.element.Elements;
+			btnType = "Elements";
 		}
 
-		if (path != "")
-			path = String(path)+"-";
+		if (path != "") 
+			elementPath = String(path)+"-";
 
 		$.each(elements, function(elementIndex, elementParams){
 			let elementName = elementParams[nameProp],
@@ -173,16 +177,16 @@ var Main = {
 					itemName: elementName,
 					dataAttr: {
 						"type": elementType,
-						"path": path+String(elementIndex),
+						"path": elementPath+String(elementIndex),
 					}
 				};
 			}
 		});
 
-		this.renderList(listNode, elementsItems);
+		this.renderList(listNode, elementsItems, btnType, path);
 	},
-	renderList: function (parentNode, items) {
-		html = "";
+	renderList: function (parentNode, items, type, path) {
+		html = '<div class="btn-group"><button class="btn-add" data-type="'+type+'" data-path="'+path+'">Add</button></div>';
 
 		//console.log($(parentNode))
 
@@ -210,8 +214,6 @@ var Main = {
 	},
 	renderModalParams: function (modalNode, type, path) {
 		element  = this.getElementByPath(type, path).element;
-		elements = {};
-		handlers = {};
 		html     = '<div class="params">';
 
 		if (type == "Process") {
@@ -277,38 +279,23 @@ var Main = {
 
 			if (paramFields["type"] == "Elements") {
 				html += '<label onclick="showList(this)">'+paramFields["text"]+'<i class="fa fa-angle-down" aria-hidden="true"></i></label><div class="list-wrap" style="display: none;">';
-
-				if (typeof element[configName] != 'undefined') {
-					elements = element[configName];
-				}
-
-				html += '<div class="btn-group"><button class="btn-add" data-type="Elements" data-path="'+path+'">Add Element</button></div>';
 				html += '<ul class="list elements">No elements</ul></div>';
 			}
 
 			if (paramFields["type"] == "Handlers") {
 				html += '<label onclick="showList(this)">'+paramFields["text"]+'<i class="fa fa-angle-down" aria-hidden="true"></i></label><div class="list-wrap" style="display: none;">';
-
-				if (typeof element[configName] != 'undefined') {
-					handlers = element[configName];
-				}
-
-				html += '<div class="btn-group"><button class="btn-add" data-type="Handlers" data-path="'+path+'">Add Handlers</button></div>';
 				html += '<ul class="list handlers">No Handlers</ul></div>';
 			}
 
 			html += '</div>';
 		})
 
-		html += '<div class="btn-group"><button class="save-element">Save</button></div></div>';
+		html += '<div class="btn-group modal-btn"><button class="save-element">Save</button></div></div>';
 
 		modalNode.find(".modal-content").html(html);
 
-		if (Object.keys(elements).length > 0)
-			this.renderElementsList(modalNode.find('.elements'), "", path);
-
-		if (Object.keys(handlers).length > 0)
-			this.renderElementsList(modalNode.find('.handlers'), "Handlers", path);
+		this.renderElementsList(modalNode.find('.elements'), "Elements", path);
+		this.renderElementsList(modalNode.find('.handlers'), "Handlers", path);
 	},
 	saveElement: function (params, type, path) {
 		element = this.getElementByPath(type, path).element;
@@ -370,6 +357,7 @@ var Main = {
                 DefOnCreate: "",
                 DefOnInput: "",
                 Elements: [],
+                Handlers: [],
                 onlineOnAfterStart: false
 			}
 		}
@@ -417,6 +405,7 @@ var Main = {
 		}  else if (type == "Handlers") {
 			elements = elementInfo.parent.Handlers;
 		} else {
+			console.log(path)
 			elements = elementInfo.element.Elements;
 		}
 
@@ -564,7 +553,7 @@ const getQRByteArrayAsBase64 = async () => {
     return result
 };
 
-//get_config_ui_elements();
+get_config_ui_elements();
 
 async function get_config_ui_elements() {
 	await eel.get_config_ui_elements()().then(async (result) => {
