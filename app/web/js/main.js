@@ -1,13 +1,14 @@
 $(document).ready(function(){
 	$(document).on('click', '.list-item .edit', function(){
 		let type   = $(this).parents(".list-item").attr('data-type'),
+			parentType = $(this).parents(".list-item").attr('data-parent-type'),
 			path   = $(this).parents(".list-item").attr('data-path'),
 			modals = $(".modal");
 
-		modal = addModal("", type, path);
+		modal = addModal("", type, path, parentType);
 		modals.removeClass("active");
 		modal.addClass("active");
-		main.renderModalParams(modal, type, path);
+		main.renderModalParams(modal, type, path, parentType);
 	})
 
 	$(document).on('click', '.list-item', function(){
@@ -58,8 +59,8 @@ $(document).ready(function(){
 		} else if (type == "Operation") {
 			path = main.pathPop(path);
 			main.renderElementsList($("#operations"), "Operation", path);
-		} else if (type == "CommonHandlers") {
-			main.renderElementsList($("#handlers"), "CommonHandlers", path);
+		} else if (type == "CommonHandler") {
+			main.renderElementsList($("#handlers"), "CommonHandler", path);
 		}
 		if (parentModal.length == 0) {
 			$('.content').removeClass("blur");
@@ -90,12 +91,12 @@ $(document).ready(function(){
 	$(document).on('change', 'select.element-type', function(){
 		let modal = $(this).parents(".modal"),
 			type  = $(this).val(),
+			parentType = modal.attr('data-parent-type'),
 			path  = modal.attr("data-path");
 
 		params = main.getElementParamsByForm(modal);
 		main.saveElement(params, type, path);
-		console.log(type)
-		main.renderModalParams(modal, type, path);
+		main.renderModalParams(modal, type, path, parentType);
 	})
 
 	$(document).on('change', '.form :input', function(){
@@ -140,12 +141,13 @@ var Main = {
 			nameProp      = "type",
 			btnType       = type,
 			elementInfo   = this.getElementByPath(type, path),
-			elementPath   = "";
+			elementPath   = "",
+			parentType    = "";
 
 		if (type == "Process" || type == "Configuration") {
 			nameProp = "ProcessName";
 			elements = elementInfo.parent.Processes;
-		} else if (type == "CommonHandlers") {
+		} else if (type == "CommonHandler") {
 			nameProp = "event";
 			elements = elementInfo.parent.CommonHandlers;
 		} else if (type == "Handlers") {
@@ -156,6 +158,7 @@ var Main = {
 			elements = elementInfo.parent.Operations;
 		} else {
 			elements = elementInfo.element.Elements;
+			parentType = elementInfo.element.type;
 			btnType = "Elements";
 		}
 
@@ -166,8 +169,8 @@ var Main = {
 			let elementName = elementParams[nameProp],
 				elementType = elementParams.type;
 
-			if (type == "CommonHandlers")
-				elementType = "CommonHandlers";
+			if (type == "CommonHandler")
+				elementType = "CommonHandler";
 
 			if (type == "Handlers")
 				elementType = "Handlers";
@@ -177,6 +180,7 @@ var Main = {
 					itemName: elementName,
 					dataAttr: {
 						"type": elementType,
+						"parent-type": parentType,
 						"path": elementPath+String(elementIndex),
 					}
 				};
@@ -187,8 +191,6 @@ var Main = {
 	},
 	renderList: function (parentNode, items, type, path) {
 		html = '<div class="btn-group"><button class="btn-add" data-type="'+type+'" data-path="'+path+'">Add</button></div>';
-
-		//console.log($(parentNode))
 
 		if (Object.keys(items).length > 0) {
 			activeNodePath = String(parentNode.find(".list-item.active").attr("data-path"));
@@ -212,7 +214,7 @@ var Main = {
 
 		parentNode.html(html);
 	},
-	renderModalParams: function (modalNode, type, path) {
+	renderModalParams: function (modalNode, type, path, parentType) {
 		element  = this.getElementByPath(type, path).element;
 		html     = '<div class="params">';
 		renderElements = false;
@@ -221,7 +223,7 @@ var Main = {
 
 		if (type == "Process") {
 			elementName = element.ProcessName;
-		} else if (type == "CommonHandlers") {
+		} else if (type == "CommonHandler") {
 			elementName = element.event;
 		} else if (type == "Operation") {
 			elementName = element.Name;
@@ -235,64 +237,94 @@ var Main = {
 		modalNode.find(".path").text(pathText);
 
 		$.each(elementParams[type], function (configName, paramFields) {
-			value = "";
-			html += '<div class="param">';
+			if (paramFields["type"] != "operations") {
+				value = "";
+				html += '<div class="param">';
 
-			if (paramFields["type"] == "text") {
-				if (typeof element[configName] != 'undefined') {
-					value = element[configName];
-				}
-
-				html += '<label for="'+configName+'">'+paramFields["text"]+'</label>';
-				html += "<input type='text' name='"+configName+"' id='"+configName+"' data-param-name='"+configName+"' value='"+value+"'>";
-			}
-
-			if (paramFields["type"] == "checkbox") {
-				if (typeof element[configName] != 'undefined') {
-					value = element[configName] == true ? 'checked' : '';
-				}
-
-				html += '<label for="'+configName+'">'+paramFields["text"]+'</label>';
-				html += '<input type="checkbox" name="'+configName+'" id="'+configName+'" data-param-name="'+configName+'" '+value+'>';
-			}
-
-			if (paramFields["type"] == "select") {
-				html += '<label>'+paramFields["text"]+'</label>';
-				
-				if (typeof element[configName] != 'undefined') {
-					value = element[configName];
-				}
-
-				if (typeof paramFields["class"] != "undefined") {
-					html += '<select data-param-name="'+configName+'" class="'+paramFields["class"]+'">';	
-				} else {
-					html += '<select data-param-name="'+configName+'">';
-				}
-
-				$.each(paramFields["options"], function (optionIndex, optionValue) {
-					if (optionValue == element[configName]) {
-						html += '<option value="'+optionValue+'" selected>'+optionValue+'</option>'	;
-					} else {
-						html += '<option value="'+optionValue+'">'+optionValue+'</option>';
+				if (paramFields["type"] == "text") {
+					if (typeof element[configName] != 'undefined') {
+						value = element[configName];
 					}
-				})
 
-				html += '</select>';
+					html += '<label for="'+configName+'">'+paramFields["text"]+'</label>';
+					html += "<input type='text' name='"+configName+"' id='"+configName+"' data-param-name='"+configName+"' value='"+value+"'>";
+				}
+
+				if (paramFields["type"] == "checkbox") {
+					if (typeof element[configName] != 'undefined') {
+						value = element[configName] == true ? 'checked' : '';
+					}
+
+					html += '<label for="'+configName+'">'+paramFields["text"]+'</label>';
+					html += '<input type="checkbox" name="'+configName+'" id="'+configName+'" data-param-name="'+configName+'" '+value+'>';
+				}
+
+				if (paramFields["type"] == "select") {
+					html += '<label>'+paramFields["text"]+'</label>';
+					
+					if (typeof element[configName] != 'undefined') {
+						value = element[configName];
+					}
+
+					if (typeof paramFields["class"] != "undefined") {
+						html += '<select data-param-name="'+configName+'" class="'+paramFields["class"]+'">';	
+					} else {
+						html += '<select data-param-name="'+configName+'">';
+					}
+
+					$.each(paramFields["options"], function (optionIndex, optionValue) {
+						if (optionValue == element[configName]) {
+							html += '<option value="'+optionValue+'" selected>'+optionValue+'</option>'	;
+						} else {
+							html += '<option value="'+optionValue+'">'+optionValue+'</option>';
+						}
+					})
+
+					html += '</select>';
+				}
+
+				if (paramFields["type"] == "elements") {
+					html += '<label onclick="showList(this)">'+paramFields["text"]+'<i class="fa fa-angle-down" aria-hidden="true"></i></label><div class="list-wrap" style="display: none;">';
+					html += '<ul class="list elements">No elements</ul></div>';
+					renderElements = true;
+				}
+
+				if (paramFields["type"] == "handlers") {
+					html += '<label onclick="showList(this)">'+paramFields["text"]+'<i class="fa fa-angle-down" aria-hidden="true"></i></label><div class="list-wrap" style="display: none;">';
+					html += '<ul class="list handlers">No Handlers</ul></div>';
+					renderHandlers = true;
+				}
+
+				if (configName == "type") {
+					$.each(paramFields, function(index, typeOptions) {
+						if (typeOptions.parent == parentType) {
+							html += '<label>'+typeOptions["text"]+'</label>';
+							
+							if (typeof element[configName] != 'undefined') {
+								value = element[configName];
+							}
+
+							//if (typeof paramFields["class"] != "undefined") {
+								html += '<select data-param-name="'+configName+'" class="element-type">';	
+							//} else {
+								//html += '<select data-param-name="'+configName+'">';
+							//}
+
+							$.each(typeOptions["options"], function (optionIndex, optionValue) {
+								if (optionValue == element[configName]) {
+									html += '<option value="'+optionValue+'" selected>'+optionValue+'</option>'	;
+								} else {
+									html += '<option value="'+optionValue+'">'+optionValue+'</option>';
+								}
+							})
+
+							html += '</select>';
+						}
+					})
+				}
+
+				html += '</div>';
 			}
-
-			if (paramFields["type"] == "Elements") {
-				html += '<label onclick="showList(this)">'+paramFields["text"]+'<i class="fa fa-angle-down" aria-hidden="true"></i></label><div class="list-wrap" style="display: none;">';
-				html += '<ul class="list elements">No elements</ul></div>';
-				renderElements = true;
-			}
-
-			if (paramFields["type"] == "Handlers") {
-				html += '<label onclick="showList(this)">'+paramFields["text"]+'<i class="fa fa-angle-down" aria-hidden="true"></i></label><div class="list-wrap" style="display: none;">';
-				html += '<ul class="list handlers">No Handlers</ul></div>';
-				renderHandlers = true;
-			}
-
-			html += '</div>';
 		})
 
 		html += '<div class="btn-group modal-btn"><button class="save-element">Save</button></div></div>';
@@ -322,7 +354,7 @@ var Main = {
 			parent.Processes.splice(elementIndex, 1);
 		} else if (type == "Operation") {
 			parent.Operations.splice(elementIndex, 1);
-		} else if (type == "CommonHandlers") {
+		} else if (type == "CommonHandler") {
 			parent.CommonHandlers.splice(elementIndex, 1);
 		} else if (type == "Handlers") {
 			parent.Handlers.splice(elementIndex, 1);
@@ -384,7 +416,7 @@ var Main = {
                 Padding: ""
             }
 		}
-		if (type == "CommonHandlers") {
+		if (type == "CommonHandler") {
 			newElement = {
                 type: "",
                 action: "",
@@ -408,12 +440,11 @@ var Main = {
 			elements = elementInfo.parent.Processes;
 		} else if (type == "Operation") {
 			elements = elementInfo.parent.Operations;
-		}  else if (type == "CommonHandlers") {
+		}  else if (type == "CommonHandler") {
 			elements = elementInfo.parent.CommonHandlers;
 		}  else if (type == "Handlers") {
 			elements = elementInfo.parent.Handlers;
 		} else {
-			console.log(path)
 			elements = elementInfo.element.Elements;
 		}
 
@@ -460,7 +491,7 @@ var Main = {
 			res.parent    = res.element;
 			res.element   = res.element.Processes[arrPath[0]];
 
-		} else if (type == "CommonHandlers") {
+		} else if (type == "CommonHandler") {
 			res.parent    = res.element;
 			res.element   = res.element.CommonHandlers[arrPath[0]];
 
@@ -512,7 +543,7 @@ async function pick_file() {
 			clearMainSection();
 			main.renderConfiguration();
 			main.renderElementsList($("#processes"), "Process", "");
-			main.renderElementsList($("#handlers"), "CommonHandlers", "");
+			main.renderElementsList($("#handlers"), "CommonHandler", "");
 			$(".file-path").text(filePath);
 		});
 	});
@@ -528,7 +559,7 @@ async function pickNewFileProject() {
 				clearMainSection();
 				main.renderConfiguration();
 				main.renderElementsList($("#processes"), "Process", "");
-				main.renderElementsList($("#handlers"), "CommonHandlers", "");
+				main.renderElementsList($("#handlers"), "CommonHandler", "");
 				$(".file-path").text(filePath);
 			});
 		}
@@ -561,11 +592,8 @@ const getQRByteArrayAsBase64 = async () => {
     return result
 };
 
-get_config_ui_elements();
-
 async function get_config_ui_elements() {
 	await eel.get_config_ui_elements()().then(async (result) => {
-		console.log(result);
 		main.elementParams = result;
 	});
 }
@@ -581,9 +609,9 @@ function clearMainSection () {
 	$("#handlers").html("No handlers");
 }
 
-function addModal (className, type, path = "") {
+function addModal (className, type, path = "", parentType = "") {
 	$("#modals-wrap").addClass("active");
-	modal = $("<div class='modal "+className+"' data-type='"+type+"' data-path='"+path+"'><div class='close-modal'><i class='fa fa-times' aria-hidden='true'></i></div><div class='modal-head'><h2 class='modal-title'></h2><span class='path'></span></div><div class='modal-content'></div></div>").appendTo("#modals-wrap");
+	modal = $("<div class='modal "+className+"' data-type='"+type+"' data-parent-type='"+parentType+"' data-path='"+path+"'><div class='close-modal'><i class='fa fa-times' aria-hidden='true'></i></div><div class='modal-head'><h2 class='modal-title'></h2><span class='path'></span></div><div class='modal-content'></div></div>").appendTo("#modals-wrap");
 	$('.content').addClass("blur");
 
 	return modal;
