@@ -141,6 +141,7 @@ def get_config_ui_elements(Model=RootConfigModel) -> dict:
                 config_item[prop] = {
                     'type': 'text',
                 }
+            config_item[prop]['text'] = prop
             config_item[prop]['required'] = required and prop in required
         result[v['title']] = config_item
     return result
