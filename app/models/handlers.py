@@ -12,6 +12,7 @@ class BaseHandler(BaseModel):
 
     class Config:
         use_enum_values = True
+        title = 'Handlers'
 
 
 class CommonHandler(BaseHandler):
