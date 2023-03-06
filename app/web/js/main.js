@@ -364,77 +364,7 @@ var Main = {
 	},
 	addElement: function (type, path) {
 		elementInfo = this.getElementByPath(type, path);
-
-		if (type == "Process") {
-			elementName = "New Process";
-			newElement = {
-	            type: "Process",
-	            ProcessName: elementName,
-	            PlanFactHeader: "",
-	            DefineOnBackPressed: false,
-	            hidden: false,
-	            login_screen: false,
-	            SC: false,
-		        Operations: []
-			}
-		}
-		if (type == "Operation") {
-			elementName = "New Screen";
-			newElement = {
-                type: "Operation",
-                Name: elementName,
-                Timer: false,
-                hideToolBarScreen: false,
-                noScroll: false,
-                handleKeyUp: false,
-                noConfirmation: false,
-                hideBottomBarScreen: false,
-                onlineOnStart: false,
-                send_when_opened: false,
-                onlineOnInput: false,
-                DefOnlineOnCreate: "",
-                DefOnlineOnInput: "",
-                DefOnCreate: "",
-                DefOnInput: "",
-                Elements: [],
-                Handlers: [],
-                onlineOnAfterStart: false
-			}
-		}
-		if (type == "Elements") {
-			newElement = {
-                Value: "",
-                Variable: "",
-                type: "LinearLayout",
-                weight: "",
-                height: "",
-                width: "",
-                orientation: "",
-                Elements: [],
-                BackgroundColor: "",
-                StrokeWidth: "",
-                Padding: ""
-            }
-		}
-		if (type == "CommonHandler") {
-			newElement = {
-                type: "",
-                action: "",
-                event: "onLaunch",
-                method: "",
-                postExecute: "",
-                alias: ""
-            }
-		}
-		if (type == "Handlers") {
-			newElement = {
-                type: "",
-                action: "",
-                event: "onLaunch",
-                method: "",
-                postExecute: "",
-            }
-		}
+		newElement = newElements[type];
 
 		if (type == "Process") {
 			elements = elementInfo.parent.Processes;
