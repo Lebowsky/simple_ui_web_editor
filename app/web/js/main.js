@@ -1,45 +1,46 @@
 $(document).ready(function(){
-	$(document).on('click', '.list-item .edit', function(){
-		let type   = $(this).parents(".list-item").attr('data-type'),
-			path   = $(this).parents(".list-item").attr('data-path'),
-			modals = $(".modal");
+	$(document).on('click', selectors.btnEdit, function(){
+		let type   = $(this).parents(selectors.listItem).attr('data-type'),
+			parentType = $(this).parents(selectors.listItem).attr('data-parent-type'),
+			path   = $(this).parents(selectors.listItem).attr('data-path'),
+			modals = $(selectors.modal);
 
-		modal = addModal("", type, path);
+		modal = addModal("", type, path, parentType);
 		modals.removeClass("active");
 		modal.addClass("active");
-		main.renderModalParams(modal, type, path);
+		main.renderModalParams(modal, type, path, parentType);
 	})
 
-	$(document).on('click', '.list-item', function(){
-		$(this).parents(".list").find(".list-item").removeClass("active");
+	$(document).on('click', selectors.listItem, function(){
+		$(this).parents(selectors.list).find(selectors.listItem).removeClass("active");
 		$(this).addClass("active");
 	})
 
-	$(document).on('click', '.list-item .delete', function(){
+	$(document).on('click', selectors.btnDelete, function(){
 		if (confirm('Вы уверены?')) {
-			let listNode = $(this).parents(".list"),
-				type = $(this).parents(".list-item").attr('data-type'),
-				path = $(this).parents(".list-item").attr('data-path'),
+			let listNode = $(this).parents(selectors.list),
+				type = $(this).parents(selectors.listItem).attr('data-type'),
+				path = $(this).parents(selectors.listItem).attr('data-path'),
 				newPath = main.pathPop(path);
 
 			main.deleteElement(type, path);
 			main.renderElementsList(listNode, type, newPath);
-			listNode.find(".list-item").removeClass("active");
+			listNode.find(selectors.listItem).removeClass("active");
 
 			if (type == "Process") {
 				if ($("#processes .list-item").length > 0) {
-					main.renderElementsList($("#operations"), "Operation", "0");
-					listNode.find(".list-item").removeClass("active");
-					listNode.find(".list-item").first().addClass("active");
+					main.renderElementsList($(selectors.operationsList), "Operation", "0");
+					listNode.find(selectors.listItem).removeClass("active");
+					listNode.find(selectors.listItem).first().addClass("active");
 				} else {
-					$("#operations").html("Select process");
+					$(selectors.operationsList).html("Select process");
 				}
 			}
 		}
 	})
 
-	$(document).on('click', '.save-element', function(){
-		let modal       = $(this).parents(".modal"),
+	$(document).on('click', selectors.btnSave, function(){
+		let modal       = $(this).parents(selectors.modal),
 			type        = modal.attr('data-type'),
 			path        = modal.attr('data-path'),
 			parentModal = modal.prev();
@@ -53,13 +54,13 @@ $(document).ready(function(){
 			parentModal.addClass("active");
 
 		} else if (type == "Process") {
-			main.renderElementsList($("#processes"), "Process", "");
+			main.renderElementsList($(selectors.processList), "Process", "");
 
 		} else if (type == "Operation") {
 			path = main.pathPop(path);
-			main.renderElementsList($("#operations"), "Operation", path);
-		} else if (type == "CommonHandlers") {
-			main.renderElementsList($("#handlers"), "CommonHandlers", path);
+			main.renderElementsList($(selectors.operationsList), "Operation", path);
+		} else if (type == "CommonHandler") {
+			main.renderElementsList($(selectors.handlersList), "CommonHandler", path);
 		}
 		if (parentModal.length == 0) {
 			$('.content').removeClass("blur");
@@ -68,8 +69,8 @@ $(document).ready(function(){
 		closeModal(modal);
 	})
 
-	$(document).on('click', '.btn-add', function(e){
-		let listNode = $(this).parents(".list"),
+	$(document).on('click', selectors.btnAdd, function(e){
+		let listNode = $(this).parents(selectors.list),
 			type     = $(this).attr("data-type"),
 			path     = $(this).attr("data-path");
 
@@ -81,21 +82,21 @@ $(document).ready(function(){
 		if ($(e.target).is(this) || $(e.target).is($(this).children("span"))) {
 			let path = $(this).attr("data-path");
 
-			main.renderElementsList($("#operations"), "Operation", path);
+			main.renderElementsList($(selectors.operationsList), "Operation", path);
 			showList($("#main-conf-screen .section-header"), "down");
-			$("#operations").find(".btn-add").attr("data-path", $(this).attr("data-path"));
+			$(selectors.operationsList).find(selectors.btnAdd).attr("data-path", $(this).attr("data-path"));
 		}
 	})
 
 	$(document).on('change', 'select.element-type', function(){
-		let modal = $(this).parents(".modal"),
+		let modal = $(this).parents(selectors.modal),
 			type  = $(this).val(),
+			parentType = modal.attr('data-parent-type'),
 			path  = modal.attr("data-path");
 
 		params = main.getElementParamsByForm(modal);
 		main.saveElement(params, type, path);
-		console.log(type)
-		main.renderModalParams(modal, type, path);
+		main.renderModalParams(modal, type, path, parentType);
 	})
 
 	$(document).on('change', '.form :input', function(){
@@ -107,11 +108,11 @@ $(document).ready(function(){
 		main.saveElement(params, "Configuration", "");
 	})
 
-	$(document).on('click', '.close-modal', function(){
-		let	modal       = $(this).parents(".modal"),
+	$(document).on('click', selectors.btnCloseModal, function(){
+		let	modal       = $(this).parents(selectors.modal),
 			parentModal = modal.prev();
 			
-		closeModal($(this).parents(".modal"));
+		closeModal($(this).parents(selectors.modal));
 
 		if (parentModal.length > 0) {
 			parentModal.addClass("active");
@@ -140,12 +141,13 @@ var Main = {
 			nameProp      = "type",
 			btnType       = type,
 			elementInfo   = this.getElementByPath(type, path),
-			elementPath   = "";
+			elementPath   = "",
+			parentType    = "";
 
 		if (type == "Process" || type == "Configuration") {
 			nameProp = "ProcessName";
 			elements = elementInfo.parent.Processes;
-		} else if (type == "CommonHandlers") {
+		} else if (type == "CommonHandler") {
 			nameProp = "event";
 			elements = elementInfo.parent.CommonHandlers;
 		} else if (type == "Handlers") {
@@ -156,6 +158,7 @@ var Main = {
 			elements = elementInfo.parent.Operations;
 		} else {
 			elements = elementInfo.element.Elements;
+			parentType = elementInfo.element.type;
 			btnType = "Elements";
 		}
 
@@ -166,8 +169,8 @@ var Main = {
 			let elementName = elementParams[nameProp],
 				elementType = elementParams.type;
 
-			if (type == "CommonHandlers")
-				elementType = "CommonHandlers";
+			if (type == "CommonHandler")
+				elementType = "CommonHandler";
 
 			if (type == "Handlers")
 				elementType = "Handlers";
@@ -177,6 +180,7 @@ var Main = {
 					itemName: elementName,
 					dataAttr: {
 						"type": elementType,
+						"parent-type": parentType,
 						"path": elementPath+String(elementIndex),
 					}
 				};
@@ -187,8 +191,6 @@ var Main = {
 	},
 	renderList: function (parentNode, items, type, path) {
 		html = '<div class="btn-group"><button class="btn-add" data-type="'+type+'" data-path="'+path+'">Add</button></div>';
-
-		//console.log($(parentNode))
 
 		if (Object.keys(items).length > 0) {
 			activeNodePath = String(parentNode.find(".list-item.active").attr("data-path"));
@@ -212,13 +214,16 @@ var Main = {
 
 		parentNode.html(html);
 	},
-	renderModalParams: function (modalNode, type, path) {
+	renderModalParams: function (modalNode, type, path, parentType) {
 		element  = this.getElementByPath(type, path).element;
 		html     = '<div class="params">';
+		renderElements = false;
+		renderHandlers = false;
+		elementParams = this.elementParams;
 
 		if (type == "Process") {
 			elementName = element.ProcessName;
-		} else if (type == "CommonHandlers") {
+		} else if (type == "CommonHandler") {
 			elementName = element.event;
 		} else if (type == "Operation") {
 			elementName = element.Name;
@@ -228,74 +233,109 @@ var Main = {
 
 		pathText = this.getElementByPath(type, path).path;
 
-		modalNode.find(".modal-title").text(elementName);
+		modalNode.find(selectors.modalTitle).text(elementName);
 		modalNode.find(".path").text(pathText);
 
 		$.each(elementParams[type], function (configName, paramFields) {
-			value = "";
-			html += '<div class="param">';
+			if (paramFields["type"] != "operations") {
+				value = "";
+				html += '<div class="param">';
 
-			if (paramFields["type"] == "text") {
-				if (typeof element[configName] != 'undefined') {
-					value = element[configName];
-				}
-
-				html += '<label for="'+configName+'">'+paramFields["text"]+'</label>';
-				html += "<input type='text' name='"+configName+"' id='"+configName+"' data-param-name='"+configName+"' value='"+value+"'>";
-			}
-
-			if (paramFields["type"] == "checkbox") {
-				if (typeof element[configName] != 'undefined') {
-					value = element[configName] == true ? 'checked' : '';
-				}
-
-				html += '<label for="'+configName+'">'+paramFields["text"]+'</label>';
-				html += '<input type="checkbox" name="'+configName+'" id="'+configName+'" data-param-name="'+configName+'" '+value+'>';
-			}
-
-			if (paramFields["type"] == "select") {
-				html += '<label>'+paramFields["text"]+'</label>';
-				
-				if (typeof element[configName] != 'undefined') {
-					value = element[configName];
-				}
-
-				if (typeof paramFields["class"] != "undefined") {
-					html += '<select data-param-name="'+configName+'" class="'+paramFields["class"]+'">';	
-				} else {
-					html += '<select data-param-name="'+configName+'">';
-				}
-
-				$.each(paramFields["options"], function (optionIndex, optionValue) {
-					if (optionValue == element[configName]) {
-						html += '<option value="'+optionValue+'" selected>'+optionValue+'</option>'	;
-					} else {
-						html += '<option value="'+optionValue+'">'+optionValue+'</option>';
+				if (paramFields["type"] == "text") {
+					if (typeof element[configName] != 'undefined') {
+						value = element[configName];
 					}
-				})
 
-				html += '</select>';
+					html += '<label for="'+configName+'">'+paramFields["text"]+'</label>';
+					html += "<input type='text' name='"+configName+"' id='"+configName+"' data-param-name='"+configName+"' value='"+value+"'>";
+				}
+
+				if (paramFields["type"] == "checkbox") {
+					if (typeof element[configName] != 'undefined') {
+						value = element[configName] == true ? 'checked' : '';
+					}
+
+					html += '<label for="'+configName+'">'+paramFields["text"]+'</label>';
+					html += '<input type="checkbox" name="'+configName+'" id="'+configName+'" data-param-name="'+configName+'" '+value+'>';
+				}
+
+				if (paramFields["type"] == "select") {
+					html += '<label>'+paramFields["text"]+'</label>';
+					
+					if (typeof element[configName] != 'undefined') {
+						value = element[configName];
+					}
+
+					if (typeof paramFields["class"] != "undefined") {
+						html += '<select data-param-name="'+configName+'" class="'+paramFields["class"]+'">';	
+					} else {
+						html += '<select data-param-name="'+configName+'">';
+					}
+
+					$.each(paramFields["options"], function (optionIndex, optionValue) {
+						if (optionValue == element[configName]) {
+							html += '<option value="'+optionValue+'" selected>'+optionValue+'</option>'	;
+						} else {
+							html += '<option value="'+optionValue+'">'+optionValue+'</option>';
+						}
+					})
+
+					html += '</select>';
+				}
+
+				if (paramFields["type"] == "elements") {
+					html += '<label onclick="showList(this)">'+paramFields["text"]+'<i class="fa fa-angle-down" aria-hidden="true"></i></label><div class="list-wrap" style="display: none;">';
+					html += '<ul class="list elements">No elements</ul></div>';
+					renderElements = true;
+				}
+
+				if (paramFields["type"] == "handlers") {
+					html += '<label onclick="showList(this)">'+paramFields["text"]+'<i class="fa fa-angle-down" aria-hidden="true"></i></label><div class="list-wrap" style="display: none;">';
+					html += '<ul class="list handlers">No Handlers</ul></div>';
+					renderHandlers = true;
+				}
+
+				if (configName == "type") {
+					$.each(paramFields, function(index, typeOptions) {
+						if (typeOptions.parent == parentType) {
+							html += '<label>'+typeOptions["text"]+'</label>';
+							
+							if (typeof element[configName] != 'undefined') {
+								value = element[configName];
+							}
+
+							//if (typeof paramFields["class"] != "undefined") {
+								html += '<select data-param-name="'+configName+'" class="element-type">';	
+							//} else {
+								//html += '<select data-param-name="'+configName+'">';
+							//}
+
+							$.each(typeOptions["options"], function (optionIndex, optionValue) {
+								if (optionValue == element[configName]) {
+									html += '<option value="'+optionValue+'" selected>'+optionValue+'</option>'	;
+								} else {
+									html += '<option value="'+optionValue+'">'+optionValue+'</option>';
+								}
+							})
+
+							html += '</select>';
+						}
+					})
+				}
+
+				html += '</div>';
 			}
-
-			if (paramFields["type"] == "Elements") {
-				html += '<label onclick="showList(this)">'+paramFields["text"]+'<i class="fa fa-angle-down" aria-hidden="true"></i></label><div class="list-wrap" style="display: none;">';
-				html += '<ul class="list elements">No elements</ul></div>';
-			}
-
-			if (paramFields["type"] == "Handlers") {
-				html += '<label onclick="showList(this)">'+paramFields["text"]+'<i class="fa fa-angle-down" aria-hidden="true"></i></label><div class="list-wrap" style="display: none;">';
-				html += '<ul class="list handlers">No Handlers</ul></div>';
-			}
-
-			html += '</div>';
 		})
 
 		html += '<div class="btn-group modal-btn"><button class="save-element">Save</button></div></div>';
 
-		modalNode.find(".modal-content").html(html);
+		modalNode.find(selectors.modalContent).html(html);
 
-		this.renderElementsList(modalNode.find('.elements'), "Elements", path);
-		this.renderElementsList(modalNode.find('.handlers'), "Handlers", path);
+		if (renderElements)
+			this.renderElementsList(modalNode.find('.elements'), "Elements", path);
+
+		if (renderHandlers)
+			this.renderElementsList(modalNode.find('.handlers'), "Handlers", path);
 	},
 	saveElement: function (params, type, path) {
 		element = this.getElementByPath(type, path).element;
@@ -314,7 +354,7 @@ var Main = {
 			parent.Processes.splice(elementIndex, 1);
 		} else if (type == "Operation") {
 			parent.Operations.splice(elementIndex, 1);
-		} else if (type == "CommonHandlers") {
+		} else if (type == "CommonHandler") {
 			parent.CommonHandlers.splice(elementIndex, 1);
 		} else if (type == "Handlers") {
 			parent.Handlers.splice(elementIndex, 1);
@@ -376,7 +416,7 @@ var Main = {
                 Padding: ""
             }
 		}
-		if (type == "CommonHandlers") {
+		if (type == "CommonHandler") {
 			newElement = {
                 type: "",
                 action: "",
@@ -400,12 +440,11 @@ var Main = {
 			elements = elementInfo.parent.Processes;
 		} else if (type == "Operation") {
 			elements = elementInfo.parent.Operations;
-		}  else if (type == "CommonHandlers") {
+		}  else if (type == "CommonHandler") {
 			elements = elementInfo.parent.CommonHandlers;
 		}  else if (type == "Handlers") {
 			elements = elementInfo.parent.Handlers;
 		} else {
-			console.log(path)
 			elements = elementInfo.element.Elements;
 		}
 
@@ -452,7 +491,7 @@ var Main = {
 			res.parent    = res.element;
 			res.element   = res.element.Processes[arrPath[0]];
 
-		} else if (type == "CommonHandlers") {
+		} else if (type == "CommonHandler") {
 			res.parent    = res.element;
 			res.element   = res.element.CommonHandlers[arrPath[0]];
 
@@ -503,8 +542,8 @@ async function pick_file() {
 			main.conf = conf;
 			clearMainSection();
 			main.renderConfiguration();
-			main.renderElementsList($("#processes"), "Process", "");
-			main.renderElementsList($("#handlers"), "CommonHandlers", "");
+			main.renderElementsList($(selectors.processList), "Process", "");
+			main.renderElementsList($(selectors.handlersList), "CommonHandler", "");
 			$(".file-path").text(filePath);
 		});
 	});
@@ -519,8 +558,8 @@ async function pickNewFileProject() {
 				main.conf = conf;
 				clearMainSection();
 				main.renderConfiguration();
-				main.renderElementsList($("#processes"), "Process", "");
-				main.renderElementsList($("#handlers"), "CommonHandlers", "");
+				main.renderElementsList($(selectors.processList), "Process", "");
+				main.renderElementsList($(selectors.handlersList), "CommonHandler", "");
 				$(".file-path").text(filePath);
 			});
 		}
@@ -553,11 +592,10 @@ const getQRByteArrayAsBase64 = async () => {
     return result
 };
 
-get_config_ui_elements();
-
 async function get_config_ui_elements() {
 	await eel.get_config_ui_elements()().then(async (result) => {
-		console.log(result);
+		console.log(result)
+		main.elementParams = result;
 	});
 }
 
@@ -567,21 +605,21 @@ function get_current_file_path () {
 };
 
 function clearMainSection () {
-	$("#processes").html("No processes");
-	$("#operations").html("No operations");
-	$("#handlers").html("No handlers");
+	$(selectors.processList).html("No processes");
+	$(selectors.operationsList).html("No operations");
+	$(selectors.handlersList).html("No handlers");
 }
 
-function addModal (className, type, path = "") {
+function addModal (className, type, path = "", parentType = "") {
 	$("#modals-wrap").addClass("active");
-	modal = $("<div class='modal "+className+"' data-type='"+type+"' data-path='"+path+"'><div class='close-modal'><i class='fa fa-times' aria-hidden='true'></i></div><div class='modal-head'><h2 class='modal-title'></h2><span class='path'></span></div><div class='modal-content'></div></div>").appendTo("#modals-wrap");
+	modal = $("<div class='modal "+className+"' data-type='"+type+"' data-parent-type='"+parentType+"' data-path='"+path+"'><div class='close-modal'><i class='fa fa-times' aria-hidden='true'></i></div><div class='modal-head'><h2 class='modal-title'></h2><span class='path'></span></div><div class='modal-content'></div></div>").appendTo("#modals-wrap");
 	$('.content').addClass("blur");
 
 	return modal;
 }
 
 function closeModal (modalNode) {
-	if (modalNode.siblings(".modal").length == 0) {
+	if (modalNode.siblings(selectors.modal).length == 0) {
 		modalNode.parents("#modals-wrap").removeClass("active");
 	}
 	modalNode.remove();
@@ -589,13 +627,13 @@ function closeModal (modalNode) {
 
 function showList (node, direction = "toggle") {
 	if (direction == "up") {
-		$(node).siblings(".list-wrap").slideUp();
+		$(node).siblings(selectors.listWrap).slideUp();
 		$(node).find("i").removeClass("fa-angle-up").addClass("fa-angle-down");
 	} else if (direction == "down") {
-		$(node).siblings(".list-wrap").slideDown();
+		$(node).siblings(selectors.listWrap).slideDown();
 		$(node).find("i").removeClass("fa-angle-down").addClass("fa-angle-up");
 	} else {
-		$(node).siblings(".list-wrap").slideToggle();
+		$(node).siblings(selectors.listWrap).slideToggle();
 
 		if ($(node).find("i").hasClass("fa-angle-down")) {
 			$(node).find("i").removeClass("fa-angle-down").addClass("fa-angle-up");
