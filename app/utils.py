@@ -181,8 +181,6 @@ def get_config_ui_elements(Model=RootConfigModel) -> dict:
     for key, value in containers.items():
         for item in value:
             element_type = ElementType(parent=key, type='select', options=value, text='type')
-            if not result[item].get('type'):
-                result[item]['type'] = []
 
             result[item]['type'].append(element_type)
 

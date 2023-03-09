@@ -73,7 +73,7 @@ class BaseField(BaseModel):
 
 
 class BaseElement(BaseModel):
-    type: Optional[List[ElementType]]
+    type: Optional[List[ElementType]] = []
 
     @root_validator
     def fill_values(cls, values: dict):
