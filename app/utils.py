@@ -11,6 +11,7 @@ import socket
 import base64
 
 from models.root_config import RootConfigModel, QRCodeConfig, OperationsModel
+from models.ui_config import create_element, BaseField, ElementType, convert_to_dict
 
 
 def can_use_chrome():
@@ -80,7 +81,7 @@ def get_qr_code_config():
     return base_64_mage
 
 
-def get_config_ui_elements(Model=RootConfigModel) -> dict:
+def _get_config_ui_elements(Model=RootConfigModel) -> dict:
     scheme = jsonref.loads(Model.schema_json(indent=2, ensure_ascii=True))
     result = {}
 
@@ -109,6 +110,7 @@ def get_config_ui_elements(Model=RootConfigModel) -> dict:
                                 'parent': v['title'],
                                 'type': 'select',
                                 'options': elements,
+                                'text': 'type'
                             })
                     else:
                         config_item['type'] = [{
@@ -154,6 +156,37 @@ def get_config_ui_elements(Model=RootConfigModel) -> dict:
             config_item[prop]['required'] = required and prop in required
         result[v['title']] = config_item
     return result
+
+
+def get_config_ui_elements(Model=RootConfigModel) -> dict:
+    scheme = jsonref.loads(Model.schema_json(indent=2, ensure_ascii=True))
+    elements = [v for v in scheme['definitions'].values() if v.get('properties', None)]
+    result = {}
+    containers = {}
+
+    for el in elements:
+        fields = {}
+        title = el['title']
+
+        for key, value in el['properties'].items():
+            if key == 'type':
+                continue
+            fields[key] = BaseField(text=key, **value)
+
+            if key == 'Elements':
+                containers[title] = _get_elements_items(value)
+
+        result[title] = create_element(title, fields).dict(exclude_none=True)
+
+    for key, value in containers.items():
+        for item in value:
+            element_type = ElementType(parent=key, type='select', options=value, text='type')
+            if not result[item].get('type'):
+                result[item]['type'] = []
+
+            result[item]['type'].append(element_type)
+
+    return convert_to_dict(result)
 
 
 def _get_elements_items(value):

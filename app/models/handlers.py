@@ -18,6 +18,9 @@ class BaseHandler(BaseModel):
 class CommonHandler(BaseHandler):
     alias: str
 
+    class Config:
+        title = 'CommonHandler'
+
 
 class Handler(BaseHandler):
     listener: Optional[str]
