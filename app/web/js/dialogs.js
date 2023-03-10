@@ -15,6 +15,7 @@ async function pick_file() {
 			main.renderElementsList($(selectors.processList), "Process", "");
 			main.renderElementsList($(selectors.handlersList), "CommonHandler", "");
 			$(".file-path").text(filePath);
+            $('#preview-button').show()
 		});
 	});
 }
@@ -31,6 +32,7 @@ async function pickNewFileProject() {
 				main.renderElementsList($(selectors.processList), "Process", "");
 				main.renderElementsList($(selectors.handlersList), "CommonHandler", "");
 				$(".file-path").text(filePath);
+                $('#preview-button').show()
 			});
 		}
 	});

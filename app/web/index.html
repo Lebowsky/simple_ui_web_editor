@@ -10,12 +10,13 @@
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;900&display=swap" rel="stylesheet">
     <script type="text/javascript" src="/eel.js"></script>
-	<script type="text/javascript" src="js/jquery-3.5.0.min.js"></script>
-	<script type="text/javascript" src="js/jquery.toast.min.js"></script>
+	<script type="text/javascript" src="js/lib/jquery-3.5.0.min.js"></script>
+	<script type="text/javascript" src="js/lib/jquery.toast.min.js"></script>
+	<script type="text/javascript" src="js/init.js"></script>
 	<script type="text/javascript" src="js/conf.js"></script>
 	<script type="text/javascript" src="js/main.js"></script>
 	<script type="text/javascript" src="js/export.js"></script>
-	<script type="text/javascript" src="js/notification.js"></script>
+	<script type="text/javascript" src="js/dialogs.js"></script>
 	<script>
         var main = Object.create(Main);
 		get_config_ui_elements();
@@ -28,7 +29,8 @@
             <button id="open-project" onclick="pickNewFileProject(main)">New Project</button>
             <button id="open-project" onclick="pick_file(main)">Open Project</button>
             <button id="open-project" onclick="fileLocationSave()">Save Project</button>
-            <button id="open-project" onclick="showQRSettings()">Show QR</button>
+            <!-- <button id="open-project" onclick="showQRSettings()">Show QR</button> -->
+			<a id="preview-button" href="http://localhost:5000/prev", target="_blank">Preview</a>
         </div>
         <span class="file-path"></span>
 		<section id="main-conf">
