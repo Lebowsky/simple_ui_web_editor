@@ -378,7 +378,6 @@ var Main = {
 			elements = elementInfo.parent.Handlers;
 		} else {
 			elements = elementInfo.element.Elements;
-			console.log(newElement)
 		}
 
 		length = elements.push(newElement);
