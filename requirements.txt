@@ -1,9 +1,11 @@
-Eel~=0.15.2
+Eel~=0.16.0
 pydantic~=1.10.4
 EasySettings~=4.0.1
 future~=0.18.3
 fastapi~=0.91.0
-uvicorn~=0.20.0
+uvicorn[standard]
 pillow~=9.4.0
 qrcode~=7.4.2
-jsonref
+jsonref~=1.1.0
+fastapi_socketio
+lxml
