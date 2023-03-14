@@ -240,7 +240,9 @@ var Main = {
 	},
 	addElement: function (type, path) {
 		elementInfo = this.getElementByPath(type, path);
-		newElement = newElements[type];
+		newElementsJson = JSON.stringify(newElements);
+		newElementsConf = JSON.parse(newElementsJson);
+		newElement = newElementsConf[type];
 
 		if (type == "Process") {
 			elements = elementInfo.parent.Processes;
