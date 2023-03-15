@@ -11,6 +11,7 @@ async function pick_file() {
 			$(".hidden-conf-json").text(JSON.stringify(conf));
 			main.conf = conf;
 			clearMainSection();
+			fillDefaultValues();
 			main.renderConfiguration();
 			main.renderElementsList($(selectors.processList), "Process", "");
 			main.renderElementsList($(selectors.handlersList), "CommonHandler", "");
@@ -28,6 +29,7 @@ async function pickNewFileProject() {
 				$(".hidden-conf-json").text(JSON.stringify(conf));
 				main.conf = conf;
 				clearMainSection();
+				fillDefaultValues();
 				main.renderConfiguration();
 				main.renderElementsList($(selectors.processList), "Process", "");
 				main.renderElementsList($(selectors.handlersList), "CommonHandler", "");

@@ -209,14 +209,15 @@ class ClientConfigurationModel(BaseConfigModel):
     broadcast_variable: Optional[str] = Field(alias='BroadcastVariable')
     face_recognition_url: Optional[str] = Field(alias='FaceRecognitionURL')
     foreground_service: Optional[bool] = Field(alias='ForegroundService')
-    on_keyboard_main: Optional[bool] = Field(alias='OnKeyboardMain')
     stop_foreground_service_on_exit: Optional[bool] = Field(alias='StopForegroundServiceOnExit')
+    on_keyboard_main: Optional[bool] = Field(alias='OnKeyboardMain')
     run_python: Optional[bool] = Field(alias='RunPython')
     def_service_configuration: Optional[str] = Field(alias='DefServiceConfiguration')
     launch: Optional[str] = Field(alias='Launch')  # Tiles
     launch_process: Optional[str] = Field(alias='LaunchProcess')  # process
     launch_var: Optional[str] = Field(alias='LaunchVar')  # field
     main_menu: Optional[List[MainMenuModel]] = Field(alias='MainMenu')
+    menu_web_template: Optional[str] = Field(alias='MenuWebTemplate')
     media_file: Optional[List[MediaFileModel]] = Field(alias='Mediafile')
     offline_on_create: Optional[List[SQLQueryModel]] = Field(alias='OfflineOnCreate')
     online_service_configuration: Optional[str] = Field(alias='OnlineServiceConfiguration')

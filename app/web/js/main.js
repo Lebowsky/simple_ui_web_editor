@@ -1,13 +1,15 @@
 var Main = {
 	renderConfiguration: function () {
 		let configuration = this.conf.ClientConfiguration;
-
 		$.each(configuration, function(confParamName, confParamValue){
+			
 			if (typeof confParamValue !== 'object') {
 				inputNode = $("#"+confParamName);
-
 				if (inputNode.length > 0) {
-					inputNode.val(confParamValue);
+					if (typeof confParamValue == 'boolean')
+						inputNode.prop('checked', confParamValue);
+					else
+						inputNode.val(confParamValue);
 				}
 			}
 		})
@@ -346,6 +348,18 @@ function clearMainSection () {
 	$(selectors.operationsList).html("No operations");
 	$(selectors.handlersList).html("No handlers");
 }
+
+function fillDefaultValues(){
+	$.each(main.elementParams.ClientConfiguration, function(key, val){
+		el = $('#' + key)
+		if (el.length && val.default_value != undefined)
+			if (val.type == 'checkbox')
+				el.prop('checked', val.default_value)
+			else if(val.type == 'text')
+				el.val(val.default_value)
+	});
+}
+
 
 function addModal (className, type, path = "", parentType = "") {
 	$("#modals-wrap").addClass("active");

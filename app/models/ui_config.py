@@ -44,6 +44,7 @@ class ElementType(BaseModel):
 class BaseField(BaseModel):
     type: FieldType
     options: Optional[List[str]]
+    default_value: Optional[Union[bool, str]]
     text: str
     required: bool = False
 
@@ -63,8 +64,10 @@ class BaseField(BaseModel):
             values['type'] = values['title'].lower()
         elif values['type'] == 'boolean':
             values['type'] = FieldType.checkbox
+            values['default_value'] = False
         else:
             values['type'] = FieldType.text
+            values['default_value'] = ''
 
         return values
 
