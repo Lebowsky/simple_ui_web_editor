@@ -24,7 +24,7 @@
 </head>
 <body>
 	<div class="content">
-    	<div class="header"><div class="logo"><img src="logo.jpg" alt="Simple Logo"></div></div>
+    	<div class="header"><div class="logo"><img src="logo.png" alt="Simple Logo"></div></div>
         <div class="btn-group main">
             <button id="open-project" onclick="pickNewFileProject(main)">New Project</button>
             <button id="open-project" onclick="pick_file(main)">Open Project</button>
@@ -33,19 +33,105 @@
 			<a id="preview-button" href="http://localhost:5000/prev", target="_blank">Preview</a>
         </div>
         <span class="file-path"></span>
-		<section id="main-conf">
-			<div class="section-header" onclick="showList(this)">Main<i class="fa fa-angle-up" aria-hidden="true"></i></div>
-			<div class="list-wrap show">
-				<ul class="list form configuration">
-					<label for="ConfigurationName">Configuration-name</label>
-					<input type="text" name="ConfigurationName" id="ConfigurationName" data-param-name="ConfigurationName">
-					<label for="ConfigurationVersion">Version</label>
-					<input type="text" name="ConfigurationVersion" id="ConfigurationVersion" data-param-name="ConfigurationVersion">
-					<label for="ConfigurationDescription">Description</label>
-					<input type="text" name="ConfigurationDescription" id="ConfigurationDescription" data-param-name="ConfigurationDescription">
-				</ul>
+        <div class="main-conf-wrap">
+			<div class="tabs">
+			    <div onclick="selectTab(this)" class="tab active" data-tab-id="main-conf">Main</div>
+			    <div onclick="selectTab(this)" class="tab" data-tab-id="main-conf-handlers">Handlers</div>
+			    <div onclick="selectTab(this)" class="tab" data-tab-id="main-conf-1">Main 1</div>
+			    <div onclick="selectTab(this)" class="tab" data-tab-id="main-conf-2">Main 2</div>
+			    <div onclick="selectTab(this)" class="tab" data-tab-id="main-conf-3">Main 3</div>
+			    <div onclick="selectTab(this)" class="tab" data-tab-id="main-conf-4">Main 4</div>
 			</div>
-		</section>
+			<section id="main-conf" class="active">
+				<div class="section-header">Main</div>
+				<div class="list-wrap show">
+					<ul class="list form configuration">
+						<li class="param">
+							<label for="ConfigurationName">Configuration-name</label>
+							<input type="text" name="ConfigurationName" id="ConfigurationName" data-param-name="ConfigurationName">
+						</li>
+						<li class="param">
+							<label for="ConfigurationVersion">Version</label>
+							<input type="text" name="ConfigurationVersion" id="ConfigurationVersion" data-param-name="ConfigurationVersion">
+						</li>
+						<li class="param">
+							<label for="ConfigurationDescription">Description</label>
+							<input type="text" name="ConfigurationDescription" id="ConfigurationDescription" data-param-name="ConfigurationDescription">
+						</li>
+					</ul>
+				</div>
+			</section>
+	        <section id="main-conf-handlers">
+	            <div class="section-header">Handlers</div>
+				<div class="list-wrap show">
+		            <ul class="list" id="handlers">No Items</ul>
+	            </div>
+			</section>
+			<section id="main-conf-1">
+				<div class="section-header">Main 1</div>
+				<div class="list-wrap show">
+					<ul class="list form configuration">
+						<li class="param">
+							<label for="ConfigurationName">Configuration-name</label>
+							<input type="text" name="ConfigurationName" id="ConfigurationName" data-param-name="ConfigurationName">
+						</li>
+						<li class="param">
+							<label for="ConfigurationVersion">Version</label>
+							<input type="text" name="ConfigurationVersion" id="ConfigurationVersion" data-param-name="ConfigurationVersion">
+						</li>
+						<li class="param">
+							<label for="ConfigurationName">Configuration-name</label>
+							<input type="text" name="ConfigurationName" id="ConfigurationName" data-param-name="ConfigurationName">
+						</li>
+						<li class="param">
+							<label for="ConfigurationVersion">Version</label>
+							<input type="text" name="ConfigurationVersion" id="ConfigurationVersion" data-param-name="ConfigurationVersion">
+						</li>
+						<li class="param">
+							<label for="ConfigurationDescription">Description</label>
+							<input type="text" name="ConfigurationDescription" id="ConfigurationDescription" data-param-name="ConfigurationDescription">
+						</li>
+					</ul>
+				</div>
+			</section>
+			<section id="main-conf-2">
+				<div class="section-header">Main 2</div>
+				<div class="list-wrap show">
+					<ul class="list form configuration">
+						<li class="param">
+							<label for="ConfigurationName">Configuration-name</label>
+							<input type="text" name="ConfigurationName" id="ConfigurationName" data-param-name="ConfigurationName">
+						</li>
+						<li class="param">
+							<label for="ConfigurationTest">Configuration-checkbox</label>
+							<input type="checkbox" name="ConfigurationTest" id="ConfigurationTest" data-param-name="ConfigurationTest">
+						</li>
+					</ul>
+				</div>
+			</section>
+			<section id="main-conf-3">
+				<div class="section-header">Main 3</div>
+				<div class="list-wrap show">
+					<ul class="list form configuration">
+						<li class="param">
+							<label for="ConfigurationDescription">Description</label>
+							<input type="text" name="ConfigurationDescription" id="ConfigurationDescription" data-param-name="ConfigurationDescription">
+						</li>
+					</ul>
+				</div>
+			</section>
+			<section id="main-conf-4">
+				<div class="section-header">Main 3</div>
+				<div class="list-wrap show">
+					<ul class="list form configuration">
+						<li class="param">
+							<label for="ConfigurationDescription">Description 1</label>
+							<input type="text" name="ConfigurationDescription" id="ConfigurationDescription" data-param-name="ConfigurationDescription">
+						</li>
+					</ul>
+				</div>
+			</section>
+		</div>
 		<section id="main-conf-process">
 			<div class="section-header" onclick="showList(this)">Processes<i class="fa fa-angle-up" aria-hidden="true"></i></div>
 			<div class="list-wrap show">
@@ -58,12 +144,12 @@
 				<ul class="list" id="operations">Select process</ul>
 			</div>
         </section>
-        <section id="main-conf-handlers">
+        <!--<section id="main-conf-handlers">
             <div class="section-header" onclick="showList(this)">Handlers<i class="fa fa-angle-down" aria-hidden="true"></i></div>
 			<div class="list-wrap">
 	            <ul class="list" id="handlers">No Items</ul>
             </div>
-		</section>
+		</section>-->
     </div>
 	<div id="modals-wrap"></div>
 	<div class="hidden-conf-json"></div>

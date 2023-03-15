@@ -352,6 +352,8 @@ function addModal (className, type, path = "", parentType = "") {
 	modal = $("<div class='modal "+className+"' data-type='"+type+"' data-parent-type='"+parentType+"' data-path='"+path+"'><div class='close-modal'><i class='fa fa-times' aria-hidden='true'></i></div><div class='modal-head'><h2 class='modal-title'></h2><span class='path'></span></div><div class='modal-content'></div></div>").appendTo("#modals-wrap");
 	$('.content').addClass("blur");
 
+	$("body").addClass("no-scroll");
+
 	return modal;
 }
 
@@ -359,7 +361,11 @@ function closeModal (modalNode) {
 	if (modalNode.siblings(selectors.modal).length == 0) {
 		modalNode.parents("#modals-wrap").removeClass("active");
 	}
+
 	modalNode.remove();
+	
+	if ($(".modal").length == 0)
+		$("body").removeClass("no-scroll");
 }
 
 function showList (node, direction = "toggle") {
@@ -378,4 +384,14 @@ function showList (node, direction = "toggle") {
 			$(node).find("i").removeClass("fa-angle-up").addClass("fa-angle-down");
 		}
 	}
+}
+
+function selectTab (tabNode) {
+	$(".tabs .tab").removeClass("active");
+	$(tabNode).addClass("active");
+
+	tabID = $(tabNode).attr("data-tab-id");
+
+	$(".main-conf-wrap section").removeClass("active");
+	$(".main-conf-wrap #"+tabID).addClass("active");
 }

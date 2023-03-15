@@ -8,6 +8,9 @@
 	color: #333;
     list-style: none;
 }
+.no-scroll {
+    overflow: hidden;
+}
 .content {
 	max-width: 600px;
 	margin: 0 auto;
@@ -20,7 +23,7 @@ section {
     display: flex;
     flex-direction: column;
     width: 100%;
-    text-align-last: left;
+    text-align: left;
 }
 .form label {
     padding: 10px 0;
@@ -218,6 +221,7 @@ footer {
 .list {
     text-align: center;
     padding: 20px 0;
+    width: 100%;
 }
 .param input[type=text] {
     width: 100%;
@@ -274,6 +278,66 @@ label i,
 .list-wrap.show {
     display: block;
 }
+.main-conf-wrap .list-wrap.show {
+    display: flex;
+}
+.main-conf-wrap .list-wrap {
+    justify-content: center;
+    align-items: center;
+}
 .modal-btn {
     margin-top: 20px;
+}
+.list .param:last-child {
+    border: none;
+}
+.main-conf-wrap {
+    position: relative;
+}
+.main-conf-wrap section .list-wrap {
+    overflow-y: auto;
+    min-height: 255px;
+    padding: 0 20px;
+}
+.main-conf-wrap section {
+    display: none;
+    padding: 0;
+}
+.main-conf-wrap section.active {
+    display: block;
+}
+.tabs {
+    position: absolute;
+    right: 100%;
+    display: flex;
+    flex-direction: column;
+    margin-top: 1px;
+    z-index: 999;
+}
+.tab.active {
+    border-right-color: #fff;
+    background: linear-gradient(-45deg, #21B9E1, #E71F53, #FBAF2E);
+    color: #fff;
+}
+.tab {
+    min-width: 100px;
+    text-align: center;
+    margin-top: -1px;
+    margin-bottom: -1px;
+    margin-right: -1px;
+    cursor: pointer;
+    padding: 11px;
+    transition: margin .1s ease, box-shadow .3s;
+    border-radius: 300px 0 0 300px;
+    margin-bottom: 10px;
+    padding: 10px 20px;
+    font-size: 13.3px;
+    font-weight: 500;
+}
+.tab:not(.active):hover {
+    box-shadow: 0 0 10px #0000001c;
+}
+body {
+    background: url(../logo-bg.png) 100px 100px;
+    background-size: 390px;
 }
