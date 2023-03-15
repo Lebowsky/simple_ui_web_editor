@@ -60,7 +60,7 @@ $(document).ready(function(){
 			path = main.pathPop(path);
 			main.renderElementsList($(selectors.operationsList), "Operation", path);
 		} else if (type == "CommonHandler") {
-			main.renderElementsList($(selectors.handlersList), "CommonHandler", path);
+			main.renderElementsList($(selectors.handlersList), "CommonHandler", "");
 		}
 		if (parentModal.length == 0) {
 			$('.content').removeClass("blur");
