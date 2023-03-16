@@ -67,8 +67,11 @@ class Chart(BaseElement, DimensionElement, TextElement):
     type: Literal['Chart']
 
 
-class SpinnerLayout(BaseElement, DimensionElement, TextElement):
+class SpinnerLayout(TextElement, DimensionElement, BaseElement):
     type: Literal['SpinnerLayout']
+
+    class Config:
+        title = 'SpinnerLayout'
 
 
 class TableLayout(BaseElement, DimensionElement, TextElement):

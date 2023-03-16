@@ -60,6 +60,7 @@ class BaseField(BaseModel):
         elif values.get('enum'):
             values['type'] = FieldType.select
             values['options'] = values['enum']
+
         elif values['title'] in ['Operations', 'Elements', 'Handlers']:
             values['type'] = values['title'].lower()
         elif values['type'] == 'boolean':

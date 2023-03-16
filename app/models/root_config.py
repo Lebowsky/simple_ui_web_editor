@@ -159,12 +159,15 @@ class CVOperationModel(BaseConfigModel):
 
 class ProcessesModel(BaseConfigModel):
     type: str = 'Process'
-    process_name: str = Field(default=su_settings.locale.get('new_process'), alias='ProcessName')
+    process_name: str = Field(default=su_settings.locale.get('new_process'), alias='ProcessName', title='Process name')
+    hidden: Optional[bool] = Field(title='Do not display in Menu')
+    define_on_back_pressed: Optional[bool] = Field(
+        alias='DefineOnBackPressed', title='Override back button (ON_BACK_PRESSED input event)')
+
+    login_screen: Optional[bool] = Field(title='Run at startup')
     plan_fact_header: Optional[str] = Field(alias='PlanFactHeader')
-    define_on_back_pressed: Optional[bool] = Field(alias='DefineOnBackPressed')
-    hidden: Optional[bool]
-    login_screen: Optional[bool]
-    sc: Optional[bool] = Field(alias='SC')
+    sc: Optional[bool] = Field(alias='SC', title='Independent process')
+
     operations: List[OperationsModel] = Field(alias='Operations')
 
     class Config:

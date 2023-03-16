@@ -20,15 +20,15 @@ class ElementsIcon(str, Enum):
 
 
 class GravityHorizontalEnum(str, Enum):
+    center: str = 'center'
     left: str = "left"
     right: str = 'right'
-    center: str = 'center'
 
 
 class GravityVerticalEnum(str, Enum):
+    center: str = 'center'
     top: str = "top"
     bottom: str = 'bottom'
-    center: str = 'center'
 
 
 class DimensionsType(str, Enum):
