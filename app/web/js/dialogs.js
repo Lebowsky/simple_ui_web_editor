@@ -5,7 +5,17 @@ function notificate(text, type) {
 
 async function pick_file() {
 	await eel.ask_file('simple_ui')().then(async (result) => {
+		if (result == null)
+			return
+		
+		if (result.error != undefined){
+			notificate('Ошибка чтения файла: ' + result.error)
+			console.log(JSON.parse(result.message))
+			return
+		};
+
 		filePath = result.file_path;
+		
 
 		await eel.load_configuration(filePath)().then(conf => {
 			$(".hidden-conf-json").text(JSON.stringify(conf));
@@ -23,6 +33,7 @@ async function pick_file() {
 
 async function pickNewFileProject() {
 	await eel.ask_save_file('simple_ui')().then(async (result) => {
+		console.log(result)
 		filePath = result.file_path;
 		if (filePath.trim() != ''){
 			await eel.get_new_configuration()().then(conf => {

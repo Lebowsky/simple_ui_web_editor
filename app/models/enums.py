@@ -19,9 +19,15 @@ class ElementsIcon(str, Enum):
     done: str = 'done'
 
 
-class GravityEnum(str, Enum):
+class GravityHorizontalEnum(str, Enum):
     left: str = "left"
     right: str = 'right'
+    center: str = 'center'
+
+
+class GravityVerticalEnum(str, Enum):
+    top: str = "top"
+    bottom: str = 'bottom'
     center: str = 'center'
 
 
@@ -43,3 +49,37 @@ class CVDetectorType(str, Enum):
     objects_ocr: str = 'Objects_OCR'
     objects_barcode: str = 'Objects_Barcode'
     objects_f1: str = 'Objects_f1'
+
+
+class EventCommonHandlerEnum(str, Enum):
+    on_launch: str = 'onLaunch'
+    on_intent_barcode: str = 'onIntentBarcode'
+    on_bluetooth_barcode: str = 'onBluetoothBarcode'
+    on_background_command: str = 'onBackgroundCommand'
+    on_recognition_listener_result: str = 'onRecognitionListenerResult'
+    on_intent: str = 'onIntent'
+    on_web_service_sync_command: str = 'onWebServiceSyncCommand'
+    on_sql_data_change: str = 'onSQLDataChange'
+    on_sql_error: str = 'onSQLError'
+    on_open_file: str = 'onOpenFile'
+
+
+class EventHandlerEnum(str, Enum):
+    on_start: str = 'onStart'
+    on_post_start: str = 'onPostStart'
+    on_input: str = 'onInput'
+
+
+class ActionHandlerEnum(str, Enum):
+    run: str = 'run'
+    run_async: str = 'runasync'
+
+
+class HandlerType(str, Enum):
+    python: str = 'python'
+    online: str = 'online'
+    http: str = 'http'
+    sql: str = 'sql'
+    http_worker: str = 'httpworker'
+    worker: str = 'worker'
+    _set: str = 'set'

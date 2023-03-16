@@ -108,22 +108,13 @@ Element = Annotated[
 class OperationsModel(BaseConfigModel):
     type: str = 'Operation'
     name: str = Field(default=su_settings.locale.get('new_screen'), alias='Name')
-    timer: bool = Field(default=False, alias='Timer')
-    hide_toolbar_screen: bool = Field(default=False, alias='hideToolBarScreen')
-    no_scroll: bool = Field(default=False, alias='noScroll')
-    online_on_after_start: Optional[bool] = Field(alias='onlineOnAfterStart')
-    handle_key_up: bool = Field(default=False, alias='handleKeyUp')
-    no_confirmation: Optional[bool] = Field(alias='noConfirmation')
-    hide_bottom_bar_screen: bool = Field(default=False, alias='hideBottomBarScreen')
-    online_on_start: bool = Field(default=False, alias='onlineOnStart')
-    send_when_opened: Optional[bool]
-    send_after_opened: Optional[bool]
-    online_on_input: bool = Field(default=False, alias='onlineOnInput')
-    def_online_on_create: Optional[str] = Field(alias='DefOnlineOnCreate')
-    def_online_on_input: Optional[str] = Field(alias='DefOnlineOnInput')
-    def_on_create: Optional[str] = Field(alias='DefOnCreate')
-    def_on_input: Optional[str] = Field(alias='DefOnInput')
-    def_on_after_create: Optional[str] = Field(alias='DefOnAfterCreate')
+    timer: bool = Field(default=False, alias='Timer', title='Screen handler on timer')
+    no_scroll: bool = Field(default=False, alias='noScroll', title='Disable scrolling for Root Layout')
+    hide_bottom_bar_screen: bool = Field(default=False, alias='hideBottomBarScreen', title='Hide button bar')
+    hide_toolbar_screen: bool = Field(default=False, alias='hideToolBarScreen', title='Hide top bar')
+    no_confirmation: Optional[bool] = Field(alias='noConfirmation', title='Close without confirmation')
+    handle_key_up: bool = Field(default=False, alias='handleKeyUp', title='Attach a keyboard handler')
+
     elements: List[Element] = Field(default=[], alias='Elements')
     handlers: Optional[List[Handler]] = Field(default=[], alias='Handlers')
 

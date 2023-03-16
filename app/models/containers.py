@@ -1,5 +1,5 @@
 from typing import List, Optional, Literal, Union, Annotated
-from pydantic import Field
+from pydantic import Field, BaseModel
 
 from models.container_elements import Tabs, Tab, TextView, Button, EditTextText, EditTextNumeric, EditTextPass, \
     EditTextAuto, EditTextAutocomplete, ModernEditText, Picture, CheckBox, Gauge, Chart, SpinnerLayout, TableLayout, \
@@ -7,13 +7,13 @@ from models.container_elements import Tabs, Tab, TextView, Button, EditTextText,
 from models.elements import BaseElement, DimensionElement, Cart
 
 
-class Container(BaseElement, DimensionElement):
+class Container(DimensionElement):
     type: Literal['LinearLayout']
-    BackgroundColor: Optional[str]
-
+    variable: str = Field(default='', alias='Variable')
     elements: List['Element'] = Field(default=[], alias='Elements')
 
     class Config:
+        use_enum_values = True
         title = 'LinearLayout'
 
 

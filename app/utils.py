@@ -64,7 +64,7 @@ def check_config_file(file_path):
     except FileNotFoundError as e:
         return {'error': 'FileNotFoundError', 'message': e.winerror}
     except Exception as e:
-        return {'error': 'UnknownError', 'message': str(e)}
+        return {'error': 'UnknownError', 'message': json.dumps({'error': str(e)})}
 
 
 def get_qr_code_config():
@@ -171,8 +171,7 @@ def get_config_ui_elements(Model=RootConfigModel) -> dict:
         for key, value in el['properties'].items():
             if key == 'type':
                 continue
-            fields[key] = BaseField(text=key, **value)
-
+            fields[key] = BaseField(text=value.get('title') or key, **value)
             if key == 'Elements':
                 containers[title] = _get_elements_items(value)
 

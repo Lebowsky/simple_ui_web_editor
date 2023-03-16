@@ -20,8 +20,9 @@ def ask_file(file_type):
         file_path = askopenfilename(parent=root, filetypes=file_types)
     root.update()
 
-    result = check_config_file(file_path)
-    return result
+    if file_path:
+        result = check_config_file(file_path)
+        return result
 
 
 def ask_save_file(file_type='simple_ui'):

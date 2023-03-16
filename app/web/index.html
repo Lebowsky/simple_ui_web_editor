@@ -36,18 +36,16 @@
         <div class="main-conf-wrap">
 			<div class="tabs">
 			    <div onclick="selectTab(this)" class="tab active" data-tab-id="main-conf-common">Common</div>
-				<div onclick="selectTab(this)" class="tab" data-tab-id="main-conf-sql-on-start">SQL on start</div>
 				<div onclick="selectTab(this)" class="tab" data-tab-id="main-conf-main-menu">Main menu</div>
 				<div onclick="selectTab(this)" class="tab" data-tab-id="main-conf-start-screen">Start screen</div>
 				<div onclick="selectTab(this)" class="tab" data-tab-id="main-conf-properties">Properties</div>
-				<div onclick="selectTab(this)" class="tab" data-tab-id="main-conf-handlers">Handlers</div>
 				<div onclick="selectTab(this)" class="tab" data-tab-id="main-conf-schedulers">Shedulers</div>
 				<div onclick="selectTab(this)" class="tab" data-tab-id="main-conf-python-files">Python files</div>
 				<div onclick="selectTab(this)" class="tab" data-tab-id="main-conf-media-files">Cached media files</div>
 			    <div onclick="selectTab(this)" class="tab" data-tab-id="main-conf-common-handlers">Common handlers</div>
 			</div>
 			<section id="main-conf-common" class="active">
-				<div class="section-header">Main</div>
+				<div class="section-header">Common</div>
 				<div class="list-wrap show">
 					<ul class="list form configuration">
 						<li class="param">
@@ -95,18 +93,10 @@
 					</ul>
 				</div>
 			</section>
-			<section id="main-conf-sql-on-start">
-	            <div class="section-header">SQL on start</div>
-				<div class="list-wrap show">
-					<ul class="list form configuration">
-					</ul>		
-				</div>
-			</section>
 			<section id="main-conf-main-menu">
 	            <div class="section-header">Main menu</div>
 				<div class="list-wrap show">
-					<ul class="list form configuration">
-					</ul>		
+					<ul class="list" id="main-menu">No Items</ul>
 				</div>
 			</section>
 			<section id="main-conf-start-screen">
@@ -140,23 +130,52 @@
 				<div class="list-wrap show">
 					<ul class="list form configuration">
 						<li class="param">
-							<label for="Launch">Menu type</label>
-							<input type="text" name="Launch" id="Launch" data-param-name="Launch">
-						</li>
-					</ul>		
-				</div>
-			</section>
-			<section id="main-conf-handlers">
-	            <div class="section-header">Handlers</div>
-				<div class="list-wrap show">
-					<ul class="list form configuration">
-						<li class="param">
-							<label for="DefServiceConfiguration">Service handler (Python)</label>
-							<input type="text" name="DefServiceConfiguration" id="DefServiceConfiguration" data-param-name="DefServiceConfiguration">
+							<label for="test">Configuration Vendor</label>
+							<input type="text" name="test" id="test" data-param-name="test">
 						</li>
 						<li class="param">
-							<label for="OnlineServiceConfiguration">Service handler (Online)</label>
-							<input type="text" name="OnlineServiceConfiguration" id="OnlineServiceConfiguration" data-param-name="OnlineServiceConfiguration">
+							<label for="test">vendor URL</label>
+							<input type="text" name="test" id="test" data-param-name="test">
+						</li>
+						<li class="param">
+							<label for="test">Vendor login (Basic)</label>
+							<input type="text" name="test" id="test" data-param-name="test">
+						</li>
+						<li class="param">
+							<label for="test">Vendor password (Basic)</label>
+							<input type="text" name="test" id="test" data-param-name="test">
+						</li>
+						<li class="param">
+							<label for="test">Vendor raw authorization string</label>
+							<input type="text" name="test" id="test" data-param-name="test">
+						</li>
+						<li class="param">
+							<label for="test">Split mode</label>
+							<input type="text" name="test" id="test" data-param-name="test">
+						</li>
+						<li class="param">
+							<label for="test">Client code</label>
+							<input type="text" name="test" id="test" data-param-name="test">
+						</li>
+						<li class="param">
+							<label for="test">Handlers URL</label>
+							<input type="text" name="test" id="test" data-param-name="test">
+						</li>
+						<li class="param">
+							<label for="test">Handlers login (Basic)</label>
+							<input type="text" name="test" id="test" data-param-name="test">
+						</li>
+						<li class="param">
+							<label for="test">Handlers password (Basic)</label>
+							<input type="text" name="test" id="test" data-param-name="test">
+						</li>
+						<li class="param">
+							<label for="test">Handlers raw authorization string</label>
+							<input type="text" name="test" id="test" data-param-name="test">
+						</li>
+						<li class="param">
+							<label for="test">Dictionaries JSON</label>
+							<input type="text" name="test" id="test" data-param-name="test">
 						</li>
 					</ul>		
 				</div>
@@ -164,22 +183,25 @@
 			<section id="main-conf-schedulers">
 	            <div class="section-header">Shedulers</div>
 				<div class="list-wrap show">
-					<ul class="list form configuration">
-					</ul>		
+					<ul class="list" id="shedulers">No Items</ul>		
 				</div>
 			</section>
 			<section id="main-conf-python-files">
 	            <div class="section-header">Python files</div>
 				<div class="list-wrap show">
 					<ul class="list form configuration">
-					</ul>		
+						<li class="param">
+							<label for="PyHandlers">Handlers file (Python)</label>
+							<input type="text" name="PyHandlers" id="PyHandlers" data-param-name="PyHandlers">
+						</li>
+					</ul>
+					<ul class="list" id="py-files">No Items</ul>
 				</div>
 			</section>
 			<section id="main-conf-media-files">
 	            <div class="section-header">Cached media files</div>
 				<div class="list-wrap show">
-					<ul class="list form configuration">
-					</ul>		
+					<ul class="list" id="py-files">No Items</ul>	
 				</div>
 			</section>
 	        <section id="main-conf-common-handlers">

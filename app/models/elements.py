@@ -2,7 +2,7 @@ from typing import List, Optional, Union, Literal
 
 from pydantic import BaseModel, Field
 
-from models.enums import GravityEnum, DimensionsType, OrientationType
+from models.enums import GravityHorizontalEnum, DimensionsType, OrientationType, GravityVerticalEnum
 
 
 class BaseElement(BaseModel):
@@ -15,17 +15,17 @@ class BaseElement(BaseModel):
 
 
 class DimensionElement(BaseModel):
-    height: Optional[Union[DimensionsType, str]]
-    width: Optional[Union[DimensionsType, str]]
-    weight: Optional[str]
-    height_value: Optional[str]
-    width_value: Optional[str]
-    gravity_horizontal: Optional[GravityEnum]
+    background_color: Optional[str] = Field(alias='BackgroundColor', title='Background color')
+    stroke_width: Optional[str] = Field(alias='StrokeWidth', title='Stroke width')
     padding: Optional[str] = Field(alias='Padding')
-    stroke_width: Optional[str] = Field(alias='StrokeWidth')
-    orientation: Optional[OrientationType]
-
-    background_color: Optional[str] = Field(alias='BackgroundColor')
+    orientation: Optional[OrientationType] = Field(title='Orientation')
+    height: Optional[Union[DimensionsType, str]] = Field(title='Height')
+    width: Optional[Union[DimensionsType, str]] = Field(title='Width')
+    gravity_horizontal: Optional[GravityHorizontalEnum] = Field(title='Gravity horizontal')
+    gravity_vertical: Optional[GravityVerticalEnum] = Field(title='Vertical gravity')
+    weight: Optional[str] = Field(title='Weight')
+    # height_value: Optional[str]
+    # width_value: Optional[str]
 
 
 class TextElement(BaseModel):
