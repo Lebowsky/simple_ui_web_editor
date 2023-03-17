@@ -1,11 +1,25 @@
 $(document).ready(function(){
+	$('#prev').resizable({
+		minWidth: 250,
+		handles: "e,w",
+		start: function(event, ui) {
+			$('iframe').css('pointer-events','none');
+		},
+		stop: function(event, ui) {
+			$('iframe').css('pointer-events','auto');
+		}
+	});
+
 	$(document).on('click', selectors.btnEdit, function(){
 		let type   = $(this).parents(selectors.listItem).attr('data-type'),
 			parentType = $(this).parents(selectors.listItem).attr('data-parent-type'),
 			path   = $(this).parents(selectors.listItem).attr('data-path'),
-			modals = $(selectors.modal);
+			modalTitle   = $(this).parents(selectors.listItem).find(".item-name").text(),
+			modals = $(selectors.modal),
+			lastModal = modals.last(),
+			modalPath = modals.last().length > 0 ? modals.last().find(".modal-head").find(".path").text() + " / " + modalTitle: modalTitle;
 
-		modal = addModal("", type, path, parentType);
+		modal = addModal("", type, path, parentType, modalTitle, modalPath);
 		modals.removeClass("active");
 		modal.addClass("active");
 		main.renderModalParams(modal, type, path, parentType);
@@ -86,6 +100,10 @@ $(document).ready(function(){
 			showList($("#main-conf-screen .section-header"), "down");
 			$(selectors.operationsList).find(selectors.btnAdd).attr("data-path", $(this).attr("data-path"));
 		}
+	})
+
+	$(document).on('click', '.main-conf-wrap .section-header', function(e){
+		hideMain();
 	})
 
 	$(document).on('change', 'select.element-type', function(){
