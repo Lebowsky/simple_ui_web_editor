@@ -416,3 +416,7 @@ div.ui-resizable-e:after {
 .main-conf-wrap.hide .tabs {
     display: none;
 }
+.content-wrapper {
+    display: flex;
+    justify-content: space-around;
+}
