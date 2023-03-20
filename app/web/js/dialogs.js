@@ -26,7 +26,8 @@ async function pick_file() {
 			main.renderElementsList($(selectors.processList), "Process", "");
 			main.renderElementsList($(selectors.handlersList), "CommonHandler", "");
 			$(".file-path").text(filePath);
-            $('#preview-button').show()
+            $('#preview-button').show();
+            loadPrev();
 		});
 	});
 }
@@ -46,6 +47,7 @@ async function pickNewFileProject() {
 				main.renderElementsList($(selectors.handlersList), "CommonHandler", "");
 				$(".file-path").text(filePath);
                 $('#preview-button').show()
+            	loadPrev();
 			});
 		}
 	});
@@ -58,6 +60,7 @@ const fileLocationSave = async (event) => {
 
 	if (result_save.result == 'success') {
 		notificate('Файл успешно сохранен', 'success')
+		loadPrev();
 	}else{
 		notificate('Ошибка сохранения файла: ' + result_save.msg, 'danger')
 	}
