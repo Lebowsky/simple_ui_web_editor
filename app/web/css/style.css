@@ -360,6 +360,7 @@ body {
     resize: both;
     max-width: 50%;
     left: 0 !important;
+    margin-left: 5%;
 }
 .prev-content {
     width: 100%;
@@ -418,7 +419,7 @@ div.ui-resizable-e:after {
 }
 .content-wrapper {
     display: flex;
-    justify-content: space-around;
+    justify-content: center;
 }
 .param > div {
     width: 48%;
