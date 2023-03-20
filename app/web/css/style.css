@@ -297,7 +297,7 @@ label i,
 }
 .main-conf-wrap section .list-wrap {
     overflow-y: auto;
-    min-height: 255px;
+    min-height: 450px;
     padding: 0 20px;
 }
 .main-conf-wrap section {

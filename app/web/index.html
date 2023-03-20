@@ -42,15 +42,17 @@
 	        <span class="file-path"></span>
 	        <div class="main-conf-wrap">
 				<div class="tabs">
-				    <div onclick="selectTab(this)" class="tab active" data-tab-id="main-conf">Main</div>
-				    <div onclick="selectTab(this)" class="tab" data-tab-id="main-conf-handlers">Handlers</div>
-				    <div onclick="selectTab(this)" class="tab" data-tab-id="main-conf-1">Main 1</div>
-				    <div onclick="selectTab(this)" class="tab" data-tab-id="main-conf-2">Main 2</div>
-				    <div onclick="selectTab(this)" class="tab" data-tab-id="main-conf-3">Main 3</div>
-				    <div onclick="selectTab(this)" class="tab" data-tab-id="main-conf-4">Main 4</div>
+				    <div onclick="selectTab(this)" class="tab active" data-tab-id="main-conf-common">Common</div>
+					<div onclick="selectTab(this)" class="tab" data-tab-id="main-conf-main-menu">Main menu</div>
+					<div onclick="selectTab(this)" class="tab" data-tab-id="main-conf-start-screen">Start screen</div>
+					<div onclick="selectTab(this)" class="tab" data-tab-id="main-conf-properties">Properties</div>
+					<div onclick="selectTab(this)" class="tab" data-tab-id="main-conf-schedulers">Shedulers</div>
+					<div onclick="selectTab(this)" class="tab" data-tab-id="main-conf-python-files">Python files</div>
+					<div onclick="selectTab(this)" class="tab" data-tab-id="main-conf-media-files">Cached media files</div>
+					<div onclick="selectTab(this)" class="tab" data-tab-id="main-conf-common-handlers">Common handlers</div>
 				</div>
 				<section id="main-conf" class="active">
-					<div class="section-header">Main<i class="fa fa-angle-up" aria-hidden="true"></i></div>
+					<div class="section-header">Common<i class="fa fa-angle-up" aria-hidden="true"></i></div>
 					<div class="list-wrap show">
 						<ul class="list form configuration">
 							<li class="param">
@@ -65,89 +67,154 @@
 								<label for="ConfigurationDescription">Description</label>
 								<input type="text" name="ConfigurationDescription" id="ConfigurationDescription" data-param-name="ConfigurationDescription">
 							</li>
-						</ul>
-					</div>
-				</section>
-		        <section id="main-conf-handlers">
-		            <div class="section-header">Handlers<i class="fa fa-angle-up" aria-hidden="true"></i></div>
-					<div class="list-wrap show">
-			            <ul class="list" id="handlers">No Items</ul>
-		            </div>
-				</section>
-				<section id="main-conf-1">
-					<div class="section-header">Main 1<i class="fa fa-angle-up" aria-hidden="true"></i></div>
-					<div class="list-wrap show">
-						<ul class="list form configuration">
 							<li class="param">
-								<label for="ConfigurationName">Configuration-name</label>
-								<input type="text" name="ConfigurationName" id="ConfigurationName" data-param-name="ConfigurationName">
+							<div>
+								<label for="ForegroundService">Enable event service</label>
+								<input type="checkbox" name="ForegroundService" id="ForegroundService" data-param-name="ForegroundService">
+							</div>
 							</li>
 							<li class="param">
-								<label for="ConfigurationVersion">Version</label>
-								<input type="text" name="ConfigurationVersion" id="ConfigurationVersion" data-param-name="ConfigurationVersion">
+							<div>
+								<label for="StopForegroundServiceOnExit">Stop service on application exit</label>
+								<input type="checkbox" name="StopForegroundServiceOnExit" id="StopForegroundServiceOnExit" data-param-name="StopForegroundServiceOnExit">
+							</div>
 							</li>
 							<li class="param">
-								<label for="ConfigurationName">Configuration-name</label>
-								<input type="text" name="ConfigurationName" id="ConfigurationName" data-param-name="ConfigurationName">
+								<label for="BroadcastIntent">Inten broadcast (intent name)</label>
+								<input type="text" name="BroadcastIntent" id="BroadcastIntent" data-param-name="BroadcastIntent">
 							</li>
 							<li class="param">
-								<label for="ConfigurationVersion">Version</label>
-								<input type="text" name="ConfigurationVersion" id="ConfigurationVersion" data-param-name="ConfigurationVersion">
+								<label for="BroadcastVariable">Inten broadcast (variable)</label>
+								<input type="text" name="BroadcastVariable" id="BroadcastVariable" data-param-name="BroadcastVariable">
 							</li>
 							<li class="param">
-								<label for="ConfigurationDescription">Description</label>
-								<input type="text" name="ConfigurationDescription" id="ConfigurationDescription" data-param-name="ConfigurationDescription">
+								<label for="FaceRecognitionURL">URL face recognition host</label>
+								<input type="text" name="FaceRecognitionURL" id="FaceRecognitionURL" data-param-name="FaceRecognitionURL">
+							</li>
+							<li class="param">
+							<div>
+								<label for="OnKeyboardMain">Keyboard reading in Main menu</label>
+								<input type="checkbox" name="OnKeyboardMain" id="OnKeyboardMain" data-param-name="OnKeyboardMain">
+							</div>
 							</li>
 						</ul>
 					</div>
 				</section>
-				<section id="main-conf-2">
-					<div class="section-header">Main 2<i class="fa fa-angle-up" aria-hidden="true"></i></div>
+		        <section id="main-conf-main-menu">
+					<div class="section-header">Main menu<i class="fa fa-angle-up" aria-hidden="true"></i></div>
+					<div class="list-wrap show">
+						<ul class="list" id="main-menu">No Items</ul>
+					</div>
+				</section>
+				<section id="main-conf-start-screen">
+					<div class="section-header">Start screen<i class="fa fa-angle-up" aria-hidden="true"></i></div>
 					<div class="list-wrap show">
 						<ul class="list form configuration">
 							<li class="param">
-								<label for="ConfigurationName">Configuration-name</label>
-								<input type="text" name="ConfigurationName" id="ConfigurationName" data-param-name="ConfigurationName">
+								<label for="Launch">Menu type</label>
+								<select name="Launch" id="Launch" data-param-name="Launch">
+									<option value="Menu" selected>Operations menu</option>
+									<option value="Tiles">Tiles menu</option>
+								</select>
 							</li>
 							<li class="param">
-								<div>
-									<label for="ConfigurationTest">Configuration-checkbox</label>
-									<input type="checkbox" name="ConfigurationTest" id="ConfigurationTest" data-param-name="ConfigurationTest">
-								</div>
-								<div>
-									<label for="ConfigurationTest">Configuration-checkbox</label>
-									<input type="checkbox" name="ConfigurationTest" id="ConfigurationTest" data-param-name="ConfigurationTest">
-								</div>
+								<label for="LaunchProcess">(* for tiles): process with layouts</label>
+								<input type="text" name="LaunchProcess" id="LaunchProcess" data-param-name="LaunchProcess">
 							</li>
 							<li class="param">
-								<div>
-									<label for="ConfigurationTest">Configuration-checkbox</label>
-									<input type="checkbox" name="ConfigurationTest" id="ConfigurationTest" data-param-name="ConfigurationTest">
-								</div>
+								<label for="LaunchVar">(* for tiles): variable of tiles</label>
+								<input type="text" name="LaunchVar" id="LaunchVar" data-param-name="LaunchVar">
+							</li>
+							<li class="param">
+								<label for="MenuWebTemplate">Menu template (web)</label>
+								<input type="text" name="MenuWebTemplate" id="MenuWebTemplate" data-param-name="MenuWebTemplate">
 							</li>
 						</ul>
 					</div>
 				</section>
-				<section id="main-conf-3">
-					<div class="section-header">Main 3<i class="fa fa-angle-up" aria-hidden="true"></i></div>
+				<section id="main-conf-properties">
+					<div class="section-header">Properties<i class="fa fa-angle-up" aria-hidden="true"></i></div>
 					<div class="list-wrap show">
 						<ul class="list form configuration">
 							<li class="param">
-								<label for="ConfigurationDescription">Description</label>
-								<input type="text" name="ConfigurationDescription" id="ConfigurationDescription" data-param-name="ConfigurationDescription">
+								<label for="test">Configuration Vendor</label>
+								<input type="text" name="test" id="test" data-param-name="test">
+							</li>
+							<li class="param">
+								<label for="test">vendor URL</label>
+								<input type="text" name="test" id="test" data-param-name="test">
+							</li>
+							<li class="param">
+								<label for="test">Vendor login (Basic)</label>
+								<input type="text" name="test" id="test" data-param-name="test">
+							</li>
+							<li class="param">
+								<label for="test">Vendor password (Basic)</label>
+								<input type="text" name="test" id="test" data-param-name="test">
+							</li>
+							<li class="param">
+								<label for="test">Vendor raw authorization string</label>
+								<input type="text" name="test" id="test" data-param-name="test">
+							</li>
+							<li class="param">
+								<label for="test">Split mode</label>
+								<input type="text" name="test" id="test" data-param-name="test">
+							</li>
+							<li class="param">
+								<label for="test">Client code</label>
+								<input type="text" name="test" id="test" data-param-name="test">
+							</li>
+							<li class="param">
+								<label for="test">Handlers URL</label>
+								<input type="text" name="test" id="test" data-param-name="test">
+							</li>
+							<li class="param">
+								<label for="test">Handlers login (Basic)</label>
+								<input type="text" name="test" id="test" data-param-name="test">
+							</li>
+							<li class="param">
+								<label for="test">Handlers password (Basic)</label>
+								<input type="text" name="test" id="test" data-param-name="test">
+							</li>
+							<li class="param">
+								<label for="test">Handlers raw authorization string</label>
+								<input type="text" name="test" id="test" data-param-name="test">
+							</li>
+							<li class="param">
+								<label for="test">Dictionaries JSON</label>
+								<input type="text" name="test" id="test" data-param-name="test">
 							</li>
 						</ul>
 					</div>
 				</section>
-				<section id="main-conf-4">
-					<div class="section-header">Main 4<i class="fa fa-angle-up" aria-hidden="true"></i></div>
+				<section id="main-conf-schedulers">
+					<div class="section-header">Shedulers<i class="fa fa-angle-up" aria-hidden="true"></i></div>
+					<div class="list-wrap show">
+						<ul class="list" id="shedulers">No Items</ul>
+					</div>
+				</section>
+				<section id="main-conf-python-files">
+					<div class="section-header">Python files<i class="fa fa-angle-up" aria-hidden="true"></i></div>
 					<div class="list-wrap show">
 						<ul class="list form configuration">
 							<li class="param">
-								<label for="ConfigurationDescription">Description 1</label>
-								<input type="text" name="ConfigurationDescription" id="ConfigurationDescription" data-param-name="ConfigurationDescription">
+								<label for="PyHandlers">Handlers file (Python)</label>
+								<input type="text" name="PyHandlers" id="PyHandlers" data-param-name="PyHandlers">
 							</li>
 						</ul>
+						<ul class="list" id="py-files">No Items</ul>
+					</div>
+				</section>
+				<section id="main-conf-media-files">
+					<div class="section-header">Cached media files<i class="fa fa-angle-up" aria-hidden="true"></i></div>
+					<div class="list-wrap show">
+						<ul class="list" id="py-files">No Items</ul>
+					</div>
+				</section>
+				<section id="main-conf-common-handlers">
+					<div class="section-header">Common handlers<i class="fa fa-angle-up" aria-hidden="true"></i></div>
+					<div class="list-wrap show">
+						<ul class="list" id="handlers">No Items</ul>
 					</div>
 				</section>
 			</div>
