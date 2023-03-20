@@ -112,15 +112,12 @@ var Main = {
 
 		pathText = this.getElementByPath(type, path).path;
 
-		//modalNode.find(selectors.modalTitle).text(elementName);
-		//modalNode.find(".path").text(pathText);
-
 		$.each(elementParams[type], function (configName, paramFields) {
 			if (paramFields["type"] != "operations") {
 				value = "";
 				if (paramFields["type"] == "elements" || paramFields["type"] == "handlers") {
 					html += '<div class="param list-param">';
-				} else {
+			  } else {
 					html += '<div class="param">';
 				}
 
@@ -186,12 +183,8 @@ var Main = {
 							if (typeof element[configName] != 'undefined') {
 								value = element[configName];
 							}
-
-							//if (typeof paramFields["class"] != "undefined") {
-								html += '<select data-param-name="'+configName+'" class="element-type">';	
-							//} else {
-								//html += '<select data-param-name="'+configName+'">';
-							//}
+							
+							html += '<select data-param-name="'+configName+'" class="element-type">';	
 
 							$.each(typeOptions["options"], function (optionIndex, optionValue) {
 								if (optionValue == element[configName]) {
@@ -436,8 +429,3 @@ function loadedPrev (prevNode) {
 	$(".preload").hide();
 	$(prevNode).addClass("load");
 }
-
-$.fn.ignore = function(sel) {
-  return this.clone().find(sel || ">*").remove().end();
-};
-//$('#prev').attr('src', function (i, val) {return val;});

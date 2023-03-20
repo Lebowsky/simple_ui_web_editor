@@ -321,7 +321,7 @@ label i,
     color: #fff;
 }
 .tab {
-    min-width: 100px;
+    min-width: 130px;
     text-align: center;
     margin-top: -1px;
     margin-bottom: -1px;
@@ -419,4 +419,7 @@ div.ui-resizable-e:after {
 .content-wrapper {
     display: flex;
     justify-content: space-around;
+}
+.param > div {
+    width: 48%;
 }
