@@ -109,13 +109,17 @@ var Main = {
 
 		pathText = this.getElementByPath(type, path).path;
 
-		modalNode.find(selectors.modalTitle).text(elementName);
-		modalNode.find(".path").text(pathText);
+		//modalNode.find(selectors.modalTitle).text(elementName);
+		//modalNode.find(".path").text(pathText);
 
 		$.each(elementParams[type], function (configName, paramFields) {
 			if (paramFields["type"] != "operations") {
 				value = "";
-				html += '<div class="param">';
+				if (paramFields["type"] == "elements" || paramFields["type"] == "handlers") {
+					html += '<div class="param list-param">';
+				} else {
+					html += '<div class="param">';
+				}
 
 				if (paramFields["type"] == "text") {
 					if (typeof element[configName] != 'undefined') {
@@ -131,8 +135,8 @@ var Main = {
 						value = element[configName] == true ? 'checked' : '';
 					}
 
-					html += '<label for="'+configName+'">'+paramFields["text"]+'</label>';
-					html += '<input type="checkbox" name="'+configName+'" id="'+configName+'" data-param-name="'+configName+'" '+value+'>';
+					html += '<div><label for="'+configName+'">'+paramFields["text"]+'</label>';
+					html += '<input type="checkbox" name="'+configName+'" id="'+configName+'" data-param-name="'+configName+'" '+value+'></div>';
 				}
 
 				if (paramFields["type"] == "select") {
@@ -347,9 +351,9 @@ function clearMainSection () {
 	$(selectors.handlersList).html("No handlers");
 }
 
-function addModal (className, type, path = "", parentType = "") {
+function addModal (className, type, path = "", parentType = "", modalTitle, modalPath) {
 	$("#modals-wrap").addClass("active");
-	modal = $("<div class='modal "+className+"' data-type='"+type+"' data-parent-type='"+parentType+"' data-path='"+path+"'><div class='close-modal'><i class='fa fa-times' aria-hidden='true'></i></div><div class='modal-head'><h2 class='modal-title'></h2><span class='path'></span></div><div class='modal-content'></div></div>").appendTo("#modals-wrap");
+	modal = $("<div class='modal "+className+"' data-type='"+type+"' data-parent-type='"+parentType+"' data-path='"+path+"'><div class='close-modal'><i class='fa fa-times' aria-hidden='true'></i></div><div class='modal-head'><h2 class='modal-title'>"+modalTitle+"</h2><span class='path'>"+modalPath+"</span></div><div class='modal-content'></div></div>").appendTo("#modals-wrap");
 	$('.content').addClass("blur");
 
 	$("body").addClass("no-scroll");
@@ -386,6 +390,16 @@ function showList (node, direction = "toggle") {
 	}
 }
 
+function hideMain () {
+	if ($(".main-conf-wrap").hasClass("hide")) {
+		$(".main-conf-wrap section .section-header").find("i").removeClass("fa-angle-down").addClass("fa-angle-up");
+	} else {
+		$(".main-conf-wrap section .section-header").find("i").removeClass("fa-angle-up").addClass("fa-angle-down");
+	}
+
+	$(".main-conf-wrap").toggleClass("hide");
+}
+
 function selectTab (tabNode) {
 	$(".tabs .tab").removeClass("active");
 	$(tabNode).addClass("active");
@@ -395,3 +409,21 @@ function selectTab (tabNode) {
 	$(".main-conf-wrap section").removeClass("active");
 	$(".main-conf-wrap #"+tabID).addClass("active");
 }
+
+function togglePrev () {
+	$("#prev").toggleClass("show");
+}
+
+function loadPrev () {
+    $("#prev .prev-content").html('<div class="preload">Load preview...</div><iframe onload="loadedPrev(this)" id="prev-if" src="http://localhost:5000/prev?'+Date.now()+'"></iframe>');
+}
+
+function loadedPrev (prevNode) {
+	$(".preload").hide();
+	$(prevNode).addClass("load");
+}
+
+$.fn.ignore = function(sel) {
+  return this.clone().find(sel || ">*").remove().end();
+};
+//$('#prev').attr('src', function (i, val) {return val;});

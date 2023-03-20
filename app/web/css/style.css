@@ -12,9 +12,9 @@
     overflow: hidden;
 }
 .content {
-	max-width: 600px;
-	margin: 0 auto;
+    max-width: 600px;
     transition: filter .3s;
+    width: 50%;
 }
 section {
 	padding: 20px;
@@ -26,7 +26,6 @@ section {
     text-align: left;
 }
 .form label {
-    padding: 10px 0;
     font-weight: 500;
 }
 .form label:first-child {
@@ -218,6 +217,12 @@ footer {
     padding: 15px;
     border-bottom: 1px #e7e7e7 solid;
 }
+.param:not(.list-param) {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+}
 .list {
     text-align: center;
     padding: 20px 0;
@@ -278,12 +283,8 @@ label i,
 .list-wrap.show {
     display: block;
 }
-.main-conf-wrap .list-wrap.show {
-    display: flex;
-}
-.main-conf-wrap .list-wrap {
-    justify-content: center;
-    align-items: center;
+.main-conf-wrap .param {
+    border: none;
 }
 .modal-btn {
     margin-top: 20px;
@@ -340,4 +341,82 @@ label i,
 body {
     background: url(../logo-bg.png) 100px 100px;
     background-size: 390px;
+}
+.preload {
+    text-align: center;
+    font-size: 20pt;
+}
+#prev {
+    width: 32%;
+    margin-top: 100px;
+    border: none;
+    box-shadow: 0 0 10px #33333361;
+    height: 750px;
+    background: #fff;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    resize: both;
+    max-width: 50%;
+    left: 0 !important;
+}
+.prev-content {
+    width: 100%;
+    height: 100%;
+}
+#prev.show {
+    display: flex;
+}
+iframe#prev-if {
+    width: 100%;
+    margin: 0;
+    height: 100%;
+    border: none;
+    display: none;
+}
+#prev-if.load {
+    display: block;
+}
+div.ui-resizable-w,
+div.ui-resizable-e {
+    width: 17px;
+    background: #ebebeb;
+}
+div.ui-resizable-w {
+    left: auto;
+    right: 100%;
+}
+div.ui-resizable-e {
+    left: 100%;
+    right: auto;
+}
+div.ui-resizable-w:after,
+div.ui-resizable-e:after {
+    content: "||";
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 10px;
+    height: 20px;
+    z-index: 9999 !important;
+    color: #000 !important;
+    font-size: 12pt;
+    font-weight: 500;
+    margin: auto;
+}
+.main-conf-wrap.hide > section .list-wrap {
+    height: 0;
+    overflow: hidden;
+    min-height: 0;
+}
+.main-conf-wrap.hide .tabs {
+    display: none;
+}
+.content-wrapper {
+    display: flex;
+    justify-content: space-around;
 }
