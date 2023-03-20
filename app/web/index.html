@@ -36,8 +36,6 @@
 	            <button id="open-project" onclick="pick_file(main)">Open Project</button>
 	            <button id="open-project" onclick="fileLocationSave()">Save Project</button>
 	            <button id="preview-button" onclick="togglePrev()">Preview</button>
-	            <!-- <button id="open-project" onclick="showQRSettings()">Show QR</button> -->
-				<!--<a id="preview-button" href="http://localhost:5000/prev", target="_blank">Preview</a>-->
 	        </div>
 	        <span class="file-path"></span>
 	        <div class="main-conf-wrap">
@@ -51,33 +49,33 @@
 					<div onclick="selectTab(this)" class="tab" data-tab-id="main-conf-media-files">Cached media files</div>
 					<div onclick="selectTab(this)" class="tab" data-tab-id="main-conf-common-handlers">Common handlers</div>
 				</div>
-				<section id="main-conf" class="active">
+				<section id="main-conf-common" class="active">
 					<div class="section-header">Common<i class="fa fa-angle-up" aria-hidden="true"></i></div>
 					<div class="list-wrap show">
 						<ul class="list form configuration">
 							<li class="param">
-								<label for="ConfigurationName">Configuration-name</label>
-								<input type="text" name="ConfigurationName" id="ConfigurationName" data-param-name="ConfigurationName">
-							</li>
-							<li class="param">
-								<label for="ConfigurationVersion">Version</label>
-								<input type="text" name="ConfigurationVersion" id="ConfigurationVersion" data-param-name="ConfigurationVersion">
+								<div>
+									<label for="ConfigurationName">Configuration-name</label>
+									<input type="text" name="ConfigurationName" id="ConfigurationName" data-param-name="ConfigurationName">
+								</div>
+								<div>
+									<label for="ConfigurationVersion">Version</label>
+									<input type="text" name="ConfigurationVersion" id="ConfigurationVersion" data-param-name="ConfigurationVersion">
+								</div>
 							</li>
 							<li class="param">
 								<label for="ConfigurationDescription">Description</label>
 								<input type="text" name="ConfigurationDescription" id="ConfigurationDescription" data-param-name="ConfigurationDescription">
 							</li>
 							<li class="param">
-							<div>
-								<label for="ForegroundService">Enable event service</label>
-								<input type="checkbox" name="ForegroundService" id="ForegroundService" data-param-name="ForegroundService">
-							</div>
-							</li>
-							<li class="param">
-							<div>
-								<label for="StopForegroundServiceOnExit">Stop service on application exit</label>
-								<input type="checkbox" name="StopForegroundServiceOnExit" id="StopForegroundServiceOnExit" data-param-name="StopForegroundServiceOnExit">
-							</div>
+								<div>
+									<label for="ForegroundService">Enable event service</label>
+									<input type="checkbox" name="ForegroundService" id="ForegroundService" data-param-name="ForegroundService">
+								</div>
+								<div>
+									<label for="StopForegroundServiceOnExit">Stop service on application exit</label>
+									<input type="checkbox" name="StopForegroundServiceOnExit" id="StopForegroundServiceOnExit" data-param-name="StopForegroundServiceOnExit">
+								</div>
 							</li>
 							<li class="param">
 								<label for="BroadcastIntent">Inten broadcast (intent name)</label>
@@ -230,25 +228,8 @@
 					<ul class="list" id="operations">Select process</ul>
 				</div>
 	        </section>
-	        <!--<section id="main-conf-handlers">
-	            <div class="section-header" onclick="showList(this)">Handlers<i class="fa fa-angle-down" aria-hidden="true"></i></div>
-				<div class="list-wrap">
-		            <ul class="list" id="handlers">No Items</ul>
-	            </div>
-			</section>-->
 	    </div>
-	    <div id="prev"><!--<div class="resize" style="
-    position: absolute;
-    top: 0;
-    right: 100%;
-    z-index: 9999;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    background: #efefef;
-    padding: 0 3px;
-    cursor: col-resize;
-">||</div>--><div class="prev-content"><div class="preload">Project preview</div></div></div>
+	    <div id="prev"><div class="prev-content"><div class="preload">Project preview</div></div></div>
 	</div>
 	<div id="modals-wrap"></div>
 	<div class="hidden-conf-json"></div>
