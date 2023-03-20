@@ -353,21 +353,16 @@ body {
     box-shadow: 0 0 10px #33333361;
     height: 750px;
     background: #fff;
-    display: none;
     justify-content: center;
     align-items: center;
     position: relative;
     resize: both;
-    max-width: 50%;
     left: 0 !important;
     margin-left: 5%;
 }
 .prev-content {
     width: 100%;
     height: 100%;
-}
-#prev.show {
-    display: flex;
 }
 iframe#prev-if {
     width: 100%;
@@ -423,4 +418,12 @@ div.ui-resizable-e:after {
 }
 .param > div {
     width: 48%;
+}
+.prev-wrap {
+    width: 45%;
+    display: none;
+    justify-content: center;
+}
+.prev-wrap.show {
+    display: flex;
 }
