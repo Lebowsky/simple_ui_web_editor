@@ -42,5 +42,4 @@ def ask_save_file(file_type='simple_ui'):
 
     if file_path:
         file_path = file_path if file_path.endswith('.ui') else f'{file_path}.ui'
-
-    return {'file_path': file_path}
+        return {'file_path': file_path}

@@ -207,8 +207,6 @@ def make_base64_from_file(file_path: str) -> str:
             data = file.read()
             base64file = base64.b64encode(data.encode('utf-8')).decode('utf-8')
             return base64file
-    else:
-        raise FileNotFoundError(f'file {file_path} not found')
 
 
 def get_content_from_base64(base_64_str: str) -> str:

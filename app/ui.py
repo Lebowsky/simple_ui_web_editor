@@ -24,6 +24,7 @@ def save_configuration(data, file_path):
     except Exception as e:
         return {'result': 'error', 'msg': str(e)}
 
+
 @eel.expose
 def load_configuration(file_path):
     return utils.get_config_from_file(file_path)
@@ -63,12 +64,19 @@ def get_base64_from_file(file_path):
 
 
 @eel.expose
-def save_handlers_file(base_64_handlers: dict):
-    if base_64_handlers:
-        for file_name, value in base_64_handlers.items():
+def save_handlers_files(handlers: dict) -> dict:
+    result = {'result': 'success'}
+    if handlers:
+        for file_name, value in handlers.items():
             with open(f'{file_name}.py', 'w', encoding='utf-8') as f:
                 content = utils.get_content_from_base64(value)
-                f.write(content)
+                try:
+                    f.write(content)
+                except Exception as e:
+                    result['result'] = 'error',
+                    result['msg'] = result.get('msg', {})[file_name] = str(e)
+
+    return result
 
 
 async def get_current_file_path():
