@@ -41,9 +41,12 @@ def save_config_to_file(config_data, file_path):
 def get_config_from_file(file_path):
     if file_path:
         check_result = check_config_file(file_path)
-        if check_result and check_result.get('error', None) is None:
-            with open(file_path, encoding='utf-8') as json_file:
-                return json.load(json_file)
+        if check_result:
+            if check_result.get('error'):
+                return check_result
+            else:
+                with open(file_path, encoding='utf-8') as json_file:
+                    return RootConfigModel(**json.load(json_file)).dict(by_alias=True, exclude_none=True)
         else:
             raise Exception(check_result)
 
@@ -196,3 +199,17 @@ def _get_elements_items(value):
             result = [element['title'] for element in value['items']['anyOf']]
 
     return result
+
+
+def make_base64_from_file(file_path: str) -> str:
+    if os.path.exists(file_path):
+        with open(file_path, 'r', encoding='utf-8') as file:
+            data = file.read()
+            base64file = base64.b64encode(data.encode('utf-8')).decode('utf-8')
+            return base64file
+    else:
+        raise FileNotFoundError(f'file {file_path} not found')
+
+
+def get_content_from_base64(base_64_str: str) -> str:
+    return base64.b64decode(base_64_str).decode('utf-8')

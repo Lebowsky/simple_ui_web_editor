@@ -75,6 +75,8 @@ $(document).ready(function(){
 			main.renderElementsList($(selectors.operationsList), "Operation", path);
 		} else if (type == "CommonHandler") {
 			main.renderElementsList($(selectors.handlersList), "CommonHandler", "");
+		} else if (type == "PyFiles") {
+			main.renderElementsList($(selectors.pyFilesList), "PyFiles", "");
 		}
 		if (parentModal.length == 0) {
 			$('.content').removeClass("blur");

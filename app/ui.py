@@ -57,6 +57,20 @@ def get_config_ui_elements():
     return utils.get_config_ui_elements()
 
 
+@eel.expose
+def get_base64_from_file(file_path):
+    return utils.make_base64_from_file(file_path)
+
+
+@eel.expose
+def save_handlers_file(base_64_handlers: dict):
+    if base_64_handlers:
+        for file_name, value in base_64_handlers.items():
+            with open(f'{file_name}.py', 'w', encoding='utf-8') as f:
+                content = utils.get_content_from_base64(value)
+                f.write(content)
+
+
 async def get_current_file_path():
     return eel.getCurrentFilePath()()
 

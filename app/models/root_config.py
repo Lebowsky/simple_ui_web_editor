@@ -64,8 +64,9 @@ class PyTimerTaskModel(BaseConfigModel):
 
 
 class PyFilesModel(BaseConfigModel):
-    py_file_key: str = Field(alias='PyFileKey')
-    py_file_data: str = Field(alias='PyFileData')
+    file_path: str = ''
+    py_file_key: str = Field(alias='PyFileKey', title='PyFileKey')
+    py_file_data: str = Field(alias='PyFileData', title='PyFileData')
 
     class Config:
         title = 'PyFiles'
@@ -217,7 +218,7 @@ class ClientConfigurationModel(BaseConfigModel):
     online_service_configuration: Optional[str] = Field(alias='OnlineServiceConfiguration')
     py_handlers: Optional[str] = Field(alias='PyHandlers')
     py_timer_task: Optional[List[PyTimerTaskModel]] = Field(alias='PyTimerTask')
-    py_files: Optional[List[PyFilesModel]] = Field(alias='PyFiles')
+    py_files: Optional[List[PyFilesModel]] = Field(default=[], alias='PyFiles')
     arch2: Optional[bool]
     common_handlers: Optional[List[CommonHandler]] = Field(default=[], alias='CommonHandlers')
 

@@ -15,7 +15,6 @@ async function pick_file() {
 		};
 
 		filePath = result.file_path;
-		
 
 		await eel.load_configuration(filePath)().then(conf => {
 			$(".hidden-conf-json").text(JSON.stringify(conf));
@@ -25,12 +24,37 @@ async function pick_file() {
 			main.renderConfiguration();
 			main.renderElementsList($(selectors.processList), "Process", "");
 			main.renderElementsList($(selectors.handlersList), "CommonHandler", "");
+			main.renderElementsList($(selectors.pyFilesList), "PyFiles", "");
 			$(".file-path").text(filePath);
             $('#preview-button').show();
             loadPrev();
 		});
 	});
 }
+
+async function pickHandlersFile(){
+	if (!main.conf)
+		return
+
+	await eel.ask_file('python')().then(async (result) => {
+		if (result == null){
+			$('#py-handlers-file-path').text("Not selected")
+			main.conf.ClientConfiguration.PyHandlers = ''
+			return
+		};
+
+		if (result.error != undefined){
+			notificate('Ошибка чтения файла: ' + result.error)
+			console.log(JSON.parse(result.message))
+			return
+		};
+
+		$('#py-handlers-file-path').text(result.file_path)
+
+		base64_str = await eel.get_base64_from_file(result.file_path)()
+		main.conf.ClientConfiguration.PyHandlers = base64_str
+	});
+};
 
 async function pickNewFileProject() {
 	await eel.ask_save_file('simple_ui')().then(async (result) => {
@@ -45,6 +69,7 @@ async function pickNewFileProject() {
 				main.renderConfiguration();
 				main.renderElementsList($(selectors.processList), "Process", "");
 				main.renderElementsList($(selectors.handlersList), "CommonHandler", "");
+				
 				$(".file-path").text(filePath);
                 $('#preview-button').show()
             	loadPrev();
@@ -59,11 +84,26 @@ const fileLocationSave = async (event) => {
     result_save = await eel.save_configuration(data, filePath)();
 
 	if (result_save.result == 'success') {
+		conf = main.conf.ClientConfiguration
+		pyHandlers = {}
+		pyHandlersString = conf.PyHandlers
+
+		if (pyHandlersString && pyHandlersString.length > 0)
+			pyHandlers['current_handlers'] = pyHandlersString
+
+		if (conf.PyFiles){
+			$.each(conf.PyFiles, function(index, el){
+				pyHandlers[el.PyFileKey] = el.PyFileData	
+			});
+		}
+
+		await eel.save_handlers_file(pyHandlers)
+
 		notificate('Файл успешно сохранен', 'success')
 		loadPrev();
 	}else{
 		notificate('Ошибка сохранения файла: ' + result_save.msg, 'danger')
-	}
+	};
 };
 
 const showQRSettings = async (event) => {

@@ -194,10 +194,13 @@
 				<section id="main-conf-python-files">
 					<div class="section-header">Python files<i class="fa fa-angle-up" aria-hidden="true"></i></div>
 					<div class="list-wrap show">
-						<ul class="list form configuration">
-							<li class="param">
-								<label for="PyHandlers">Handlers file (Python)</label>
-								<input type="text" name="PyHandlers" id="PyHandlers" data-param-name="PyHandlers">
+						<ul class="list">
+							<li>
+								<button id="open-py-handlers-file" onclick="pickHandlersFile()">Open file</button>
+								<label>Handlers file (Python)</label>
+							<li>
+							</li>
+								<span id="py-handlers-file-path">Not selected</span>
 							</li>
 						</ul>
 						<ul class="list" id="py-files">No Items</ul>

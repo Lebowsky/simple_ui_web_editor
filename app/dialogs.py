@@ -15,13 +15,17 @@ def ask_file(file_type):
     else:
         if file_type == 'simple_ui':
             file_types = [('Simple UI files', '*.ui')]
+        elif file_type == 'python':
+            file_types = [('Python files', '*.py')]
         else:
             file_types = [('All files', '*')]
         file_path = askopenfilename(parent=root, filetypes=file_types)
     root.update()
 
     if file_path:
-        result = check_config_file(file_path)
+        result = {'file_path': file_path}
+        if file_type == 'simple_ui':
+            result = check_config_file(file_path)
         return result
 
 
@@ -35,6 +39,7 @@ def ask_save_file(file_type='simple_ui'):
         file_types = [('All files', '*')]
     file_path: str = asksaveasfilename(parent=root, filetypes=file_types)
     root.update()
+
     if file_path:
         file_path = file_path if file_path.endswith('.ui') else f'{file_path}.ui'
 
