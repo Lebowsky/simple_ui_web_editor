@@ -431,7 +431,7 @@ function selectTab (tabNode) {
 }
 
 function togglePrev () {
-	$("#prev-wrap").toggleClass("show");
+	$(".prev-wrap").toggleClass("show");
 }
 
 function loadPrev () {
