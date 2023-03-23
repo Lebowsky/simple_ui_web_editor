@@ -22,9 +22,10 @@
 	<script type="text/javascript" src="js/main.js"></script>
 	<script type="text/javascript" src="js/export.js"></script>
 	<script type="text/javascript" src="js/dialogs.js"></script>
+	<script type="text/javascript" src="js/utils.js"></script>
 	<script>
         var main = Object.create(Main);
-		get_config_ui_elements();
+		setConfigUIElements();
 	</script>
 </head>
 <body>
@@ -33,7 +34,7 @@
 	    	<div class="header"><div class="logo"><img src="logo.png" alt="Simple Logo"></div></div>
 	        <div class="btn-group main">
 	            <button id="open-project" onclick="pickNewFileProject(main)">New Project</button>
-	            <button id="open-project" onclick="pick_file(main)">Open Project</button>
+	            <button id="open-project" onclick="pickFile(main)">Open Project</button>
 	            <button id="open-project" onclick="fileLocationSave()">Save Project</button>
 	            <button id="preview-button" onclick="togglePrev()">Preview</button>
 	        </div>
@@ -194,10 +195,13 @@
 				<section id="main-conf-python-files">
 					<div class="section-header">Python files<i class="fa fa-angle-up" aria-hidden="true"></i></div>
 					<div class="list-wrap show">
-						<ul class="list form configuration">
-							<li class="param">
-								<label for="PyHandlers">Handlers file (Python)</label>
-								<input type="text" name="PyHandlers" id="PyHandlers" data-param-name="PyHandlers">
+						<ul class="list">
+							<li>
+								<button id="open-py-handlers-file" onclick="pickHandlersFile()">Open file</button>
+								<label>Handlers file (Python)</label>
+							<li>
+							</li>
+								<span id="py-handlers-file-path">Not selected</span>
 							</li>
 						</ul>
 						<ul class="list" id="py-files">No Items</ul>
@@ -230,6 +234,7 @@
 	        </section>
 	    </div>
 	    <div class="prev-wrap">
+
 	    	<div id="prev">
 	    		<div class="prev-content">
 	    			<div class="preload">Project preview</div>

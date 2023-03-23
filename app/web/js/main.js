@@ -29,6 +29,9 @@ var Main = {
 		} else if (type == "CommonHandler") {
 			nameProp = "event";
 			elements = elementInfo.parent.CommonHandlers;
+		} else if (type == "PyFiles") {
+			nameProp = "PyFileKey";
+			elements = elementInfo.parent.PyFiles;
 		} else if (type == "Handlers") {
 			nameProp = "event";
 			elements = elementInfo.parent.Handlers;
@@ -53,6 +56,9 @@ var Main = {
 
 			if (type == "Handlers")
 				elementType = "Handlers";
+
+			if (type == "PyFiles")
+				elementType = "PyFiles";
 
 			if (typeof elementName !== 'undefined') {
 				elementsItems[elementIndex] = {
@@ -232,6 +238,8 @@ var Main = {
 			parent.Operations.splice(elementIndex, 1);
 		} else if (type == "CommonHandler") {
 			parent.CommonHandlers.splice(elementIndex, 1);
+		} else if (type == "PyFiles") {
+			parent.PyFiles.splice(elementIndex, 1);
 		} else if (type == "Handlers") {
 			parent.Handlers.splice(elementIndex, 1);
 		} else {
@@ -250,6 +258,8 @@ var Main = {
 			elements = elementInfo.parent.Operations;
 		}  else if (type == "CommonHandler") {
 			elements = elementInfo.parent.CommonHandlers;
+		}  else if (type == "PyFiles") {
+			elements = elementInfo.parent.PyFiles;
 		}  else if (type == "Handlers") {
 			elements = elementInfo.parent.Handlers;
 		} else {
@@ -290,11 +300,10 @@ var Main = {
 			}
 
 		arrPath = String(path).split('-');
-
+		
 		if (type == "Configuration") {
 			return res;
 		}
-
 		if (type == "Process") {
 			res.parent    = res.element;
 			res.element   = res.element.Processes[arrPath[0]];
@@ -302,6 +311,11 @@ var Main = {
 		} else if (type == "CommonHandler") {
 			res.parent    = res.element;
 			res.element   = res.element.CommonHandlers[arrPath[0]];
+
+		} else if (type == "PyFiles") {
+			res.parent    = res.element;
+			res.element   = res.element.PyFiles[arrPath[0]];
+
 
 		} else if (type == "Handlers") {
 			processIndex   = arrPath[0];
@@ -329,7 +343,6 @@ var Main = {
 				res.element = res.element.Elements[arrPath[i]];
 			}
 		}
-
 		return res;
 	},
 	pathPop: function (path) {
@@ -418,7 +431,7 @@ function selectTab (tabNode) {
 }
 
 function togglePrev () {
-	$(".prev-wrap").toggleClass("show");
+	$("#prev-wrap").toggleClass("show");
 }
 
 function loadPrev () {

@@ -3,67 +3,45 @@ function notificate(text, type) {
     console.log(text)
 };
 
-async function pick_file() {
-	await eel.ask_file('simple_ui')().then(async (result) => {
-		if (result == null)
-			return
-		
-		if (result.error != undefined){
-			notificate('Ошибка чтения файла: ' + result.error)
-			console.log(JSON.parse(result.message))
-			return
-		};
-
-		filePath = result.file_path;
-		
-
-		await eel.load_configuration(filePath)().then(conf => {
-			$(".hidden-conf-json").text(JSON.stringify(conf));
-			main.conf = conf;
-			clearMainSection();
-			fillDefaultValues();
-			main.renderConfiguration();
-			main.renderElementsList($(selectors.processList), "Process", "");
-			main.renderElementsList($(selectors.handlersList), "CommonHandler", "");
-			$(".file-path").text(filePath);
-            $('#preview-button').show();
-            loadPrev();
-		});
-	});
-}
+async function pickFile() {
+	let result = await askFile('simple_ui');
+	if (checkAskFileResult(result)){
+		conf = await loadConfiguration(result.file_path);
+		initReadedConf(conf, result.file_path);
+	};
+};
 
 async function pickNewFileProject() {
-	await eel.ask_save_file('simple_ui')().then(async (result) => {
-		console.log(result)
-		filePath = result.file_path;
-		if (filePath.trim() != ''){
-			await eel.get_new_configuration()().then(conf => {
-				$(".hidden-conf-json").text(JSON.stringify(conf));
-				main.conf = conf;
-				clearMainSection();
-				fillDefaultValues();
-				main.renderConfiguration();
-				main.renderElementsList($(selectors.processList), "Process", "");
-				main.renderElementsList($(selectors.handlersList), "CommonHandler", "");
-				$(".file-path").text(filePath);
-                $('#preview-button').show()
-            	loadPrev();
-			});
-		}
-	});
+	let result = await askSaveFile()
+	if (checkAskFileResult(result)){
+		conf = await getNewConfiguration()
+		initReadedConf(conf, result.file_path)
+	}
 }
 
 const fileLocationSave = async (event) => {
-    const data = main.conf;
-    filePath = $('.file-path').text();
-    result_save = await eel.save_configuration(data, filePath)();
+	if (typeof main.conf == 'undefined')
+        return 
 
-	if (result_save.result == 'success') {
-		notificate('Файл успешно сохранен', 'success')
-		loadPrev();
-	}else{
-		notificate('Ошибка сохранения файла: ' + result_save.msg, 'danger')
+    const filePath = $('.file-path').text();
+
+	let handlers = await fillBase64Handlers()
+	if (saveConfFiles(main.conf, filePath, handlers))
+		loadPrev()
+}; 
+
+async function pickHandlersFile(){
+	if (! main.conf)
+		return
+
+	let filePathText = 'Not selected'
+	resultAsk = await askFile('python')
+	
+	if (checkAskFileResult(resultAsk)){
+		filePathText = resultAsk.file_path
 	}
+
+	$('#py-handlers-file-path').text(filePathText)
 };
 
 const showQRSettings = async (event) => {

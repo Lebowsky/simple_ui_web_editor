@@ -2,6 +2,7 @@ const selectors = {
 	processList: "#processes",
 	operationsList: "#operations",
 	handlersList: "#handlers",
+    pyFilesList: "#py-files",
 	listWrap: ".list-wrap",
 	list: ".list",
 	listItem: ".list-item",
@@ -73,5 +74,11 @@ const newElements = {
         event: "onLaunch",
         method: "",
         postExecute: "",
-	}
+	},
+        PyFiles: {
+                type: "",
+                PyFileData: '',
+                file_path: '',
+                PyFileKey: 'Python module'
+        }
 }
