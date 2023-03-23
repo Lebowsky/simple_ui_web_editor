@@ -12,9 +12,10 @@
     overflow: hidden;
 }
 .content {
-    max-width: 600px;
+    max-width: 780px;
     transition: filter .3s;
     width: 50%;
+    padding: 0 50px 0 130px;
 }
 section {
 	padding: 20px;
@@ -347,7 +348,7 @@ body {
     font-size: 20pt;
 }
 #prev {
-    width: 32%;
+    width: 100%;
     margin-top: 100px;
     border: none;
     box-shadow: 0 0 10px #33333361;
@@ -417,7 +418,7 @@ div.ui-resizable-e:after {
     display: flex;
     justify-content: center;
 }
-.param > div {
+#main-conf-common .param > div {
     width: 48%;
 }
 .prev-wrap {
