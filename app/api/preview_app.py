@@ -8,6 +8,9 @@ from ui import get_current_file_path
 class AsyncSimple(Simple):
     def __init__(self, socket):
         super().__init__(socket, '')
+        module = __import__('current_handlers')
+        import importlib
+        importlib.reload(module)
 
     async def build_page(self):
 
@@ -125,7 +128,7 @@ class AsyncSimple(Simple):
         try:
             await self.handle_command()
         except Exception as e:
-            self.socket_.emit('error', {'code': str(e)}, room=self.sid, namespace='/' + SOCKET_NAMESPACE)
+            await self.socket_.emit('error', {'code': str(e)}, room=self.sid, namespace='/' + SOCKET_NAMESPACE)
             print(e)
 
     async def new_screen_tab(self, configuration, processname, screenname, soup, tabid, title=None):
@@ -595,10 +598,10 @@ class AsyncSimple(Simple):
             screenname = self.hashMap.get('ShowScreen', '')
             if "{" in screenname and "}" in screenname and ":" in screenname:  # looks like json...
                 jdata = json.loads(screenname)
-                process = get_process(self.configuration, jdata['process'])
-                screen = get_screen(process, jdata['screen'])
+                process = self.get_process(self.configuration, jdata['process'])
+                screen = self.get_screen(process, jdata['screen'])
             else:
-                screen = get_screen(self.process, screenname)
+                screen = self.get_screen(self.process, screenname)
 
             if screen == None:
                 await self.socket_.emit('setvaluehtml', {'key': "root_" + self.current_tab_id,
