@@ -221,7 +221,7 @@ footer {
 .param:not(.list-param) {
     display: flex;
     flex-wrap: wrap;
-    align-items: center;
+    align-items: end;
     justify-content: space-between;
 }
 .list {
