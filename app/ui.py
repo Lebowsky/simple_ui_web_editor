@@ -1,9 +1,9 @@
 import eel
 
-import utils
-import config
-import dialogs
-from utils import get_qr_code_config
+from . import utils
+from . import config
+from . import dialogs
+from .utils import get_qr_code_config, resource_path
 
 
 class UIOpenMode:
@@ -93,7 +93,7 @@ def start(open_mode):
         else:
             port = utils.get_port()
             print('Server starting at http://localhost:' + str(port) + '/index.html')
-            eel.start('index.html', size=(1080, 720), host='localhost', port=port, mode=None,
+            eel.start(f'{resource_path("index.html")}', size=(1080, 720), host='localhost', port=port, mode=None,
                       close_callback=lambda x, y: None)
     except (SystemExit, KeyboardInterrupt):
         pass  # This is what the bottle server raises

@@ -4,13 +4,13 @@ import uuid
 
 from pydantic import BaseModel, Field, validator
 
-from config import su_settings
+from ..config import su_settings
 # from models.elements import BaseElement
-from models.elements import Barcode, HorizontalGallery, Voice, Photo, PhotoGallery, \
+from .elements import Barcode, HorizontalGallery, Voice, Photo, PhotoGallery, \
     Signature, Vision, Cart, ImageSlider, MenuItem
-from models.enums import CVDetectorType
-from models.containers import Container, Tiles
-from models.handlers import CommonHandler, Handler
+from .enums import CVDetectorType
+from .containers import Container, Tiles
+from .handlers import CommonHandler, Handler
 
 
 class BaseConfigModel(BaseModel):

@@ -1,10 +1,10 @@
 from typing import List, Optional, Literal, Union, Annotated
 from pydantic import Field, BaseModel
 
-from models.container_elements import Tabs, Tab, TextView, Button, EditTextText, EditTextNumeric, EditTextPass, \
+from .container_elements import Tabs, Tab, TextView, Button, EditTextText, EditTextNumeric, EditTextPass, \
     EditTextAuto, EditTextAutocomplete, ModernEditText, Picture, CheckBox, Gauge, Chart, SpinnerLayout, TableLayout, \
     MultilineText, CardsLayout, CButtons, CButtonsHorizontal, DateField, ProgressButton, HTML, Map, File
-from models.elements import BaseElement, DimensionElement, Cart
+from .elements import BaseElement, DimensionElement, Cart
 
 
 class Container(DimensionElement):

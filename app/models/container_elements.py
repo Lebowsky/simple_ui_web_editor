@@ -2,8 +2,8 @@ from typing import List, Optional, Union, Literal
 
 from pydantic import BaseModel, Field
 
-from models.elements import BaseElement, DimensionElement, TextElement
-from models.enums import ElementsIcon
+from .elements import BaseElement, DimensionElement, TextElement
+from .enums import ElementsIcon
 
 
 class Tabs(BaseElement, DimensionElement, TextElement):

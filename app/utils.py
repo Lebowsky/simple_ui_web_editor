@@ -1,4 +1,5 @@
 import os
+import sys
 import json
 from json import JSONDecodeError
 import jsonref
@@ -10,9 +11,18 @@ import qrcode
 import socket
 import base64
 
-from models.root_config import RootConfigModel, QRCodeConfig, OperationsModel
-from models.ui_config import create_element, BaseField, ElementType, convert_to_dict
+from .models.root_config import RootConfigModel, QRCodeConfig, OperationsModel
+from .models.ui_config import create_element, BaseField, ElementType, convert_to_dict
 
+def resource_path(relative_path):
+    """ Get absolute path to resource, works for dev and for PyInstaller """
+    try:
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
 
 def can_use_chrome():
     """ Identify if Chrome is available for Eel to use """

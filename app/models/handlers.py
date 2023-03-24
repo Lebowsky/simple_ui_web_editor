@@ -2,7 +2,7 @@ from typing import Optional
 
 from pydantic import BaseModel, Field, validator, root_validator
 
-from models.enums import EventCommonHandlerEnum, EventHandlerEnum, ActionHandlerEnum, HandlerType
+from .enums import EventCommonHandlerEnum, EventHandlerEnum, ActionHandlerEnum, HandlerType
 
 
 class BaseHandler(BaseModel):

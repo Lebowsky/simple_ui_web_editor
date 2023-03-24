@@ -2,7 +2,7 @@ from typing import List, Optional, Union, Literal
 
 from pydantic import BaseModel, Field
 
-from models.enums import GravityHorizontalEnum, DimensionsType, OrientationType, GravityVerticalEnum
+from .enums import GravityHorizontalEnum, DimensionsType, OrientationType, GravityVerticalEnum
 
 
 class BaseElement(BaseModel):

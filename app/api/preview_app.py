@@ -2,7 +2,7 @@ import json
 
 from uiweb import Simple, bs4, uuid, threading, SOCKET_NAMESPACE, html
 
-from ui import get_current_file_path
+from ..ui import get_current_file_path
 
 
 class AsyncSimple(Simple):

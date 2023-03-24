@@ -7,8 +7,8 @@ from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
 from fastapi_socketio import SocketManager
 
-from api.preview_app import AsyncSimple
-from utils import get_config_from_file
+from .preview_app import AsyncSimple
+from ..utils import get_config_from_file
 
 sw: AsyncSimple
 
@@ -30,7 +30,7 @@ class Server(uvicorn.Server):
             thread.join()
 
 
-server = Server(uvicorn.Config(app=app, host="0.0.0.0", port=5000, log_level="info"))
+server = Server(uvicorn.Config(app=app, host="0.0.0.0", port=5000))
 
 
 @app.get('/get_conf')

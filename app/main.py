@@ -1,7 +1,7 @@
-import ui
-import config
+from . import ui
+from . import config
 
-from api.app import server
+from .api.app import server
 
 
 def start_ui():
