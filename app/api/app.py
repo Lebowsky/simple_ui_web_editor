@@ -35,7 +35,7 @@ server = Server(uvicorn.Config(app=app, host="0.0.0.0", port=5000))
 
 @app.get('/get_conf')
 async def get_config():
-    from ui import get_current_file_path
+    from ..ui import get_current_file_path
 
     file_path = await get_current_file_path()
     config = get_config_from_file(file_path)

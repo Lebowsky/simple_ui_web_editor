@@ -76,7 +76,7 @@ function getHandlers(){
     let handlers = {};
     const conf = main.conf.ClientConfiguration;
 
-    if (typeof conf.PyHandlers != undefined && conf.PyHandlers.length > 0){
+    if (typeof conf.PyHandlers != 'undefined' && conf.PyHandlers.length > 0){
         handlers['current_handlers'] = conf.PyHandlers;
     };
 

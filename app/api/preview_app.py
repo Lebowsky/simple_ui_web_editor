@@ -1,16 +1,20 @@
 import json
+import os
 
 from uiweb import Simple, bs4, uuid, threading, SOCKET_NAMESPACE, html
 
 from ..ui import get_current_file_path
+from ..config import resource_path
 
 
 class AsyncSimple(Simple):
     def __init__(self, socket):
         super().__init__(socket, '')
-        module = __import__('current_handlers')
-        import importlib
-        importlib.reload(module)
+        path_to_handlers = resource_path('current_handlers')
+        if os.path.exists(path_to_handlers):
+            module = __import__('current_handlers')
+            import importlib
+            importlib.reload(module)
 
     async def build_page(self):
 

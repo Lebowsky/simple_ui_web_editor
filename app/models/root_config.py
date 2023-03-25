@@ -5,7 +5,7 @@ import uuid
 from pydantic import BaseModel, Field, validator
 
 from ..config import su_settings
-# from models.elements import BaseElement
+
 from .elements import Barcode, HorizontalGallery, Voice, Photo, PhotoGallery, \
     Signature, Vision, Cart, ImageSlider, MenuItem
 from .enums import CVDetectorType

@@ -3,7 +3,6 @@ import eel
 from . import utils
 from . import config
 from . import dialogs
-from .utils import get_qr_code_config, resource_path
 
 
 class UIOpenMode:
@@ -50,7 +49,7 @@ def ask_save_file(file_type):
 
 @eel.expose
 def get_qr_settings():
-    return str(get_qr_code_config())
+    return str(utils.get_qr_code_config())
 
 
 @eel.expose
@@ -68,7 +67,7 @@ def save_handlers_files(handlers: dict) -> dict:
     result = {'result': 'success'}
     if handlers:
         for file_name, value in handlers.items():
-            with open(f'{file_name}.py', 'w', encoding='utf-8') as f:
+            with open(config.resource_path(f'{file_name}.py'), 'w', encoding='utf-8') as f:
                 content = utils.get_content_from_base64(value)
                 try:
                     f.write(content)
@@ -93,7 +92,7 @@ def start(open_mode):
         else:
             port = utils.get_port()
             print('Server starting at http://localhost:' + str(port) + '/index.html')
-            eel.start(f'{resource_path("index.html")}', size=(1080, 720), host='localhost', port=port, mode=None,
+            eel.start('index.html', size=(1080, 720), host='localhost', port=port, mode=None,
                       close_callback=lambda x, y: None)
     except (SystemExit, KeyboardInterrupt):
         pass  # This is what the bottle server raises

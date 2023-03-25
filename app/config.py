@@ -1,5 +1,4 @@
 import os
-import pathlib
 import json
 import sys
 
@@ -12,15 +11,9 @@ class UIOpenMode:
     USER_DEFAULT = 2
 
 
-# Frontend
-# FRONTEND_ASSET_FOLDER = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'web')
-
-
 # Argument-influenced configuration
 ui_open_mode = UIOpenMode.CHROME
 
-
-# Settings SimpleUI
 
 def resource_path(relative_path):
     """ Get absolute path to resource, works for dev and for PyInstaller """
@@ -33,6 +26,9 @@ def resource_path(relative_path):
     return os.path.join(base_path, relative_path)
 
 
+FRONTEND_ASSET_FOLDER = resource_path('app/web')
+
+
 class Locale:
     def __init__(self, locale):
         self.locale = locale
@@ -41,15 +37,14 @@ class Locale:
         return self.locale.get(key, key)
 
 
-FRONTEND_ASSET_FOLDER = resource_path('app/web')
-print(FRONTEND_ASSET_FOLDER)
-
-
 class SimpleUISettings:
     def __init__(self):
-        settings = EasySettings("uiconfigfile.conf")
-        # _locale_filename = settings.get("locale_filename") or f'{pathlib.Path(__file__).resolve().parent}/en_locale.json'
-        _locale_filename = settings.get("locale_filename") or f'{resource_path("app/en_locale.json")}'
+        settings = EasySettings(resource_path("app/uiconfigfile.conf"))
+
+        _locale_filename = (
+                resource_path(f'app/{settings.get("locale_filename")}')
+                or resource_path("app/en_locale.json")
+        )
 
         with open(_locale_filename, 'r', encoding='utf-8') as file:
             self.locale = Locale(json.load(file))
