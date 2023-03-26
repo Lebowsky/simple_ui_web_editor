@@ -20,14 +20,7 @@ async function pickNewFileProject() {
 }
 
 const fileLocationSave = async (event) => {
-	if (typeof main.conf == 'undefined')
-        return 
-
-    const filePath = $('.file-path').text();
-
-	let handlers = await fillBase64Handlers()
-	if (saveConfFiles(main.conf, filePath, handlers))
-		loadPrev()
+	saveConfiguration()
 }; 
 
 async function pickHandlersFile(){

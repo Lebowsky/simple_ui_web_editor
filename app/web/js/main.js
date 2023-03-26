@@ -431,6 +431,7 @@ function selectTab (tabNode) {
 }
 
 function togglePrev () {
+	saveConfiguration();
 	$(".prev-wrap").toggleClass("show");
 }
 
