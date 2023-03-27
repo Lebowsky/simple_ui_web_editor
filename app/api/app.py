@@ -8,7 +8,7 @@ from fastapi.responses import HTMLResponse
 from fastapi_socketio import SocketManager
 
 from .preview_app import AsyncSimple
-from ..utils import get_config_from_file
+from ..utils import get_config_from_file, get_python_modules
 
 sw: AsyncSimple
 
@@ -45,7 +45,7 @@ async def get_config():
 @app.get('/prev', response_class=HTMLResponse)
 async def prev_index():
     global sw
-    sw = AsyncSimple(sio)
+    sw = AsyncSimple(sio, python_modules=get_python_modules())
     return HTMLResponse(content=await sw.build_page())
 
 

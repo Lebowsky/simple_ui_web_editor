@@ -8,14 +8,17 @@ from ..config import resource_path
 
 
 class AsyncSimple(Simple):
-    def __init__(self, socket):
+    def __init__(self, socket, python_modules=None):
         super().__init__(socket, '')
-        path_to_handlers = resource_path('current_handlers.py')
-        if os.path.exists(path_to_handlers):
-            print('handlers update')
-            module = __import__('current_handlers')
-            import importlib
-            importlib.reload(module)
+
+        if python_modules:
+            for name in python_modules:
+                path_to_handlers = resource_path(f'{name}.py')
+                if os.path.exists(path_to_handlers):
+                    print(f'{name} update')
+                    module = __import__(name)
+                    import importlib
+                    importlib.reload(module)
 
     async def build_page(self):
 

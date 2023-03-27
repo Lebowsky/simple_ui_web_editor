@@ -12,6 +12,8 @@ import qrcode
 from .models import ui_config
 from .models.root_config import RootConfigModel, QRCodeConfig
 
+python_modules = {}
+
 
 def can_use_chrome():
     """ Identify if Chrome is available for Eel to use """
@@ -133,3 +135,13 @@ def make_base64_from_file(file_path: str) -> str:
 
 def get_content_from_base64(base_64_str: str) -> str:
     return base64.b64decode(base_64_str).decode('utf-8')
+
+
+def update_python_modules(new_modules: dict):
+    if new_modules:
+        global python_modules
+        python_modules = new_modules
+
+
+def get_python_modules():
+    return python_modules
