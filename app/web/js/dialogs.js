@@ -8,6 +8,7 @@ async function pickFile() {
 	if (checkAskFileResult(result)){
 		conf = await loadConfiguration(result.file_path);
 		initReadedConf(conf, result.file_path);
+		saveConfiguration();
 	};
 };
 
@@ -16,18 +17,12 @@ async function pickNewFileProject() {
 	if (checkAskFileResult(result)){
 		conf = await getNewConfiguration()
 		initReadedConf(conf, result.file_path)
+		saveConfiguration();
 	}
 }
 
 const fileLocationSave = async (event) => {
-	if (typeof main.conf == 'undefined')
-        return 
-
-    const filePath = $('.file-path').text();
-
-	let handlers = await fillBase64Handlers()
-	if (saveConfFiles(main.conf, filePath, handlers))
-		loadPrev()
+	saveConfiguration();
 }; 
 
 async function pickHandlersFile(){

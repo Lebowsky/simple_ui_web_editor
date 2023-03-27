@@ -30,6 +30,16 @@ function checkSaveFileResult(answer){
     return result
 }
 
+async function saveConfiguration(){
+    if (typeof main.conf == 'undefined')
+        return;
+
+    const filePath = $('.file-path').text();
+
+	let handlers = await fillBase64Handlers();
+	saveConfFiles(main.conf, filePath, handlers)
+}
+
 async function saveConfFiles(conf, filePath, pyHandlers){
     let result_save = await saveConf(conf, filePath)
     let result_check = checkSaveFileResult(result_save)
@@ -43,6 +53,7 @@ async function saveConfFiles(conf, filePath, pyHandlers){
         notificate('Ошибка сохранения файла: ' + result_save.msg, 'danger') 
     else
         notificate('Файл успешно сохранен', 'success')
+        loadPrev();
 
     return result_check
 }

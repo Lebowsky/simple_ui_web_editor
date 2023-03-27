@@ -10,8 +10,9 @@ from ..config import resource_path
 class AsyncSimple(Simple):
     def __init__(self, socket):
         super().__init__(socket, '')
-        path_to_handlers = resource_path('current_handlers')
+        path_to_handlers = resource_path('current_handlers.py')
         if os.path.exists(path_to_handlers):
+            print('handlers update')
             module = __import__('current_handlers')
             import importlib
             importlib.reload(module)
