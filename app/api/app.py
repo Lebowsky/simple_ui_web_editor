@@ -63,11 +63,10 @@ async def prev_index(request: Request):
             return response
 
 
-
-
 @sio.on('connect_event', namespace='/simpleweb')
-def connect(sid, *args):
+async def connect(sid, message):
     sw.set_sid(sid)
+    await sw.connect_event(message=message)
     print('connect_event')
 
 

@@ -27,7 +27,6 @@ $(document).ready(function () {
             }, 200);
         }
     });
-
     $(document).on('click', 'tr', function () {
         var id = $(this).attr("id")
         var index = $(this).index()
@@ -146,7 +145,6 @@ $(document).ready(function () {
             console.log('Some problem...:', e);
         }
     }
-
     socket.on('upload_file', function (data) {
         alert(data.file_id);
 
@@ -211,7 +209,6 @@ $(document).ready(function () {
                     "next": "Следующий",
                     "previous": "Предыдущий"
                 }
-
             }
         });
     });
