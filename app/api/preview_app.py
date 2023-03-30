@@ -8,9 +8,9 @@ from ..config import resource_path
 
 
 class AsyncSimple(Simple):
-    def __init__(self, socket, python_modules=None):
+    def __init__(self, socket, templates, python_modules=None):
         super().__init__(socket, '')
-
+        self.templates = templates
         if python_modules:
             for name in python_modules:
                 path_to_handlers = resource_path(f'{name}.py')
@@ -20,18 +20,24 @@ class AsyncSimple(Simple):
                     import importlib
                     importlib.reload(module)
 
-    async def build_page(self):
+    async def get_preview_page(self, request):
 
         file_path = await get_current_file_path()
 
         with open(file_path, encoding='utf-8') as file:
             self.configuration = json.load(file)
 
-        res = super().build_page()
-        res = res.replace(
-            'io(namespace, {reconnection: false})', 'io(namespace, {reconnection: false, path: "/ws/socket.io"})')
+        menu_context = []
+        for process in self.configuration['ClientConfiguration']['Processes']:
+            if process.get("type") == "Process" and str(process.get('hidden', 'false')).lower() == 'false':
+                menu_context.append(
+                    {
+                        'href': 'javascript:void(0)',
+                        'caption': process.get("ProcessName")
+                    }
+                )
 
-        return res
+        return self.templates.TemplateResponse("preview/preview.html", {"request": request, 'menu': menu_context})
 
     async def RunEvent(self, event, postExecute=None):
 
@@ -391,8 +397,8 @@ class AsyncSimple(Simple):
             for el in jSetValues:
                 for key, value in el.items():
                     await self.socket_.emit('setvalue', {'key': "d" + self.current_tab_id + "_" + key, 'value': el[key],
-                                                   'tabid': self.current_tab_id}, room=self.sid,
-                                      namespace='/' + SOCKET_NAMESPACE)
+                                                         'tabid': self.current_tab_id}, room=self.sid,
+                                            namespace='/' + SOCKET_NAMESPACE)
                     # print("d"+Simple.current_tab_id+"_"+key)
 
             self.hashMap.pop('SetValues', None)
@@ -407,8 +413,8 @@ class AsyncSimple(Simple):
             for el in jSetValues:
                 for key, value in el.items():
                     await self.socket_.emit('setvaluepulse',
-                                      {'key': "d" + active_tab + "_" + key, 'value': html.unescape(el[key]),
-                                       'tabid': active_tab}, room=self.sid, namespace='/' + SOCKET_NAMESPACE)
+                                            {'key': "d" + active_tab + "_" + key, 'value': html.unescape(el[key]),
+                                             'tabid': active_tab}, room=self.sid, namespace='/' + SOCKET_NAMESPACE)
                     # jSetValues = [{'key':"d"+Simple.current_tab_id+"_"+key,'value':el[key],'tabid':Simple.current_tab_id}]
                     # self.set_values_pulse(jSetValues)
             self.hashMap.pop('SetValuesPulse', None)
@@ -419,11 +425,11 @@ class AsyncSimple(Simple):
             for el in jSetValues:
                 for key, value in el.items():
                     await self.socket_.emit('setvaluehtml', {'key': "tablediv_" + "d" + self.current_tab_id + "_" + key,
-                                                       'value': str(
-                                                           self.add_table(json.dumps(el[key], ensure_ascii=False),
-                                                                          "d" + self.current_tab_id + "_" + key)),
-                                                       'tabid': self.current_tab_id}, sid=self.sid,
-                                      namespace='/' + SOCKET_NAMESPACE)
+                                                             'value': str(
+                                                                 self.add_table(json.dumps(el[key], ensure_ascii=False),
+                                                                                "d" + self.current_tab_id + "_" + key)),
+                                                             'tabid': self.current_tab_id}, sid=self.sid,
+                                            namespace='/' + SOCKET_NAMESPACE)
                     # self.socket_.emit('run_datatable',{"id":"d"+self.current_tab_id+"_"+key} ,room=self.sid,namespace='/'+SOCKET_NAMESPACE)
             self.hashMap.pop('SetValuesTable', None)
         if 'SetValuesCards' in self.hashMap:
@@ -432,16 +438,17 @@ class AsyncSimple(Simple):
             for el in jSetValues:
                 for key, value in el.items():
                     await self.socket_.emit('setvaluehtml', {'key': "cardsdiv_" + "d" + self.current_tab_id + "_" + key,
-                                                       'value': str(
-                                                           self.add_cards(json.dumps(el[key], ensure_ascii=False),
-                                                                          "d" + self.current_tab_id + "_" + key)),
-                                                       'tabid': self.current_tab_id}, sid=self.sid,
-                                      namespace='/' + SOCKET_NAMESPACE)
+                                                             'value': str(
+                                                                 self.add_cards(json.dumps(el[key], ensure_ascii=False),
+                                                                                "d" + self.current_tab_id + "_" + key)),
+                                                             'tabid': self.current_tab_id}, sid=self.sid,
+                                            namespace='/' + SOCKET_NAMESPACE)
             self.hashMap.pop('SetValuesCards', None)
 
         if 'CloseTab' in self.hashMap:
-            await self.socket_.emit('close_tab', {'buttonid': "maintab_" + self.current_tab_id, 'tabid': self.current_tab_id},
-                              room=self.sid, namespace='/' + SOCKET_NAMESPACE)
+            await self.socket_.emit('close_tab',
+                                    {'buttonid': "maintab_" + self.current_tab_id, 'tabid': self.current_tab_id},
+                                    room=self.sid, namespace='/' + SOCKET_NAMESPACE)
             self.hashMap.pop('CloseTab', None)
 
         if 'LoginCommit' in self.hashMap:
@@ -455,7 +462,7 @@ class AsyncSimple(Simple):
             self.make_menu(soup, soup, menustr)
 
             await self.socket_.emit('setvaluehtml', {"key": "sidenav", "value": str(soup)}, room=self.sid,
-                              namespace='/' + SOCKET_NAMESPACE)
+                                    namespace='/' + SOCKET_NAMESPACE)
             await self.socket_.emit('setmenulisteners', {}, room=self.sid, namespace='/' + SOCKET_NAMESPACE)
 
             self.hashMap.pop('LoginCommit', None)
@@ -480,11 +487,11 @@ class AsyncSimple(Simple):
                                               soup, tabid, title)
 
             await self.socket_.emit('add_html', {"id": "maintabs", "code": str(button)}, room=self.sid,
-                              namespace='/' + SOCKET_NAMESPACE)
+                                    namespace='/' + SOCKET_NAMESPACE)
             await self.socket_.emit('add_html', {"id": "maincontainer", "code": str(tab)}, room=self.sid,
-                              namespace='/' + SOCKET_NAMESPACE)
+                                    namespace='/' + SOCKET_NAMESPACE)
             await self.socket_.emit('click_button', {"id": "maintab_" + tabid}, room=self.sid,
-                              namespace='/' + SOCKET_NAMESPACE)
+                                    namespace='/' + SOCKET_NAMESPACE)
 
             firsttabslayout = []
             for t in added_tables:
@@ -504,9 +511,9 @@ class AsyncSimple(Simple):
                 dialogHTML = self.get_edit_html(jtable, jline, True)
 
                 await self.socket_.emit('setvaluehtml', {"key": "modaldialog", "value": dialogHTML}, room=self.sid,
-                                  namespace='/' + SOCKET_NAMESPACE)
+                                        namespace='/' + SOCKET_NAMESPACE)
                 await self.socket_.emit('show_modal', {'table_id': table_id, 'selected_line_id': '-1'}, room=self.sid,
-                                  namespace='/' + SOCKET_NAMESPACE)
+                                        namespace='/' + SOCKET_NAMESPACE)
 
         if 'TableEditRow' in self.hashMap:
             table_id = self.hashMap.get('TableEditRow')
@@ -522,18 +529,19 @@ class AsyncSimple(Simple):
                     dialogHTML = self.get_edit_html(jtable, jline, False)
 
                     await self.socket_.emit('setvaluehtml', {"key": "modaldialog", "value": dialogHTML}, room=self.sid,
-                                      namespace='/' + SOCKET_NAMESPACE)
+                                            namespace='/' + SOCKET_NAMESPACE)
                     await self.socket_.emit('show_modal', {'table_id': self.hashMap["table_id"],
-                                                     'selected_line_id': self.hashMap["selected_line_id"]},
-                                      room=self.sid, namespace='/' + SOCKET_NAMESPACE)
+                                                           'selected_line_id': self.hashMap["selected_line_id"]},
+                                            room=self.sid, namespace='/' + SOCKET_NAMESPACE)
 
         if 'UploadFile' in self.hashMap:
             file_id = self.hashMap.get('UploadFile')
 
             self.hashMap.pop('UploadFile', None)
 
-            await self.socket_.emit('upload_file', {'file_id': "d" + self.current_tab_id + "_" + file_id}, room=self.sid,
-                              namespace='/' + SOCKET_NAMESPACE)
+            await self.socket_.emit('upload_file', {'file_id': "d" + self.current_tab_id + "_" + file_id},
+                                    room=self.sid,
+                                    namespace='/' + SOCKET_NAMESPACE)
 
         if 'toast' in self.hashMap:
             text = self.hashMap.get('toast', '')
@@ -541,7 +549,8 @@ class AsyncSimple(Simple):
             toastid = str(uuid.uuid4().hex)
             # toasthtml = """<div class="alert" id="""+toastid+"""
             # <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span> """ + text+ '</div>'
-            await self.socket_.emit('toast', {'code': text, 'id': toastid}, room=self.sid, namespace='/' + SOCKET_NAMESPACE)
+            await self.socket_.emit('toast', {'code': text, 'id': toastid}, room=self.sid,
+                                    namespace='/' + SOCKET_NAMESPACE)
 
         if 'beep' in self.hashMap:
             self.hashMap.pop('beep', None)
@@ -587,9 +596,9 @@ class AsyncSimple(Simple):
               </div>
               </dialog>"""
             await self.socket_.emit('setvaluehtml', {"key": "modaldialog", "value": dialogHTML}, room=self.sid,
-                              namespace='/' + SOCKET_NAMESPACE)
+                                    namespace='/' + SOCKET_NAMESPACE)
             await self.socket_.emit('show_dialog', {'code': text, 'id': toastid}, room=self.sid,
-                              namespace='/' + SOCKET_NAMESPACE)
+                                    namespace='/' + SOCKET_NAMESPACE)
 
         if 'basic_notification' in self.hashMap:
             jnotification = json.loads(self.hashMap.get("basic_notification"))
@@ -600,7 +609,7 @@ class AsyncSimple(Simple):
             title = jnotification.get('title', '')
 
             await self.socket_.emit('notification', {'text': text, 'id': notificationid, 'title': title}, room=self.sid,
-                              namespace='/' + SOCKET_NAMESPACE)
+                                    namespace='/' + SOCKET_NAMESPACE)
 
         if 'ShowScreen' in self.hashMap:
             screenname = self.hashMap.get('ShowScreen', '')
@@ -613,9 +622,9 @@ class AsyncSimple(Simple):
 
             if screen == None:
                 await self.socket_.emit('setvaluehtml', {'key': "root_" + self.current_tab_id,
-                                                   'value': '<h1>Не найден экран: ' + screenname + '</h1>',
-                                                   'tabid': self.current_tab_id}, room=self.sid,
-                                  namespace='/' + SOCKET_NAMESPACE)
+                                                         'value': '<h1>Не найден экран: ' + screenname + '</h1>',
+                                                         'tabid': self.current_tab_id}, room=self.sid,
+                                        namespace='/' + SOCKET_NAMESPACE)
             else:
                 self.hashMap.pop('ShowScreen', None)
                 soup = bs4.BeautifulSoup(features="lxml")
@@ -630,8 +639,8 @@ class AsyncSimple(Simple):
                 layots = self.get_layouts(soup, screen, 0)
 
                 await self.socket_.emit('setvaluehtml', {'key': "root_" + self.current_tab_id, 'value': str(layots),
-                                                   'tabid': self.current_tab_id}, room=self.sid,
-                                  namespace='/' + SOCKET_NAMESPACE)
+                                                         'tabid': self.current_tab_id}, room=self.sid,
+                                        namespace='/' + SOCKET_NAMESPACE)
 
                 for t in added_tables:
                     await self.socket_.emit('run_datatable', t, room=self.sid, namespace='/' + SOCKET_NAMESPACE)
@@ -640,7 +649,6 @@ class AsyncSimple(Simple):
                     await self.socket_.emit('click_button', {"id": t}, room=self.sid, namespace='/' + SOCKET_NAMESPACE)
 
         self.tabsHashMap[active_tab] = dict(self.hashMap)
-
 
     async def close_maintab(self, message):
         super().close_maintab(message)
