@@ -8,6 +8,7 @@ from fastapi.responses import HTMLResponse
 from fastapi_socketio import SocketManager
 
 from .preview_app import AsyncSimple
+from ..config import resource_path
 from ..utils import get_config_from_file, get_python_modules
 
 sw: AsyncSimple
@@ -45,8 +46,15 @@ async def get_config():
 @app.get('/prev', response_class=HTMLResponse)
 async def prev_index():
     global sw
-    sw = AsyncSimple(sio, python_modules=get_python_modules())
-    return HTMLResponse(content=await sw.build_page())
+    try:
+        sw = AsyncSimple(sio, python_modules=get_python_modules())
+        response = HTMLResponse(content=await sw.build_page())
+    except Exception as e:
+        with open(resource_path('app/web/templates/error_500_response.html'), encoding='utf-8') as f:
+            response = HTMLResponse(content=f.read().replace('Message Here', str(e)))
+            print(str(e))
+    finally:
+        return response
 
 
 @sio.on('connect_event', namespace='/simpleweb')
