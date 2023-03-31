@@ -207,7 +207,6 @@ class ClientConfigurationModel(BaseConfigModel):
     stop_foreground_service_on_exit: Optional[bool] = Field(alias='StopForegroundServiceOnExit')
     on_keyboard_main: Optional[bool] = Field(alias='OnKeyboardMain')
     run_python: Optional[bool] = Field(alias='RunPython')
-    def_service_configuration: Optional[str] = Field(alias='DefServiceConfiguration')
     launch: Optional[str] = Field(alias='Launch')  # Tiles
     launch_process: Optional[str] = Field(alias='LaunchProcess')  # process
     launch_var: Optional[str] = Field(alias='LaunchVar')  # field
@@ -215,11 +214,12 @@ class ClientConfigurationModel(BaseConfigModel):
     menu_web_template: Optional[str] = Field(alias='MenuWebTemplate')
     media_file: Optional[List[MediaFileModel]] = Field(alias='Mediafile')
     offline_on_create: Optional[List[SQLQueryModel]] = Field(alias='OfflineOnCreate')
-    online_service_configuration: Optional[str] = Field(alias='OnlineServiceConfiguration')
+    # def_service_configuration: Optional[str] = Field(alias='DefServiceConfiguration')
+    # online_service_configuration: Optional[str] = Field(alias='OnlineServiceConfiguration')
     py_handlers: Optional[str] = Field(alias='PyHandlers')
     py_timer_task: Optional[List[PyTimerTaskModel]] = Field(alias='PyTimerTask')
     py_files: Optional[List[PyFilesModel]] = Field(default=[], alias='PyFiles')
-    arch2: Optional[bool]
+    arch2: bool = True
     common_handlers: Optional[List[CommonHandler]] = Field(default=[], alias='CommonHandlers')
 
     class Config:

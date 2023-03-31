@@ -69,12 +69,24 @@ def check_config_file(file_path):
         return {'error': 'ValidationError', 'message': e.json()}
     except FileNotFoundError as e:
         return {'error': 'FileNotFoundError', 'message': e.winerror}
+    except VersionError as e:
+        return {'error': 'VersionError', 'message': json.dumps({'error': str(e)})}
     except Exception as e:
         return {'error': 'UnknownError', 'message': json.dumps({'error': str(e)})}
 
 
-def check_config_version(json_data):
-    pass
+def check_config_version(data: dict):
+    for item in ['DefServiceConfiguration', 'OnlineServiceConfiguration']:
+        if item in data.keys() and data[item]:
+            raise VersionError('Unsupported configuration version')
+
+    check_keys = ['DefOnCreate', 'DefOnInput', 'DefOnlineOnCreate', 'DefOnlineOnInput']
+
+    for process in data['ClientConfiguration']['Processes']:
+        for operation in process['Operations']:
+            for item in check_keys:
+                if item in operation.keys() and operation[item]:
+                    raise VersionError('Unsupported configuration version')
 
 
 def get_qr_code_config():
@@ -151,3 +163,7 @@ def update_python_modules(new_modules: dict):
 
 def get_python_modules():
     return python_modules
+
+
+class VersionError(Exception):
+    pass
