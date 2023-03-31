@@ -59,7 +59,9 @@ def get_new_config():
 def check_config_file(file_path):
     try:
         with open(file_path, encoding='utf-8') as json_file:
-            config = RootConfigModel(**json.load(json_file))
+            json_data = json.load(json_file)
+            RootConfigModel(**json_data)
+            check_config_version(json_data)
             return {'file_path': file_path}
     except json.JSONDecodeError as e:
         return {'error': 'JSONDecodeError', 'message': e.msg}
@@ -69,6 +71,10 @@ def check_config_file(file_path):
         return {'error': 'FileNotFoundError', 'message': e.winerror}
     except Exception as e:
         return {'error': 'UnknownError', 'message': json.dumps({'error': str(e)})}
+
+
+def check_config_version(json_data):
+    pass
 
 
 def get_qr_code_config():
