@@ -12,7 +12,7 @@ class BaseHandler(BaseModel):
     type_: Optional[HandlerType] = Field(alias='Type', title='Type')
     type: HandlerType = Field(alias='type')
     method: str = Field(title='Method')
-    postExecute: str = Field(title='Post execute')
+    postExecute: str = Field(default='', title='Post execute')
 
     class Config:
         use_enum_values = True

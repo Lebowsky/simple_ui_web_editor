@@ -5,9 +5,13 @@ function checkAskFileResult(answer){
         result = false   
 
     }else if (typeof answer.error != 'undefined'){
-		notificate('Ошибка чтения файла: ' + answer.error)
-		console.log(JSON.parse(answer.message))
-
+        if (answer.error == 'VersionError' && 
+            confirm('Выбранный файл будет преобразован в новый формат. Продолжить?')){
+            result = true
+        }else{
+            notificate('Ошибка чтения файла: ' + answer.error)
+            console.log(JSON.parse(answer.message))
+        };
 	}else if (typeof answer.file_path != 'undefined'){
         result = true;
 	}else{
