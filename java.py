@@ -21,11 +21,14 @@ class NoSQL:
         with open(self.database_path, encoding='utf-8') as f:
             return json.load(f).get(key)
 
-    def put(self, key: str, value):
-        with open(self.database_path, 'r+', encoding='utf-8') as f:
-            data = json.load(f).get(key)
-            data[key] = value
-            json.dump(data)
+    def put(self, key: str, value, queue):
+        with open(self.database_path, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+
+        data[key] = value
+
+        with open(self.database_path, 'w', encoding='utf-8') as f:
+            json.dump(data, f, ensure_ascii=True, indent=4)
 
     def getallkeys(self) -> dict:
         with open(self.database_path, encoding='utf-8') as f:
