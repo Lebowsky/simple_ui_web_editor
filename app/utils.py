@@ -91,6 +91,8 @@ def check_config_version(data: dict):
     check_keys = ['DefOnCreate', 'DefOnInput', 'DefOnlineOnCreate', 'DefOnlineOnInput']
 
     for process in data['ClientConfiguration']['Processes']:
+        if not process.get('Operations'):
+            continue
         for operation in process['Operations']:
             for item in check_keys:
                 if item in operation.keys() and operation[item]:

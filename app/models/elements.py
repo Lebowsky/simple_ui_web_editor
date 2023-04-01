@@ -9,6 +9,7 @@ class BaseElement(BaseModel):
     type: str
     value: str = Field(default='', alias='Value')
     variable: str = Field(default='', alias='Variable')
+    style_name: Optional[str]
 
     class Config:
         use_enum_values = True

@@ -1,3 +1,4 @@
+import sys
 import contextlib
 import threading
 import time
@@ -49,12 +50,14 @@ async def prev_index():
     try:
         sw = AsyncSimple(sio, python_modules=get_python_modules())
         response = HTMLResponse(content=await sw.build_page())
+        return response
     except Exception as e:
+        import traceback
+
         with open(resource_path('app/web/templates/error_500_response.html'), encoding='utf-8') as f:
             response = HTMLResponse(content=f.read().replace('Message Here', str(e)))
-            print(str(e))
-    finally:
-        return response
+            print(traceback.format_exc())
+            return response
 
 
 @sio.on('connect_event', namespace='/simpleweb')

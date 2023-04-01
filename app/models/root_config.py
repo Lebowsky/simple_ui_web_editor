@@ -7,7 +7,7 @@ from pydantic import BaseModel, Field, validator
 from ..config import su_settings
 
 from .elements import Barcode, HorizontalGallery, Voice, Photo, PhotoGallery, \
-    Signature, Vision, Cart, ImageSlider, MenuItem
+    Signature, Vision, Cart, ImageSlider, MenuItem, DimensionElement, TextElement
 from .enums import CVDetectorType
 from .containers import Container, Tiles
 from .handlers import CommonHandler, Handler
@@ -61,6 +61,10 @@ class PyTimerTaskModel(BaseConfigModel):
 
     class Config:
         title = 'PyTimerTask'
+
+
+class StyleTemplates(DimensionElement, TextElement):
+    name: str
 
 
 class PyFilesModel(BaseConfigModel):
@@ -219,6 +223,7 @@ class ClientConfigurationModel(BaseConfigModel):
     py_handlers: Optional[str] = Field(alias='PyHandlers')
     py_timer_task: Optional[List[PyTimerTaskModel]] = Field(alias='PyTimerTask')
     py_files: Optional[List[PyFilesModel]] = Field(default=[], alias='PyFiles')
+    style_templates: Optional[List[StyleTemplates]] = Field(alias='StyleTemplates')
     arch2: bool = True
     common_handlers: Optional[List[CommonHandler]] = Field(default=[], alias='CommonHandlers')
 
