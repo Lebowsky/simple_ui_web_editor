@@ -1,5 +1,6 @@
 import json
 import os
+import pathlib
 from string import Formatter
 from types import LambdaType
 
@@ -14,6 +15,7 @@ class AsyncSimple(Simple):
         super().__init__(socket, '')
         self.templates = templates
         self.html = None
+        self.load_settings(resource_path('web_settings.json'))
 
         if python_modules:
             for name in python_modules:
@@ -1155,6 +1157,14 @@ class AsyncSimple(Simple):
 
             else:
                 self.hashMap['ErrorMessage'] = str(e)
+
+    def load_settings(self, path):
+        if pathlib.Path(path).is_file():
+            with open(path, encoding='utf-8') as f:
+                web_settings = json.load(f)
+                self.urlonline = web_settings.get('url', '')
+                self.username = web_settings.get('user', '')
+                self.password = web_settings.get('password', '')
 
     @staticmethod
     def get_process(configuration, processname):
