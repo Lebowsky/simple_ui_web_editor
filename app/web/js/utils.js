@@ -64,14 +64,18 @@ async function saveConfFiles(conf, filePath, pyHandlers){
 
 async function fillBase64Handlers(){
     let result = null;
-    const filePath = $('#py-handlers-file-path').text();
+    const filePath = $('#py-handlers-file-path').attr('data-path');
     const conf = main.conf.ClientConfiguration;
 
-    if (filePath.length > 0 && filePath != 'Not selected')
+    if (filePath.length > 0){
         result = await getBase64FromFilePath(filePath);
+    }
 
     if (result != null && result.length > 0){
         conf.PyHandlers = result;
+		main.saveElement(getSaveParamValueById('py-handlers-file-path', 'path'), "Configuration", "");
+    }else{
+        conf.pyHandlersPath = ''
     };
 
     if (typeof conf.PyFiles != 'undefined'){
@@ -118,5 +122,31 @@ function initReadedConf(conf, filePath){
     $(".file-path").text(filePath);
     $('#preview-button').show();
 
+    let pyHandlersPath = getConfParamValue('pyHandlersPath')
+    if (pyHandlersPath.length > 0){
+        $('#py-handlers-file-path').text(pyHandlersPath)
+    }else{
+        $('#py-handlers-file-path').text(constants.pyHandlersEmptyPath)
+    }
+    $('#py-handlers-file-path').attr('data-path', pyHandlersPath)
+
     loadPrev();
+}
+
+function getSaveParamValueById(id, valueParamName){
+    let filePathElement = $('#'+id)
+    let paramName = filePathElement.attr("data-param-name");
+    let paramValue = filePathElement.attr('data-' + valueParamName);
+    let params = {};
+    params[paramName] = paramValue;
+    
+    return params
+}
+
+function getConfParamValue(paramName, def=''){
+    let paramValue = main.conf.ClientConfiguration[paramName]
+    if (typeof paramValue == 'undefined')
+        return def
+    else
+        return paramValue
 }

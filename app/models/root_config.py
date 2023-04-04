@@ -221,6 +221,7 @@ class ClientConfigurationModel(BaseConfigModel):
     # def_service_configuration: Optional[str] = Field(alias='DefServiceConfiguration')
     # online_service_configuration: Optional[str] = Field(alias='OnlineServiceConfiguration')
     py_handlers: Optional[str] = Field(alias='PyHandlers')
+    py_handlers_path: Optional[str] = Field(alias='pyHandlersPath')
     py_timer_task: Optional[List[PyTimerTaskModel]] = Field(alias='PyTimerTask')
     py_files: Optional[List[PyFilesModel]] = Field(default=[], alias='PyFiles')
     style_templates: Optional[List[StyleTemplates]] = Field(alias='StyleTemplates')

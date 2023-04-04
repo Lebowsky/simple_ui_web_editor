@@ -82,3 +82,7 @@ const newElements = {
                 PyFileKey: 'Python module'
         }
 }
+
+const constants = {
+        'pyHandlersEmptyPath': '<Not selected>'
+}
