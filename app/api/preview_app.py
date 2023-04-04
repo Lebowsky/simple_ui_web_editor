@@ -1254,7 +1254,6 @@ class HTMLCreator:
             src=f'data:image/png;base64,{self.get_element_data(params, data)}'
         )
 
-
         # if 'style_class' in params:
         #     new_element['class'] = new_element.get('class', []) + [elem.get('style_class')]
 
@@ -1290,6 +1289,14 @@ class HTMLCreator:
         if not config:
             return
 
+        def add_style_from_func(func_list):
+            for func in func_list:
+                if isinstance(func, LambdaType):
+                    res = func(element)
+                    if res:
+                        styles.append(res.format(**element))
+                        break
+
         style_value = config.get(prop)
 
         if isinstance(style_value, dict):
@@ -1300,12 +1307,7 @@ class HTMLCreator:
                     if element.get(k) and element[k] in v:
                         self._add_styles(element, v, element[k], styles)
                     elif element.get(k):
-                        for func in v.values():
-                            if isinstance(func, LambdaType):
-                                result = func(element)
-                                if result:
-                                    styles.append(result.format(**element))
-                                    break
+                        add_style_from_func(v.values())
 
         elif isinstance(style_value, str):
             styles.append(style_value.format(**element))
@@ -1391,6 +1393,7 @@ class HTMLCreator:
                 'Padding': 'padding:{Padding}px'
             }
         }
+
 
 class javahashMap:
     d = {}
