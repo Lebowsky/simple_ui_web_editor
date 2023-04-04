@@ -53,8 +53,8 @@ async def get_config():
 async def prev_index(request: Request):
     global sw
     try:
-        sw = AsyncSimple(sio, python_modules=get_python_modules())
-        response = HTMLResponse(content=await sw.build_page())
+        sw = AsyncSimple(sio, templates=templates, python_modules=get_python_modules())
+        response = await sw.get_preview_page(request)
         return response
     except Exception as e:
         import traceback

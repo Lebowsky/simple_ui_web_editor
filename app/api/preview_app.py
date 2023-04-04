@@ -1124,6 +1124,38 @@ class AsyncSimple(Simple):
 
         return html_element
 
+    def set_input(self, method, data, ddata):
+        f = None
+        try:
+            module = __import__('current_handlers')
+            jdata = json.loads(data)
+            jhashMap = javahashMap()
+            jhashMap.importdict(self.hashMap)
+            f = getattr(module, method)
+            res = f(jhashMap, None, ddata)
+            jdata['hashmap'] = res.export()
+            jdata['stop'] = False
+            jdata['ErrorMessage'] = ""
+            jdata['Rows'] = []
+
+            self.hashMap = res.d
+
+            return json.dumps(jdata, ensure_ascii=False)
+        except Exception as e:
+            if f and getattr(f, '__name__'):
+                import traceback
+
+                stack = traceback.extract_tb(e.__traceback__)[:2]
+                pretty = traceback.format_list(stack)
+                error_traceback = '<br>'.join(pretty) + '\n  {} {}'.format(e.__class__, e)
+
+                # error_traceback = traceback.format_exception(etype=type(e), value=e, tb=e.__traceback__)
+                # error_traceback = ''.join(traceback.TracebackException.from_exception(e).format())
+                self.hashMap['ErrorMessage'] = html.unescape(f'Error in handler: {f.__name__}<br>{error_traceback}')
+
+            else:
+                self.hashMap['ErrorMessage'] = str(e)
+
     @staticmethod
     def get_process(configuration, processname):
         for process in configuration['ClientConfiguration']['Processes']:
@@ -1359,3 +1391,33 @@ class HTMLCreator:
                 'Padding': 'padding:{Padding}px'
             }
         }
+
+class javahashMap:
+    d = {}
+
+    def put(self, key, val):
+        self.d[key] = val
+
+    def get(self, key):
+        return self.d.get(key)
+
+    def remove(self, key):
+        if key in self.d:
+            self.d.pop(key)
+
+    def containsKey(self, key):
+        return key in self.d
+
+    def importmap(self, arr):
+        self.d = {}
+        for pair in arr:
+            self.d[pair['key']] = pair['value']
+
+    def importdict(self, d):
+        self.d = d
+
+    def export(self):
+        ex_hashMap = []
+        for key in self.d.keys():
+            ex_hashMap.append({"key": key, "value": self.d[key]})
+        return ex_hashMap
