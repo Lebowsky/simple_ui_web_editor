@@ -78,14 +78,14 @@ class PyFilesModel(BaseConfigModel):
 
 class ConfigurationSettingsModel(BaseConfigModel):
     uid: str = uuid.uuid4().hex
-    vendor: Optional[str]
-    vendor_url: Optional[str]
-    vendor_auth: Optional[str]
-    handler_split_mode: Optional[bool]
-    handler_code: Optional[str]
-    handler_url: Optional[str]
-    handler_auth: Optional[str]
-    dictionaries: Optional[str]
+    vendor: Optional[str] = ''
+    vendor_url: Optional[str] = ''
+    vendor_auth: Optional[str] = ''
+    handler_split_mode: Optional[bool] = False
+    handler_code: Optional[str] = ''
+    handler_url: Optional[str] = ''
+    handler_auth: Optional[str] = ''
+    dictionaries: Optional[str] = ''
 
     class Config:
         title = 'ConfigurationSettings'

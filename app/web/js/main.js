@@ -14,6 +14,18 @@ var Main = {
 				}
 			}
 		})
+		$.each(this.conf.ClientConfiguration.ConfigurationSettings, function(confParamName, confParamValue){
+			if (typeof confParamValue !== 'object') {
+				inputNode = $("#"+confParamName);
+
+				if (inputNode.length > 0) {
+					if (typeof confParamValue == 'boolean')
+						inputNode.prop('checked', confParamValue);
+					else
+						inputNode.val(confParamValue);
+				}
+			}
+		})
 	},
 	renderElementsList: function (listNode, type, path) {
 		let elementsItems = {},
@@ -222,10 +234,12 @@ var Main = {
 	saveElement: function (params, type, path) {
 		element = this.getElementByPath(type, path).element;
 
+		if (typeof element == 'undefined')
+			return
+
 		$.each(params, function (paramName, paramValue) {
 			element[paramName] = paramValue;
 		})
-
 	},
 	deleteElement: function (type, path) {
 		let parent     = this.getElementByPath(type, path).parent,
@@ -292,6 +306,9 @@ var Main = {
 		return params;
 	},
 	getElementByPath: function (type, path) {
+		if (typeof this.conf == 'undefined')
+			return {element: undefined}
+
 		let res = {
 				element: this.conf.ClientConfiguration,
 				parent: {},
@@ -304,6 +321,12 @@ var Main = {
 		if (type == "Configuration") {
 			return res;
 		}
+
+		if (type == "ConfigurationSettings") {
+			res.element = res.element.ConfigurationSettings;
+			return res;
+		}
+
 		if (type == "Process") {
 			res.parent    = res.element;
 			res.element   = res.element.Processes[arrPath[0]];

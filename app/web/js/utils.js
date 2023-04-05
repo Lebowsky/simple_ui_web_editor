@@ -28,7 +28,7 @@ function checkSaveFileResult(answer){
         result = true
     else if (answer != null && typeof answer.msg != 'undefined'){
         notificate('Ошибка сохранения файла') 
-        console.error(JSON.parse(answer.msg))
+        console.error(answer.msg)
     }
 
     return result
@@ -114,6 +114,7 @@ function initReadedConf(conf, filePath){
     clearMainSection();
     fillSelectElementsOptions();
     fillDefaultValues();
+    fillConfigSettings();
 
     main.renderConfiguration();
     main.renderElementsList($(selectors.processList), "Process", "");
@@ -147,6 +148,32 @@ function fillSelectElementsOptions(){
             })
         }
     });
+}
+
+function fillConfigSettings(){
+    let settings = main.conf.ClientConfiguration.ConfigurationSettings;
+
+    try {
+        if (typeof settings.vendor_auth != 'undefined' && settings.vendor_auth.length > 0){
+            let auth_array = decodeURIComponent(atob(settings.vendor_auth.split(' ')[1])).split(':')
+            $('#vendor-login').val(auth_array[0])
+            $('#vendor-password').val(auth_array[1])
+        }else{
+            $('#vendor-login').val('')
+            $('#vendor-password').val('')    
+        };
+
+        if (typeof settings.handler_auth != 'undefined' && settings.handler_auth.length > 0){
+            let auth_array = decodeURIComponent(atob(settings.handler_auth.split(' ')[1])).split(':')
+            $('#handlers-login').val(auth_array[0])
+            $('#handlers-password').val(auth_array[1])    
+        }else{
+            $('#handlers-login').val('')
+            $('#handlers-password').val('')    
+        }
+    } catch (error) {
+        console.log(error)    
+    }
 }
 
 function getSaveParamValueById(id, valueParamName){
