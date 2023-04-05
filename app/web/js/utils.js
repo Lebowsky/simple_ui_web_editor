@@ -112,6 +112,7 @@ function getHandlers(){
 function initReadedConf(conf, filePath){
     main.conf = conf;
     clearMainSection();
+    fillSelectElementsOptions();
     fillDefaultValues();
 
     main.renderConfiguration();
@@ -131,6 +132,21 @@ function initReadedConf(conf, filePath){
     $('#py-handlers-file-path').attr('data-path', pyHandlersPath)
 
     loadPrev();
+}
+
+function fillSelectElementsOptions(){
+    $.each(main.elementParams.ClientConfiguration, function(key, value){
+        if (value.type == 'select'){
+            selectNode = $('#' + key)
+            selectNode.empty()
+            $.each(value.options, function (index, option) {
+                selectNode.append($('<option>', {
+                    value: option,
+                    text: option
+                }));
+            })
+        }
+    });
 }
 
 function getSaveParamValueById(id, valueParamName){

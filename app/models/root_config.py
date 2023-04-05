@@ -8,7 +8,7 @@ from ..config import su_settings
 
 from .elements import Barcode, HorizontalGallery, Voice, Photo, PhotoGallery, \
     Signature, Vision, Cart, ImageSlider, MenuItem, DimensionElement, TextElement
-from .enums import CVDetectorType
+from .enums import CVDetectorType, LaunchType
 from .containers import Container, Tiles
 from .handlers import CommonHandler, Handler
 
@@ -211,7 +211,7 @@ class ClientConfigurationModel(BaseConfigModel):
     stop_foreground_service_on_exit: Optional[bool] = Field(alias='StopForegroundServiceOnExit')
     on_keyboard_main: Optional[bool] = Field(alias='OnKeyboardMain')
     run_python: Optional[bool] = Field(alias='RunPython')
-    launch: Optional[str] = Field(alias='Launch')  # Tiles
+    launch: Optional[LaunchType] = Field(alias='Launch', title='Menu type')  # Tiles
     launch_process: Optional[str] = Field(alias='LaunchProcess')  # process
     launch_var: Optional[str] = Field(alias='LaunchVar')  # field
     main_menu: Optional[List[MainMenuModel]] = Field(alias='MainMenu')

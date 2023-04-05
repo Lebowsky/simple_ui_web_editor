@@ -3,6 +3,11 @@ from typing import Literal
 from enum import Enum
 
 
+class LaunchType(str, Enum):
+    menu: str = 'Menu'
+    tiles: str = 'Tiles'
+
+
 class ElementsIcon(str, Enum):
     forward: str = 'forward'
     backward: str = 'backward'
