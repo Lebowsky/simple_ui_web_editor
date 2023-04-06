@@ -151,30 +151,35 @@ function fillSelectElementsOptions(){
 }
 
 function fillConfigSettings(){
-    let settings = main.conf.ClientConfiguration.ConfigurationSettings;
+    const settings = main.conf.ClientConfiguration.ConfigurationSettings,
+          {vendor_auth: vendorAuth = '', handler_auth: handlerAuth = ''} = settings;
 
-    try {
-        if (typeof settings.vendor_auth != 'undefined' && settings.vendor_auth.length > 0){
-            let auth_array = decodeURIComponent(atob(settings.vendor_auth.split(' ')[1])).split(':')
-            $('#vendor-login').val(auth_array[0])
-            $('#vendor-password').val(auth_array[1])
-        }else{
-            $('#vendor-login').val('')
-            $('#vendor-password').val('')    
+    let vendorLogin = '',
+        vendorPassword = '',
+        handlersLogin = '',
+        handlersPassword = ''
+    
+    if (vendorAuth){
+        try {
+            [vendorLogin = '', vendorPassword = ''] = decodeURIComponent(atob(vendorAuth.split(' ')[1])).split(':');
+        }catch(error){
+            console.log(error);
         };
+    };
+    $('#vendor-login').val(vendorLogin);
+    $('#vendor-password').val(vendorPassword);
 
-        if (typeof settings.handler_auth != 'undefined' && settings.handler_auth.length > 0){
-            let auth_array = decodeURIComponent(atob(settings.handler_auth.split(' ')[1])).split(':')
-            $('#handlers-login').val(auth_array[0])
-            $('#handlers-password').val(auth_array[1])    
-        }else{
-            $('#handlers-login').val('')
-            $('#handlers-password').val('')    
-        }
-    } catch (error) {
-        console.log(error)    
-    }
-}
+    if (handlerAuth){
+        try{
+            [handlersLogin = '', handlersPassword = ''] = decodeURIComponent(atob(handlerAuth.split(' ')[1])).split(':');
+        }catch(error){
+            console.log(error);
+        };
+    };
+    $('#handlers-login').val(handlersLogin);
+    $('#handlers-password').val(handlersPassword);
+
+};
 
 function getSaveParamValueById(id, valueParamName){
     let filePathElement = $('#'+id)
