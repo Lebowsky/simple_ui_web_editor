@@ -131,7 +131,7 @@ var Main = {
 		pathText = this.getElementByPath(type, path).path;
 
 		$.each(elementParams[type], function (configName, paramFields) {
-			if (paramFields["type"] != "operations") {
+			if (paramFields["type"] && paramFields["type"] != "operations") {
 				value = "";
 				if (paramFields["type"] == "elements" || paramFields["type"] == "handlers") {
 					html += '<div class="param list-param">';

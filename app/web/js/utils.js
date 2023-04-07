@@ -178,7 +178,6 @@ function fillConfigSettings(){
     };
     $('#handlers-login').val(handlersLogin);
     $('#handlers-password').val(handlersPassword);
-
 };
 
 function getSaveParamValueById(id, valueParamName){

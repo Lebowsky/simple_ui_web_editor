@@ -1,8 +1,8 @@
-from typing import Optional, Union, List, Any
+from typing import Optional, Union, List, Dict
 
 from enum import Enum
 
-from pydantic import BaseModel, validator, root_validator, create_model
+from pydantic import BaseModel, root_validator, create_model
 
 
 def get_any_of_elements(any_of: List):
@@ -22,6 +22,59 @@ def convert_to_dict(value):
     return create_model('result', **value)().dict(exclude_none=True)
 
 
+class Tab:
+    def __init__(self, field):
+        self.tabs = {
+            'common': {
+                'title': 'Common',
+                'items': [
+                    'type',
+                    'Value',
+                    'Variable',
+                    'style_name'
+                ],
+            },
+            'dimensions': {
+                'title': 'Dimensions',
+                'items': [
+                    'BackgroundColor',
+                    'StrokeWidth',
+                    'Padding',
+                    'orientation',
+                    'height',
+                    'width',
+                    'gravity_horizontal',
+                    'gravity_vertical',
+                    'weight',
+                ],
+            },
+            'text': {
+                'title': 'Text',
+                'items': [
+                    'TextSize',
+                    'TextColor',
+                    'TextBold',
+                    'TextItalic',
+                ],
+            },
+            'other': {
+                'title': 'Other',
+                'items': []
+            }
+        }
+        self.name = self.get_field_tab(field)
+        self.title = self.tabs[self.name].get('title', 'Other')
+
+    def get_field_tab(self, field, default='other'):
+        tab_name = default
+        for tab, value in self.tabs.items():
+            if field in value['items']:
+                tab_name = tab
+                break
+
+        return tab_name
+
+
 class FieldType(Enum):
     text = 'text'
     select = 'select'
@@ -36,6 +89,7 @@ class ElementType(BaseModel):
     type: FieldType
     options: Optional[List[str]]
     text: str
+    tab_name: str = ''
 
     class Config:
         use_enum_values = True
@@ -45,6 +99,7 @@ class BaseField(BaseModel):
     type: FieldType
     options: Optional[List[str]]
     default_value: Optional[Union[bool, str]]
+    tab_name: str = ''
     text: str
     required: bool = False
 
@@ -78,11 +133,19 @@ class BaseField(BaseModel):
 
 class BaseElement(BaseModel):
     type: Optional[List[ElementType]] = []
+    tabs: Dict = {}
 
     @root_validator
     def fill_values(cls, values: dict):
         if values.get('type'):
             values.pop('type')
+
+        for key, value in values.items():
+            if isinstance(value, BaseField):
+                tab = Tab(key)
+                value.tab_name = tab.name
+                if tab.name not in [key for key in values['tabs']]:
+                    values['tabs'][tab.name] = tab.title
 
         return values
 
