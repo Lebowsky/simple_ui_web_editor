@@ -61,7 +61,7 @@ const newElements = {
         Padding: ""
 	},
 	CommonHandler: {
-        type: "",
+        type: "CommonHandler",
         action: "",
         event: "onLaunch",
         method: "",
@@ -69,14 +69,14 @@ const newElements = {
         alias: ""
 	},
 	Handlers: {
-        type: "",
+        type: "Handlers",
         action: "",
         event: "onLaunch",
         method: "",
         postExecute: "",
 	},
         PyFiles: {
-                type: "",
+                type: "PyFiles",
                 PyFileData: '',
                 file_path: '',
                 PyFileKey: 'Python module'

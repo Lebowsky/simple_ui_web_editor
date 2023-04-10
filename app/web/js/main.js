@@ -38,6 +38,11 @@ var Main = {
 		if (type == "Process" || type == "Configuration") {
 			nameProp = "ProcessName";
 			elements = elementInfo.parent.Processes;
+			if (type == "Process") {
+				parentType = "Process";
+			} else if (type == "Configuration") {
+				parentType = "Configuration";
+			}
 		} else if (type == "CommonHandler") {
 			nameProp = "event";
 			elements = elementInfo.parent.CommonHandlers;
@@ -47,6 +52,7 @@ var Main = {
 		} else if (type == "Handlers") {
 			nameProp = "event";
 			elements = elementInfo.parent.Handlers;
+			parentType = "handlers";
 		} else if (type == "Operation") {
 			nameProp = "Name";
 			elements = elementInfo.parent.Operations;
@@ -77,17 +83,17 @@ var Main = {
 					itemName: elementName,
 					dataAttr: {
 						"type": elementType,
-						"parent-type": parentType,
+						//"parent-type": parentType,
 						"path": elementPath+String(elementIndex),
 					}
 				};
 			}
 		});
 
-		this.renderList(listNode, elementsItems, btnType, path);
+		this.renderList(listNode, elementsItems, btnType, path, parentType);
 	},
-	renderList: function (parentNode, items, type, path) {
-		html = '<div class="btn-group"><button class="btn-add" data-type="'+type+'" data-path="'+path+'">Add</button></div>';
+	renderList: function (parentNode, items, type, path, parentType) {
+		html = '<div class="btn-group"><button class="btn-add" data-type="'+type+'" data-parent-type="'+parentType+'" data-path="'+path+'">Add</button></div>';
 
 		if (Object.keys(items).length > 0) {
 			activeNodePath = String(parentNode.find(".list-item.active").attr("data-path"));
@@ -98,6 +104,8 @@ var Main = {
 				} else {
 					html += '<li class="list-item" ';
 				}
+				
+				html += 'data-parent-type="'+parentType+'"';
 	
 				$.each(item["dataAttr"], function (attrName, attrValue) {
 					html += 'data-'+attrName+'="'+attrValue+'"';
@@ -117,6 +125,7 @@ var Main = {
 		renderElements = false;
 		renderHandlers = false;
 		elementParams = this.elementParams;
+		arrTabs = Object.keys(elementParams[type]["tabs"]);
 
 		const namePath = {
 			Process: element.ProcessName,
@@ -127,6 +136,14 @@ var Main = {
 
 		pathText = this.getElementByPath(type, path).path;
 
+		if (arrTabs.length > 1) {
+			html += "<div class='tabs'>";
+			$.each(elementParams[type]["tabs"], function (tabName, tabValue) {
+				html += `<div onclick="selectModalTab(this)" class="tab ${tabName == arrTabs[0] ? 'active' : ''}" data-tab="${tabName}">${tabValue}</div>`;
+			})
+			html += "</div>";
+		}
+
 		$.each(elementParams[type], function (configName, paramFields) {
 			let renderParams = {
 				...paramFields,
@@ -136,9 +153,9 @@ var Main = {
 
 			if (paramFields["type"] && paramFields["type"] != "operations") {
 				let isListParam = paramFields["type"] == "elements" || paramFields["type"] == "handlers";
-				
+
 				html += `
-					<div class="param ${isListParam ? 'list-param' : ''}">
+					<div class="param ${isListParam ? 'list-param' : ''} ${paramFields["tab_name"] == arrTabs[0] ? 'active' : ''}" data-tab="${paramFields["tab_name"]}">
 					${getRenderModalElement(renderParams)}
 					</div>
 				`
@@ -157,7 +174,7 @@ var Main = {
 
 					if (typeOptions.parent == parentType) {
 						html += `
-							<div class="param">
+							<div class="param active" data-tab="${arrTabs[0]}">
 							${getRenderModalElement(renderParams)}
 							</div>
 							`	
@@ -226,6 +243,17 @@ var Main = {
 		}
 
 		length = elements.push(newElement);
+		elementIndex = length-1;
+
+		if (path != "") {
+			elementPath = path+"-"+elementIndex;
+		} else {
+			elementPath = elementIndex;
+		}
+
+		newElement["path"] = elementPath;
+
+		return newElement;
 	},
 	getElementParamsByForm: function (elemntParamsNode) {
 		inputs = elemntParamsNode.find(":input");
@@ -396,6 +424,16 @@ function selectTab (tabNode) {
 
 	$(".main-conf-wrap section").removeClass("active");
 	$(".main-conf-wrap #"+tabID).addClass("active");
+}
+
+function selectModalTab (tabNode) {
+	$(".tabs .tab").removeClass("active");
+	$(tabNode).addClass("active");
+
+	tabID = $(tabNode).attr("data-tab");
+
+	$(tabNode).parents(".params").find(".param").removeClass("active");
+	$(tabNode).parents(".params").find(".param[data-tab="+tabID+"]").addClass("active");
 }
 
 function togglePrev () {
