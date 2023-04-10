@@ -8,6 +8,7 @@ async function pickFile() {
 	if (checkAskFileResult(result)){
 		conf = await loadConfiguration(result.file_path);
 		initReadedConf(conf, result.file_path);
+		saveConfiguration();
 	};
 };
 
@@ -16,25 +17,29 @@ async function pickNewFileProject() {
 	if (checkAskFileResult(result)){
 		conf = await getNewConfiguration()
 		initReadedConf(conf, result.file_path)
+		saveConfiguration();
 	}
 }
 
 const fileLocationSave = async (event) => {
-	saveConfiguration()
+	saveConfiguration();
 }; 
 
 async function pickHandlersFile(){
 	if (! main.conf)
 		return
 
-	let filePathText = 'Not selected'
-	resultAsk = await askFile('python')
+	let filePathText = constants.pyHandlersEmptyPath;
+	resultAsk = await askFile('python');
 	
 	if (checkAskFileResult(resultAsk)){
-		filePathText = resultAsk.file_path
+		filePathText = resultAsk.file_path;
+		$('#py-handlers-file-path').attr('data-path', filePathText);
+	}else{
+		$('#py-handlers-file-path').attr('data-path', '');
 	}
 
-	$('#py-handlers-file-path').text(filePathText)
+	$('#py-handlers-file-path').text(filePathText);
 };
 
 const showQRSettings = async (event) => {

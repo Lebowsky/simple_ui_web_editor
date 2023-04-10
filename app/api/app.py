@@ -3,16 +3,23 @@ import threading
 import time
 
 import uvicorn
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
+
 from fastapi_socketio import SocketManager
 
 from .preview_app import AsyncSimple
-from ..utils import get_config_from_file
+from ..config import resource_path
+from ..utils import get_config_from_file, get_python_modules
 
 sw: AsyncSimple
 
 app = FastAPI()
+app.mount("/static", StaticFiles(directory=resource_path('app/web/templates/preview/static')), name="static")
+templates = Jinja2Templates(directory=resource_path('app/web/templates'))
+
 sio = SocketManager(app)
 
 
@@ -30,7 +37,7 @@ class Server(uvicorn.Server):
             thread.join()
 
 
-server = Server(uvicorn.Config(app=app, host="0.0.0.0", port=5000))
+server = Server(uvicorn.Config(app=app, host="0.0.0.0", port=5000, reload=True))
 
 
 @app.get('/get_conf')
@@ -43,15 +50,24 @@ async def get_config():
 
 
 @app.get('/prev', response_class=HTMLResponse)
-async def prev_index():
+async def prev_index(request: Request):
     global sw
-    sw = AsyncSimple(sio)
-    return HTMLResponse(content=await sw.build_page())
+    try:
+        sw = AsyncSimple(sio, templates=templates, python_modules=get_python_modules())
+        response = await sw.get_preview_page(request)
+        return response
+    except Exception as e:
+        import traceback
+        with open(resource_path('app/web/templates/error_500_response.html'), encoding='utf-8') as f:
+            response = HTMLResponse(content=f.read().replace('Message Here', str(e)))
+            print(traceback.format_exc())
+            return response
 
 
 @sio.on('connect_event', namespace='/simpleweb')
-def connect(sid, *args):
+async def connect(sid, message):
     sw.set_sid(sid)
+    await sw.connect_event(message=message)
     print('connect_event')
 
 

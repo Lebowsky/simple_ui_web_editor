@@ -7,8 +7,8 @@ from pydantic import BaseModel, Field, validator
 from ..config import su_settings
 
 from .elements import Barcode, HorizontalGallery, Voice, Photo, PhotoGallery, \
-    Signature, Vision, Cart, ImageSlider, MenuItem
-from .enums import CVDetectorType
+    Signature, Vision, Cart, ImageSlider, MenuItem, DimensionElement, TextElement
+from .enums import CVDetectorType, LaunchType
 from .containers import Container, Tiles
 from .handlers import CommonHandler, Handler
 
@@ -63,6 +63,10 @@ class PyTimerTaskModel(BaseConfigModel):
         title = 'PyTimerTask'
 
 
+class StyleTemplates(DimensionElement, TextElement):
+    name: str
+
+
 class PyFilesModel(BaseConfigModel):
     file_path: str = ''
     py_file_key: str = Field(alias='PyFileKey', title='PyFileKey')
@@ -74,14 +78,14 @@ class PyFilesModel(BaseConfigModel):
 
 class ConfigurationSettingsModel(BaseConfigModel):
     uid: str = uuid.uuid4().hex
-    vendor: Optional[str]
-    vendor_url: Optional[str]
-    vendor_auth: Optional[str]
-    handler_split_mode: Optional[bool]
-    handler_code: Optional[str]
-    handler_url: Optional[str]
-    handler_auth: Optional[str]
-    dictionaries: Optional[str]
+    vendor: Optional[str] = ''
+    vendor_url: Optional[str] = ''
+    vendor_auth: Optional[str] = ''
+    handler_split_mode: Optional[bool] = False
+    handler_code: Optional[str] = ''
+    handler_url: Optional[str] = ''
+    handler_auth: Optional[str] = ''
+    dictionaries: Optional[str] = ''
 
     class Config:
         title = 'ConfigurationSettings'
@@ -207,19 +211,21 @@ class ClientConfigurationModel(BaseConfigModel):
     stop_foreground_service_on_exit: Optional[bool] = Field(alias='StopForegroundServiceOnExit')
     on_keyboard_main: Optional[bool] = Field(alias='OnKeyboardMain')
     run_python: Optional[bool] = Field(alias='RunPython')
-    def_service_configuration: Optional[str] = Field(alias='DefServiceConfiguration')
-    launch: Optional[str] = Field(alias='Launch')  # Tiles
+    launch: Optional[LaunchType] = Field(alias='Launch', title='Menu type')  # Tiles
     launch_process: Optional[str] = Field(alias='LaunchProcess')  # process
     launch_var: Optional[str] = Field(alias='LaunchVar')  # field
     main_menu: Optional[List[MainMenuModel]] = Field(alias='MainMenu')
     menu_web_template: Optional[str] = Field(alias='MenuWebTemplate')
     media_file: Optional[List[MediaFileModel]] = Field(alias='Mediafile')
     offline_on_create: Optional[List[SQLQueryModel]] = Field(alias='OfflineOnCreate')
-    online_service_configuration: Optional[str] = Field(alias='OnlineServiceConfiguration')
+    # def_service_configuration: Optional[str] = Field(alias='DefServiceConfiguration')
+    # online_service_configuration: Optional[str] = Field(alias='OnlineServiceConfiguration')
     py_handlers: Optional[str] = Field(alias='PyHandlers')
+    py_handlers_path: Optional[str] = Field(alias='pyHandlersPath')
     py_timer_task: Optional[List[PyTimerTaskModel]] = Field(alias='PyTimerTask')
     py_files: Optional[List[PyFilesModel]] = Field(default=[], alias='PyFiles')
-    arch2: Optional[bool]
+    style_templates: Optional[List[StyleTemplates]] = Field(alias='StyleTemplates')
+    arch2: bool = True
     common_handlers: Optional[List[CommonHandler]] = Field(default=[], alias='CommonHandlers')
 
     class Config:

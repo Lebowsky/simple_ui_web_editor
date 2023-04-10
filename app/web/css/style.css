@@ -148,7 +148,7 @@ select {
 .logo img {
     width: 100px;
 }
-input[type=text] {
+input[type=text], input[type=password]{
     padding: 8px 10px;
     color: #333;
 }
@@ -229,7 +229,7 @@ footer {
     padding: 20px 0;
     width: 100%;
 }
-.param input[type=text] {
+.param input[type=text], .param input[type=password] {
     width: 100%;
     margin-top: 10px;
 }
@@ -420,6 +420,11 @@ div.ui-resizable-e:after {
 #main-conf-common .param > div {
     width: 48%;
 }
+
+#main-conf-properties .param > div {
+    width: 48%;
+}
+
 .prev-wrap {
     width: 45%;
     padding: 0 50px;

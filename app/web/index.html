@@ -23,6 +23,7 @@
 	<script type="text/javascript" src="js/export.js"></script>
 	<script type="text/javascript" src="js/dialogs.js"></script>
 	<script type="text/javascript" src="js/utils.js"></script>
+	<script type="text/javascript" src="js/renderElements.js"></script>
 	<script>
         var main = Object.create(Main);
 		setConfigUIElements();
@@ -43,6 +44,7 @@
 				<div class="tabs">
 				    <div onclick="selectTab(this)" class="tab active" data-tab-id="main-conf-common">Common</div>
 					<div onclick="selectTab(this)" class="tab" data-tab-id="main-conf-main-menu">Main menu</div>
+					<div onclick="selectTab(this)" class="tab" data-tab-id="main-conf-main-styles">Styles</div>
 					<div onclick="selectTab(this)" class="tab" data-tab-id="main-conf-start-screen">Start screen</div>
 					<div onclick="selectTab(this)" class="tab" data-tab-id="main-conf-properties">Properties</div>
 					<div onclick="selectTab(this)" class="tab" data-tab-id="main-conf-schedulers">Shedulers</div>
@@ -91,10 +93,8 @@
 								<input type="text" name="FaceRecognitionURL" id="FaceRecognitionURL" data-param-name="FaceRecognitionURL">
 							</li>
 							<li class="param">
-							<div>
 								<label for="OnKeyboardMain">Keyboard reading in Main menu</label>
 								<input type="checkbox" name="OnKeyboardMain" id="OnKeyboardMain" data-param-name="OnKeyboardMain">
-							</div>
 							</li>
 						</ul>
 					</div>
@@ -105,16 +105,19 @@
 						<ul class="list" id="main-menu">No Items</ul>
 					</div>
 				</section>
+				<section id="main-conf-main-styles">
+					<div class="section-header">Styles<i class="fa fa-angle-up" aria-hidden="true"></i></div>
+					<div class="list-wrap show">
+						<ul class="list" id="styles">No Items</ul>
+					</div>
+				</section>
 				<section id="main-conf-start-screen">
 					<div class="section-header">Start screen<i class="fa fa-angle-up" aria-hidden="true"></i></div>
 					<div class="list-wrap show">
 						<ul class="list form configuration">
 							<li class="param">
 								<label for="Launch">Menu type</label>
-								<select name="Launch" id="Launch" data-param-name="Launch">
-									<option value="Menu" selected>Operations menu</option>
-									<option value="Tiles">Tiles menu</option>
-								</select>
+								<select name="Launch" id="Launch" data-param-name="Launch"></select>
 							</li>
 							<li class="param">
 								<label for="LaunchProcess">(* for tiles): process with layouts</label>
@@ -136,53 +139,65 @@
 					<div class="list-wrap show">
 						<ul class="list form configuration">
 							<li class="param">
-								<label for="test">Configuration Vendor</label>
-								<input type="text" name="test" id="test" data-param-name="test">
+								<div>
+									<label for="test">Split mode</label>
+									<input type="checkbox" name="test" id="test" data-param-name="test">
+								</div>
 							</li>
 							<li class="param">
-								<label for="test">vendor URL</label>
-								<input type="text" name="test" id="test" data-param-name="test">
+								<div>
+									<label for="vendor">Vendor</label>
+									<input type="text" name="vendor" id="vendor" data-param-name="vendor">
+								</div>
+								<div>
+									<label for="vendor_url">Vendor URL</label>
+									<input type="text" name="vendor_url" id="vendor_url" data-param-name="vendor_url">
+								</div>
 							</li>
 							<li class="param">
-								<label for="test">Vendor login (Basic)</label>
-								<input type="text" name="test" id="test" data-param-name="test">
+								<div>
+									<label for="vendor-login">Vendor login (Basic)</label>
+									<input type="text" name="vendor-login" id="vendor-login">
+								</div>
+								<div>
+									<label for="vendor-password">Vendor password (Basic)</label>
+									<input type="password" name="vendor-password" id="vendor-password">
+								</div>
 							</li>
 							<li class="param">
-								<label for="test">Vendor password (Basic)</label>
-								<input type="text" name="test" id="test" data-param-name="test">
+								<label for="vendor_auth">Vendor raw authorization string</label>
+								<input type="text" name="vendor-auth" id="vendor_auth" data-param-name="vendor_auth" readonly>
 							</li>
 							<li class="param">
-								<label for="test">Vendor raw authorization string</label>
-								<input type="text" name="test" id="test" data-param-name="test">
+								</li>
+							<li class="param">
+								<div>
+									<label for="handler_code">Client code</label>
+									<input type="text" name="handler_code" id="handler_code" data-param-name="handler_code">
+								</div>
+								<div>
+									<label for="handler_url">Handlers URL</label>
+									<input type="text" name="handler_url" id="handler_url" data-param-name="handler_url">
+								</div>
 							</li>
 							<li class="param">
-								<label for="test">Split mode</label>
-								<input type="text" name="test" id="test" data-param-name="test">
+								<div>
+									<label for="handlers-login">Handlers login (Basic)</label>
+									<input type="text" name="handlers-login" id="handlers-login">
+								</div>
+								<div>
+									<label for="handlers-password">Handlers password (Basic)</label>
+									<input type="password" name="handlers-password" id="handlers-password">
+								</div>
 							</li>
 							<li class="param">
-								<label for="test">Client code</label>
-								<input type="text" name="test" id="test" data-param-name="test">
+								<label for="handler_auth">Handlers raw authorization string</label>
+								<input type="text" name="handler_auth" id="handler_auth" data-param-name="handler_auth" readonly>
 							</li>
 							<li class="param">
-								<label for="test">Handlers URL</label>
-								<input type="text" name="test" id="test" data-param-name="test">
-							</li>
-							<li class="param">
-								<label for="test">Handlers login (Basic)</label>
-								<input type="text" name="test" id="test" data-param-name="test">
-							</li>
-							<li class="param">
-								<label for="test">Handlers password (Basic)</label>
-								<input type="text" name="test" id="test" data-param-name="test">
-							</li>
-							<li class="param">
-								<label for="test">Handlers raw authorization string</label>
-								<input type="text" name="test" id="test" data-param-name="test">
-							</li>
-							<li class="param">
-								<label for="test">Dictionaries JSON</label>
-								<input type="text" name="test" id="test" data-param-name="test">
-							</li>
+								<label for="dictionaries">Dictionaries JSON</label>
+								<input type="text" name="dictionaries" id="dictionaries" data-param-name="dictionaries">
+`							</li>
 						</ul>
 					</div>
 				</section>
@@ -200,8 +215,8 @@
 								<button id="open-py-handlers-file" onclick="pickHandlersFile()">Open file</button>
 								<label>Handlers file (Python)</label>
 							<li>
-							</li>
-								<span id="py-handlers-file-path">Not selected</span>
+							</li class="param">
+								<span id="py-handlers-file-path" data-param-name="pyHandlersPath">&lt;Not selected&gt;</span>
 							</li>
 						</ul>
 						<ul class="list" id="py-files">No Items</ul>

@@ -5,9 +5,13 @@ function checkAskFileResult(answer){
         result = false   
 
     }else if (typeof answer.error != 'undefined'){
-		notificate('Ошибка чтения файла: ' + answer.error)
-		console.log(JSON.parse(answer.message))
-
+        if (answer.error == 'VersionError' && 
+            confirm('Выбранный файл будет преобразован в новый формат. Продолжить?')){
+            result = true
+        }else{
+            notificate('Ошибка чтения файла: ' + answer.error)
+            console.log(JSON.parse(answer.message))
+        };
 	}else if (typeof answer.file_path != 'undefined'){
         result = true;
 	}else{
@@ -24,7 +28,7 @@ function checkSaveFileResult(answer){
         result = true
     else if (answer != null && typeof answer.msg != 'undefined'){
         notificate('Ошибка сохранения файла') 
-        console.error(JSON.parse(answer.msg))
+        console.error(answer.msg)
     }
 
     return result
@@ -32,13 +36,12 @@ function checkSaveFileResult(answer){
 
 async function saveConfiguration(){
     if (typeof main.conf == 'undefined')
-        return 
+        return;
 
     const filePath = $('.file-path').text();
 
-	let handlers = await fillBase64Handlers()
-	if (saveConfFiles(main.conf, filePath, handlers))
-		loadPrev()
+	let handlers = await fillBase64Handlers();
+	saveConfFiles(main.conf, filePath, handlers)
 }
 
 async function saveConfFiles(conf, filePath, pyHandlers){
@@ -54,20 +57,25 @@ async function saveConfFiles(conf, filePath, pyHandlers){
         notificate('Ошибка сохранения файла: ' + result_save.msg, 'danger') 
     else
         notificate('Файл успешно сохранен', 'success')
+        loadPrev();
 
     return result_check
 }
 
 async function fillBase64Handlers(){
     let result = null;
-    const filePath = $('#py-handlers-file-path').text();
+    const filePath = $('#py-handlers-file-path').attr('data-path');
     const conf = main.conf.ClientConfiguration;
 
-    if (filePath.length > 0 && filePath != 'Not selected')
+    if (filePath.length > 0){
         result = await getBase64FromFilePath(filePath);
+    }
 
     if (result != null && result.length > 0){
         conf.PyHandlers = result;
+		main.saveElement(getSaveParamValueById('py-handlers-file-path', 'path'), "Configuration", "");
+    }else{
+        conf.pyHandlersPath = ''
     };
 
     if (typeof conf.PyFiles != 'undefined'){
@@ -104,7 +112,9 @@ function getHandlers(){
 function initReadedConf(conf, filePath){
     main.conf = conf;
     clearMainSection();
+    fillSelectElementsOptions();
     fillDefaultValues();
+    fillConfigSettings();
 
     main.renderConfiguration();
     main.renderElementsList($(selectors.processList), "Process", "");
@@ -114,5 +124,76 @@ function initReadedConf(conf, filePath){
     $(".file-path").text(filePath);
     $('#preview-button').show();
 
+    let pyHandlersPath = getConfParamValue('pyHandlersPath')
+    if (pyHandlersPath.length > 0){
+        $('#py-handlers-file-path').text(pyHandlersPath)
+    }else{
+        $('#py-handlers-file-path').text(constants.pyHandlersEmptyPath)
+    }
+    $('#py-handlers-file-path').attr('data-path', pyHandlersPath)
+
     loadPrev();
+}
+
+function fillSelectElementsOptions(){
+    $.each(main.elementParams.ClientConfiguration, function(key, value){
+        if (value.type == 'select'){
+            selectNode = $('#' + key)
+            selectNode.empty()
+            $.each(value.options, function (index, option) {
+                selectNode.append($('<option>', {
+                    value: option,
+                    text: option
+                }));
+            })
+        }
+    });
+}
+
+function fillConfigSettings(){
+    const settings = main.conf.ClientConfiguration.ConfigurationSettings,
+          {vendor_auth: vendorAuth = '', handler_auth: handlerAuth = ''} = settings;
+
+    let vendorLogin = '',
+        vendorPassword = '',
+        handlersLogin = '',
+        handlersPassword = ''
+    
+    if (vendorAuth){
+        try {
+            [vendorLogin = '', vendorPassword = ''] = decodeURIComponent(atob(vendorAuth.split(' ')[1])).split(':');
+        }catch(error){
+            console.log(error);
+        };
+    };
+    $('#vendor-login').val(vendorLogin);
+    $('#vendor-password').val(vendorPassword);
+
+    if (handlerAuth){
+        try{
+            [handlersLogin = '', handlersPassword = ''] = decodeURIComponent(atob(handlerAuth.split(' ')[1])).split(':');
+        }catch(error){
+            console.log(error);
+        };
+    };
+    $('#handlers-login').val(handlersLogin);
+    $('#handlers-password').val(handlersPassword);
+};
+
+function getSaveParamValueById(id, valueParamName){
+    let filePathElement = $('#'+id)
+    let paramName = filePathElement.attr("data-param-name");
+    let paramValue = filePathElement.attr('data-' + valueParamName);
+    let params = {};
+    params[paramName] = paramValue;
+    
+    return params
+}
+
+function getConfParamValue(paramName, def=''){
+    let paramValue = main.conf.ClientConfiguration[paramName]
+    if (typeof paramValue == 'undefined')
+        return def
+    else
+        return paramValue
 }

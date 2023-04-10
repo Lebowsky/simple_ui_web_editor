@@ -14,6 +14,18 @@ var Main = {
 				}
 			}
 		})
+		$.each(this.conf.ClientConfiguration.ConfigurationSettings, function(confParamName, confParamValue){
+			if (typeof confParamValue !== 'object') {
+				inputNode = $("#"+confParamName);
+
+				if (inputNode.length > 0) {
+					if (typeof confParamValue == 'boolean')
+						inputNode.prop('checked', confParamValue);
+					else
+						inputNode.val(confParamValue);
+				}
+			}
+		})
 	},
 	renderElementsList: function (listNode, type, path) {
 		let elementsItems = {},
@@ -106,107 +118,52 @@ var Main = {
 		renderHandlers = false;
 		elementParams = this.elementParams;
 
-		if (type == "Process") {
-			elementName = element.ProcessName;
-		} else if (type == "CommonHandler") {
-			elementName = element.event;
-		} else if (type == "Operation") {
-			elementName = element.Name;
-		} else {
-			elementName = type;
+		const namePath = {
+			Process: element.ProcessName,
+			CommonHandler: element.event,
+			Operation: element.Name
 		}
+		elementName = namePath[type] || type
 
 		pathText = this.getElementByPath(type, path).path;
 
 		$.each(elementParams[type], function (configName, paramFields) {
-			if (paramFields["type"] != "operations") {
-				value = "";
-				if (paramFields["type"] == "elements" || paramFields["type"] == "handlers") {
-					html += '<div class="param list-param">';
-			  } else {
-					html += '<div class="param">';
-				}
+			let renderParams = {
+				...paramFields,
+				name: configName,
+				value: element[configName],
+			};
 
-				if (paramFields["type"] == "text") {
-					if (typeof element[configName] != 'undefined') {
-						value = element[configName];
-					}
-
-					html += '<label for="'+configName+'">'+paramFields["text"]+'</label>';
-					html += "<input type='text' name='"+configName+"' id='"+configName+"' data-param-name='"+configName+"' value='"+value+"'>";
-				}
-
-				if (paramFields["type"] == "checkbox") {
-					if (typeof element[configName] != 'undefined') {
-						value = element[configName] == true ? 'checked' : '';
-					}
-
-					html += '<div><label for="'+configName+'">'+paramFields["text"]+'</label>';
-					html += '<input type="checkbox" name="'+configName+'" id="'+configName+'" data-param-name="'+configName+'" '+value+'></div>';
-				}
-
-				if (paramFields["type"] == "select") {
-					html += '<label>'+paramFields["text"]+'</label>';
-					
-					if (typeof element[configName] != 'undefined') {
-						value = element[configName];
-					}
-
-					if (typeof paramFields["class"] != "undefined") {
-						html += '<select data-param-name="'+configName+'" class="'+paramFields["class"]+'">';	
-					} else {
-						html += '<select data-param-name="'+configName+'">';
-					}
-
-					$.each(paramFields["options"], function (optionIndex, optionValue) {
-						if (optionValue == element[configName]) {
-							html += '<option value="'+optionValue+'" selected>'+optionValue+'</option>'	;
-						} else {
-							html += '<option value="'+optionValue+'">'+optionValue+'</option>';
-						}
-					})
-
-					html += '</select>';
-				}
-
-				if (paramFields["type"] == "elements") {
-					html += '<label onclick="showList(this)">'+paramFields["text"]+'<i class="fa fa-angle-down" aria-hidden="true"></i></label><div class="list-wrap" style="display: none;">';
-					html += '<ul class="list elements">No elements</ul></div>';
+			if (paramFields["type"] && paramFields["type"] != "operations") {
+				let isListParam = paramFields["type"] == "elements" || paramFields["type"] == "handlers";
+				
+				html += `
+					<div class="param ${isListParam ? 'list-param' : ''}">
+					${getRenderModalElement(renderParams)}
+					</div>
+				`
+				if (paramFields["type"] == "elements")
 					renderElements = true;
-				}
 
-				if (paramFields["type"] == "handlers") {
-					html += '<label onclick="showList(this)">'+paramFields["text"]+'<i class="fa fa-angle-down" aria-hidden="true"></i></label><div class="list-wrap" style="display: none;">';
-					html += '<ul class="list handlers">No Handlers</ul></div>';
+				if (paramFields["type"] == "handlers")
 					renderHandlers = true;
-				}
 
-				if (configName == "type") {
-					$.each(paramFields, function(index, typeOptions) {
-						if (typeOptions.parent == parentType) {
-							html += '<label>'+typeOptions["text"]+'</label>';
-							
-							if (typeof element[configName] != 'undefined') {
-								value = element[configName];
-							}
-							
-							html += '<select data-param-name="'+configName+'" class="element-type">';	
+			}else if (configName == "type") {
+				renderParams.type = configName
 
-							$.each(typeOptions["options"], function (optionIndex, optionValue) {
-								if (optionValue == element[configName]) {
-									html += '<option value="'+optionValue+'" selected>'+optionValue+'</option>'	;
-								} else {
-									html += '<option value="'+optionValue+'">'+optionValue+'</option>';
-								}
-							})
+				$.each(paramFields, function(index, typeOptions) {
+					renderParams.text = typeOptions["text"]
+					renderParams.options = typeOptions["options"]
 
-							html += '</select>';
-						}
-					})
-				}
-
-				html += '</div>';
-			}
+					if (typeOptions.parent == parentType) {
+						html += `
+							<div class="param">
+							${getRenderModalElement(renderParams)}
+							</div>
+							`	
+					}
+				})
+			};
 		})
 
 		html += '<div class="btn-group modal-btn"><button class="save-element">Save</button></div></div>';
@@ -222,10 +179,12 @@ var Main = {
 	saveElement: function (params, type, path) {
 		element = this.getElementByPath(type, path).element;
 
+		if (typeof element == 'undefined')
+			return
+
 		$.each(params, function (paramName, paramValue) {
 			element[paramName] = paramValue;
 		})
-
 	},
 	deleteElement: function (type, path) {
 		let parent     = this.getElementByPath(type, path).parent,
@@ -292,6 +251,9 @@ var Main = {
 		return params;
 	},
 	getElementByPath: function (type, path) {
+		if (typeof this.conf == 'undefined')
+			return {element: undefined}
+
 		let res = {
 				element: this.conf.ClientConfiguration,
 				parent: {},
@@ -304,6 +266,12 @@ var Main = {
 		if (type == "Configuration") {
 			return res;
 		}
+
+		if (type == "ConfigurationSettings") {
+			res.element = res.element.ConfigurationSettings;
+			return res;
+		}
+
 		if (type == "Process") {
 			res.parent    = res.element;
 			res.element   = res.element.Processes[arrPath[0]];

@@ -120,6 +120,9 @@ $(document).ready(function(){
 	})
 
 	$(document).on('change', '.form :input', function(){
+		if (typeof $(this).attr("data-param-name") == 'undefined')
+			return
+
 		paramName = $(this).attr("data-param-name");
 		paramValue = $(this).val();
 		params = {};
@@ -140,6 +143,36 @@ $(document).ready(function(){
 			$('.content').removeClass("blur");
 		}
 	});
+
+	$(document).on('change', '#vendor-login, #vendor-password', function(){
+		let login = $('#vendor-login').val()
+		let password = $('#vendor-password').val()
+		let authString = 'Basic ' + btoa(encodeURIComponent(login + ':' + password));
+		$('#vendor_auth').val(authString)
+
+		let paramName = $('#vendor_auth').attr("data-param-name");
+		let paramValue = authString;
+		let params = {};
+		params[paramName] = paramValue;
+
+		main.saveElement(params, "ConfigurationSettings", '');
+	});
+
+	$(document).on('change', '#handlers-login, #handlers-password', function(){
+		let login = $('#handlers-login').val();
+		let password = $('#handlers-password').val();
+		let authString = 'Basic ' + btoa(encodeURIComponent(login + ':' + password));
+		$('#handler_auth').val(authString);
+
+		let paramName = $('#handler_auth').attr("data-param-name");
+		let paramValue = authString;
+		let params = {};
+		params[paramName] = paramValue;
+
+		main.saveElement(params, "ConfigurationSettings", '');
+	});
+
+	
 
     window.onbeforeunload = function (e) {
         return e

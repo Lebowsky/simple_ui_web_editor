@@ -75,6 +75,8 @@ def save_handlers_files(handlers: dict) -> dict:
                     result['result'] = 'error',
                     result['msg'] = result.get('msg', {})[file_name] = str(e)
 
+        utils.update_python_modules(handlers)
+
     return result
 
 

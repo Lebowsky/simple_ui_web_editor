@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Simple</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/png" sizes="16x16"
+        href="data:image/png;base64,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" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/dataTables.bootstrap5.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href="{{ url_for('static', path='/styles.css') }}" rel="stylesheet">
+    <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/4.2.0/socket.io.js"></script>
+    <script src="//cdn.jsdelivr.net/jquery.color-animation/1/mainfile"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.25/js/dataTables.bootstrap5.js"></script>
+    <script src="{{ url_for('static', path='/init.js') }}"></script>
+    <script>
+        function isNumberKey(evt) {
+            var charCode = (evt.which) ? evt.which : evt.keyCode
+            if (charCode > 31 && (charCode != 46 && (charCode < 48 || charCode > 57)))
+                return false;
+            return true;
+        }
+    </script>
+</head>
+
+<body>
+    <div class="sidenav" id="sidenav">
+        {% for item in menu %}
+        <a href="{{ item.href }}">{{ item.caption }}</a>
+        {% endfor %}
+    </div>
+
+    <div class="main" id="maincontainer">
+        <div class="tab" id="maintabs">
+        </div>
+        <div id="maintop">
+        </div>
+        <div id="modaldialog">
+        </div>
+    </div>
+
+    <!-- toast -->
+    <div id="toastModal" class="toastmodal">
+        <div class="toastmodal-content">
+            <div class="toastmodal-header">
+                <span class="toastclose">&times;</span>
+                <h5 style="padding-left: 1%;">Информация</h5>
+            </div>
+            <div class="toastmodal-body">
+                <p style="padding-left: 1%;" id="toastbody" />
+                <p />
+            </div>
+        </div>
+    </div>
+
+    <!-- error -->
+    <div id="errorModal" class="errormodal">
+        <div class="errormodal-content">
+            <div class="errormodal-header">
+                <span class="errorclose">&times;</span>
+                <h5 style="padding-left: 1%;">Ошибка</h5>
+            </div>
+            <div class="errormodal-body">
+                <p style="padding-left: 1%;" id="errorbody" />
+                <p />
+            </div>
+        </div>
+    </div>
+</body>
+
+<script src="{{ url_for('static', path='/events.js') }}"></script>
+
+<script>
+    function openProcess(strId) {
+        alert(strId);
+    }
+</script>
+
+<script>
+    var modal = document.getElementById("toastModal");
+    var span = document.getElementsByClassName("toastclose")[0];
+
+    span.onclick = function () {
+        modal.style.display = "none";
+    }
+
+    window.onclick = function (event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+</script>
+
+<script>
+    var modal = document.getElementById("errorModal");
+    var span = document.getElementsByClassName("errorclose")[0];
+    span.onclick = function () {
+        modal.style.display = "none";
+    }
+
+    window.onclick = function (event) {
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+</script>
+</html>
