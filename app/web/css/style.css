@@ -212,6 +212,7 @@ footer {
     max-height: 600px;
     overflow-y: auto;
     padding-right: 20px;
+    align-items: center;
 }
 .param {
     width: 100%;
@@ -315,10 +316,11 @@ label i,
     flex-direction: column;
     margin-top: 1px;
     z-index: 999;
+    top: 0;
 }
 .tab.active {
     border-right-color: #fff;
-    background: linear-gradient(-45deg, #21B9E1, #E71F53, #FBAF2E);
+    background: linear-gradient(-45deg, #21B9E1, #E71F53, #FBAF2E) !important;
     color: #fff;
 }
 .tab {
@@ -335,6 +337,15 @@ label i,
     padding: 10px 20px;
     font-size: 13.3px;
     font-weight: 500;
+}
+.modal .tab {
+    background: #fff;
+    border-radius: 300px;
+}
+.modal .tabs {
+    margin-top: 0;
+    margin-right: 50px;
+    top: auto;
 }
 .tab:not(.active):hover {
     box-shadow: 0 0 10px #0000001c;
@@ -434,6 +445,17 @@ div.ui-resizable-e:after {
 .prev-wrap.show {
     display: flex;
 }
+.modal-content .param.active:not(.list-param) {
+    display: flex;
+}
+.modal-content .param.active {
+    display: block;
+}
+.modal-content .param {
+    display: none;
+}
+
+
 @media (max-width: 1376px) {
 .content {
     width: 59%;

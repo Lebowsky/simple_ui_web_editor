@@ -36,7 +36,7 @@ const getRenderModalElement = (params) => {
                 <i class="fa fa-angle-down" aria-hidden="true"></i>
             </label>
             <div class="list-wrap" style="display: none;">
-                <ul class="list elements">No handlers</ul>
+                <ul class="list handlers">No handlers</ul>
             </div>
             `,
 
