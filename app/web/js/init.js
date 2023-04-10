@@ -90,8 +90,18 @@ $(document).ready(function(){
 			type     = $(this).attr("data-type"),
 			path     = $(this).attr("data-path");
 
-		main.addElement(type, path);
+		newElement = main.addElement(type, path);
 		main.renderElementsList(listNode, type, path);
+
+		let parentType = $(this).attr('data-parent-type'),
+			modalTitle = newElement["type"],
+			modals = $(selectors.modal),
+			modalPath = modals.last().length > 0 ? modals.last().find(".modal-head").find(".path").text() + " / " + modalTitle: modalTitle;
+
+		modal = addModal("", newElement["type"], newElement["path"], parentType, modalTitle, modalPath);
+		modals.removeClass("active");
+		modal.addClass("active");
+		main.renderModalParams(modal, newElement["type"], newElement["path"], parentType);
 	})
 
 	$(document).on('click', '#processes .list-item', function(e){
