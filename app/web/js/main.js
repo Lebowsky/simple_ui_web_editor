@@ -166,7 +166,8 @@ var Main = {
 					renderHandlers = true;
 
 			}else if (configName == "type") {
-				renderParams.type = configName
+				renderParams.type = configName;
+				renderParams.value = type;
 
 				$.each(paramFields, function(index, typeOptions) {
 					renderParams.text = typeOptions["text"]
@@ -369,7 +370,7 @@ function fillDefaultValues(){
 
 function addModal (className, type, path = "", parentType = "", modalTitle, modalPath) {
 	$("#modals-wrap").addClass("active");
-	modal = $("<div class='modal "+className+"' data-type='"+type+"' data-parent-type='"+parentType+"' data-path='"+path+"'><div class='close-modal'><i class='fa fa-times' aria-hidden='true'></i></div><div class='modal-head'><h2 class='modal-title'>"+modalTitle+"</h2><span class='path'>"+modalPath+"</span></div><div class='modal-content'></div></div>").appendTo("#modals-wrap");
+	modal = $("<div class='modal "+className+"' data-type='"+type+"' data-parent-type='"+parentType+"' data-path='"+path+"'><div class='close-modal'><i class='fa fa-times' aria-hidden='true'></i></div><div class='modal-head'><h2 class='modal-title'>"+modalTitle+"<span class='edited'>*</span></h2><span class='path'>"+modalPath+"</span></div><div class='modal-content'></div></div>").appendTo("#modals-wrap");
 	$('.content').addClass("blur");
 
 	$("body").addClass("no-scroll");
@@ -381,11 +382,17 @@ function closeModal (modalNode) {
 	if (modalNode.siblings(selectors.modal).length == 0) {
 		modalNode.parents("#modals-wrap").removeClass("active");
 	}
+	
+	parentModal = modalNode.prev();
 
 	modalNode.remove();
 	
-	if ($(".modal").length == 0)
+	if ($(".modal").length == 0) {
 		$("body").removeClass("no-scroll");
+		$('.content').removeClass("blur");
+	} else {
+		parentModal.addClass("active");
+	}
 }
 
 function showList (node, direction = "toggle") {
@@ -447,4 +454,91 @@ function loadPrev () {
 function loadedPrev (prevNode) {
 	$(".preload").hide();
 	$(prevNode).addClass("load");
+}
+
+var keys = {
+	"27" : "closeModal", // Esc
+	"ctrl+13" : "saveElementModal", // Ctrl+Enter
+}
+
+var events = {
+	closeModal: function (modal = false) {
+		if (modal === false) {
+			modal = $("#modals-wrap .modal.active");
+		}
+
+		if (modal.length > 0) {
+			confirmClose = true;
+
+			if (modal.hasClass("edited")) {
+				confirmClose = confirm('Закрыть без сохранения?');
+			}
+
+			if (confirmClose) {
+				let parentModal = modal.prev();
+
+				if (modal.hasClass("new")) {
+					let type = modal.attr('data-type'),
+						path = modal.attr('data-path');
+
+					main.deleteElement(type, path);
+					
+					if (parentModal.length > 0) {
+						main.renderElementsList(parentModal.find(".elements"), "", parentModal.attr("data-path"));
+						main.renderElementsList(parentModal.find(".handlers"), "Handlers", parentModal.attr("data-path"));
+
+					} else if (type == "Process") {
+						main.renderElementsList($(selectors.processList), "Process", "");
+
+					} else if (type == "Operation") {
+						path = main.pathPop(path);
+						main.renderElementsList($(selectors.operationsList), "Operation", path);
+					} else if (type == "CommonHandler") {
+						main.renderElementsList($(selectors.handlersList), "CommonHandler", "");
+					} else if (type == "PyFiles") {
+						main.renderElementsList($(selectors.pyFilesList), "PyFiles", "");
+					}
+					if (parentModal.length == 0) {
+						$('.content').removeClass("blur");
+					}
+				}
+
+				closeModal(modal);
+			}
+		}
+	},
+	saveElementModal: function (modal = false) {
+		if (modal === false) {
+			modal = $("#modals-wrap .modal.active");
+		}
+
+		let parentModal = modal.prev();
+
+		if (modal.length > 0) {
+			let type        = modal.attr('data-type'),
+				path        = modal.attr('data-path'),
+				parentModal = modal.prev();
+
+			params = main.getElementParamsByForm(modal);
+			main.saveElement(params, type, path);
+			
+			if (parentModal.length > 0) {
+				main.renderElementsList(parentModal.find(".elements"), "", parentModal.attr("data-path"));
+				main.renderElementsList(parentModal.find(".handlers"), "Handlers", parentModal.attr("data-path"));
+
+			} else if (type == "Process") {
+				main.renderElementsList($(selectors.processList), "Process", "");
+
+			} else if (type == "Operation") {
+				path = main.pathPop(path);
+				main.renderElementsList($(selectors.operationsList), "Operation", path);
+			} else if (type == "CommonHandler") {
+				main.renderElementsList($(selectors.handlersList), "CommonHandler", "");
+			} else if (type == "PyFiles") {
+				main.renderElementsList($(selectors.pyFilesList), "PyFiles", "");
+			}
+
+			closeModal(modal);
+		}
+	}
 }

@@ -54,35 +54,8 @@ $(document).ready(function(){
 	})
 
 	$(document).on('click', selectors.btnSave, function(){
-		let modal       = $(this).parents(selectors.modal),
-			type        = modal.attr('data-type'),
-			path        = modal.attr('data-path'),
-			parentModal = modal.prev();
-
-		params = main.getElementParamsByForm(modal);
-		main.saveElement(params, type, path);
-		
-		if (parentModal.length > 0) {
-			main.renderElementsList(parentModal.find(".elements"), "", parentModal.attr("data-path"));
-			main.renderElementsList(parentModal.find(".handlers"), "Handlers", parentModal.attr("data-path"));
-			parentModal.addClass("active");
-
-		} else if (type == "Process") {
-			main.renderElementsList($(selectors.processList), "Process", "");
-
-		} else if (type == "Operation") {
-			path = main.pathPop(path);
-			main.renderElementsList($(selectors.operationsList), "Operation", path);
-		} else if (type == "CommonHandler") {
-			main.renderElementsList($(selectors.handlersList), "CommonHandler", "");
-		} else if (type == "PyFiles") {
-			main.renderElementsList($(selectors.pyFilesList), "PyFiles", "");
-		}
-		if (parentModal.length == 0) {
-			$('.content').removeClass("blur");
-		}
-
-		closeModal(modal);
+		let modal = $(this).parents(selectors.modal);
+		events["saveElementModal"](modal);
 	})
 
 	$(document).on('click', selectors.btnAdd, function(e){
@@ -101,6 +74,7 @@ $(document).ready(function(){
 		modal = addModal("", newElement["type"], newElement["path"], parentType, modalTitle, modalPath);
 		modals.removeClass("active");
 		modal.addClass("active");
+		modal.addClass("new");
 		main.renderModalParams(modal, newElement["type"], newElement["path"], parentType);
 	})
 
@@ -125,8 +99,14 @@ $(document).ready(function(){
 			path  = modal.attr("data-path");
 
 		params = main.getElementParamsByForm(modal);
-		main.saveElement(params, type, path);
+		//main.saveElement(params, type, path);
 		main.renderModalParams(modal, type, path, parentType);
+		modal.addClass("edited");
+	})
+
+	$(document).on('change', '.modal.active :input', function(){
+		let modal = $(this).parents(selectors.modal);
+		modal.addClass("edited");
 	})
 
 	$(document).on('change', '.form :input', function(){
@@ -142,16 +122,23 @@ $(document).ready(function(){
 	})
 
 	$(document).on('click', selectors.btnCloseModal, function(){
-		let	modal       = $(this).parents(selectors.modal),
-			parentModal = modal.prev();
-			
-		closeModal($(this).parents(selectors.modal));
+		let modal = $(this).parents(selectors.modal);
+		events["closeModal"](modal);
+	});
 
-		if (parentModal.length > 0) {
-			parentModal.addClass("active");
-		} else {
-			$('.content').removeClass("blur");
-		}
+	$(document).keyup(function(e) {
+		key = e.keyCode;
+
+		if (e.ctrlKey)
+			key = "ctrl+"+key;
+		if (e.shiftKey)
+			key = "shift+"+key;
+		if (e.altKey)
+			key = "alt+"+key;
+
+		if (typeof(keys[key]) != "undefined") {
+			events[keys[key]]();
+		};
 	});
 
 	$(document).on('change', '#vendor-login, #vendor-password', function(){
