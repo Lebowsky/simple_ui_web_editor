@@ -55,7 +55,7 @@ $(document).ready(function(){
 
 	$(document).on('click', selectors.btnSave, function(){
 		let modal = $(this).parents(selectors.modal);
-		events["saveElementModal"](modal);
+		events.saveElementModal(modal);
 	})
 
 	$(document).on('click', selectors.btnAdd, function(e){
@@ -73,8 +73,7 @@ $(document).ready(function(){
 
 		modal = addModal("", newElement["type"], newElement["path"], parentType, modalTitle, modalPath);
 		modals.removeClass("active");
-		modal.addClass("active");
-		modal.addClass("new");
+		modal.addClass("active new edited");
 		main.renderModalParams(modal, newElement["type"], newElement["path"], parentType);
 	})
 
@@ -123,10 +122,10 @@ $(document).ready(function(){
 
 	$(document).on('click', selectors.btnCloseModal, function(){
 		let modal = $(this).parents(selectors.modal);
-		events["closeModal"](modal);
+		events.closeModal(modal);
 	});
 
-	$(document).keyup(function(e) {
+	$(window).keyup(function(e) {
 		key = e.keyCode;
 
 		if (e.ctrlKey)
@@ -135,6 +134,8 @@ $(document).ready(function(){
 			key = "shift+"+key;
 		if (e.altKey)
 			key = "alt+"+key;
+
+		console.log(e.keyCode);
 
 		if (typeof(keys[key]) != "undefined") {
 			events[keys[key]]();
