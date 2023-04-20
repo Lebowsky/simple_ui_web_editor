@@ -117,10 +117,14 @@ function initReadedConf(conf, filePath){
     fillConfigSettings();
 
     main.renderConfiguration();
-    main.renderElementsList($(selectors.processList), "Process", "");
-    main.renderElementsList($(selectors.handlersList), "CommonHandler", "");
-    main.renderElementsList($(selectors.pyFilesList), "PyFiles", "");
-
+    // main.renderElementsList($(selectors.processList), "Process", "");
+    main.renderListElements({
+        Processes: listElements['Processes'],
+        CommonHandlers: listElements['CommonHandlers'],
+        PyFiles: listElements['PyFiles'],
+        MainMenu: listElements['MainMenu'],
+    });
+    
     $(".file-path").text(filePath);
     $('#preview-button').show();
 

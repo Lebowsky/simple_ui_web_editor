@@ -170,8 +170,6 @@ $(document).ready(function(){
 		main.saveElement(params, "ConfigurationSettings", '');
 	});
 
-	
-
     window.onbeforeunload = function (e) {
         return e
     };

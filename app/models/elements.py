@@ -39,6 +39,9 @@ class TextElement(BaseModel):
 class Barcode(BaseElement):
     type: Literal['barcode']
 
+    class Config:
+        title = 'barcode'
+
 
 class HorizontalGallery(BaseElement):
     type: Literal['HorizontalGallery']

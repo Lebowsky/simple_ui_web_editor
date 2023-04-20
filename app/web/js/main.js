@@ -27,7 +27,21 @@ var Main = {
 			}
 		})
 	},
-	renderElementsList: function (listNode, type, path) {
+	renderListElements: (elements) => {
+		$.each(elements, (key, value) => {
+			const elementData = main.getElementDataByPath(value.type, value.path)
+			const renderParams = {
+				...value,
+				parentType: value.type,
+				path: value.path,
+				items: elementData.parent[key],
+				
+				activeNodePath: String($(value.node).find(".list-item.active").attr("data-path"))
+			}
+			$(value.node).html(getRenderListElement(renderParams));	
+		});
+	},
+	renderElementsList: function (listNode, type, path='') {
 		let elementsItems = {},
 			nameProp      = "type",
 			btnType       = type,
@@ -279,7 +293,84 @@ var Main = {
 
 		return params;
 	},
+	getElementDataByPath: function (type, path){
+		if (!this.conf){
+			return {element: undefined}		
+		};
+
+		let elementData;
+		let arrPath = String(path).split('-');
+		const [mainIndex, operationIndex, handlersIndex] = arrPath
+		const config = this.conf.ClientConfiguration
+		const res = {
+			element: config,
+			parent: {},
+			elements: {},
+			path: ""
+		}
+
+		const elementsData = {
+			Configuration: {
+				...res
+			},
+			ConfigurationSettings: {
+				...res,
+				element: config.ConfigurationSettings,
+			},
+			Process: {
+				...res,
+				parent: res.element,
+				element: config.Processes[mainIndex]
+			},
+			MainMenu: {
+				...res,
+				parent: res.element,
+				element: config.MainMenu[mainIndex]		
+			},
+			CommonHandler: {
+				...res,
+				parent: res.element,
+				element: config.CommonHandlers[mainIndex]
+			},
+			PyFiles: {
+				...res,
+				parent: res.element,
+				element: config.PyFiles[mainIndex]
+			},
+			Handlers: {
+				...res,
+				parent: operationIndex ? config.Processes[mainIndex].Operations[operationIndex] : undefined,
+				element: operationIndex ? config.Processes[mainIndex].Operations[operationIndex].Handlers[handlersIndex] : undefined,
+			},
+			Operation: {
+				...res,
+				parent: config.Processes[mainIndex],
+				element: operationIndex ? config.Processes[mainIndex].Operations[operationIndex] : undefined
+			},
+		}
+
+		elementData = elementsData[type]
+		if (elementData)
+			return elementData
+		else {
+			elementData = {
+				...res,
+				parent: config.Processes[mainIndex].Operations[operationIndex],
+				element: config.Processes[mainIndex].Operations[operationIndex]
+			}
+
+			arrPath.splice(0, 2);
+
+			for (var i = 0; i < arrPath.length; i++) {
+				elementData.parent  = elementData.element;
+				elementData.element = elementData.element.Elements[arrPath[i]];
+			}
+			return elementData
+		}
+	},
 	getElementByPath: function (type, path) {
+		return this.getElementDataByPath(type, path)
+
 		if (typeof this.conf == 'undefined')
 			return {element: undefined}
 
