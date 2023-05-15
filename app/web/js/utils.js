@@ -57,7 +57,7 @@ async function saveConfFiles(conf, filePath, pyHandlers){
         notificate('Ошибка сохранения файла: ' + result_save.msg, 'danger') 
     else
         notificate('Файл успешно сохранен', 'success')
-        loadPrev();
+        // loadPrev();
 
     return result_check
 }

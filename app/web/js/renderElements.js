@@ -1,103 +1,3 @@
-const getRenderModalElement = (params) => {
-    const value = getRenderParamsValue(params);
-    const { type, name, text } = params;
-
-    const renderElements = {
-        text: `
-            <label for="${name}">${text}</label>
-            <input type="${type}" name="${name}" id="${name}" data-param-name="${name}" value="${value}">
-            `,
-
-        checkbox: `
-            <div>
-                <label for="${name}">${text}</label>
-                <input type="${type}" name="${name}" id="${name}" data-param-name="${name}" ${value}>
-            </div>
-            `,
-
-        select: `
-            <label>${text}</label>
-            <select data-param-name="${name}">
-            ${getSelectOptions(params)}
-            </select>
-            `,
-
-        elements: `
-            <label onclick="showList(this)">${text}
-                <i class="fa fa-angle-down" aria-hidden="true"></i>
-            </label>
-            <div class="list-wrap" style="display: none;">
-                <ul class="list elements">No elements</ul>
-            </div>
-            `,
-
-        handlers: `
-            <label onclick="showList(this)">${text}
-                <i class="fa fa-angle-down" aria-hidden="true"></i>
-            </label>
-            <div class="list-wrap" style="display: none;">
-                <ul class="list handlers">No handlers</ul>
-            </div>
-            `,
-
-        type: `
-            <label>${text}</label>
-            <select data-param-name="${name}" class="element-type">
-            ${getSelectOptions(params)}
-            </select>
-            `
-    }
-
-    return renderElements[type]
-}
-const getRenderParamsValue = (params) => {
-    return {
-        text: params.value ? params.value : '',
-        select: params.value ? params.value : '',
-        checkbox: params.value == true ? 'checked' : ''
-    }[params.type]
-}
-const getSelectOptions = (params) => {
-    const { options, value } = params;
-    if (options)
-        return `${options.map(option => `<option value="${option}" ${option == value ? 'selected' : ''}>${option}</option>`)}`
-}
-const getRenderListElement = (params) => {
-    const { type, parentType, path, rowKey, items } = params;
-
-    const renderElements = {
-        element: `
-            <div class="btn-group">
-            <button class="btn-add" data-type="${type}" data-parent-type="${parentType}" data-path="${path}">Add</button>
-            </div>
-            ${getRowsListElement(params)}
-        `
-    }
-
-    return renderElements['element'];
-}
-const getRowsListElement = (params) => {
-    const { type, parentType, rowKey, path, items } = params;
-
-    let html = ''
-    if (!items || items.length == 0)
-        return "No Items"
-
-    Object.entries(items).forEach(item => {
-        const [index, element] = item;
-
-        html += `
-        <li class="list-item ${element.active ? 'active' : ''}" data-parent-type="${parentType}" data-type="${element.type ? element.type : type}" data-path="${path === '' ? index : path}">
-            <span class="item-name">${element.name}</span>
-            <div class="item-btn">
-                <span class="edit">edit</span>
-                <span class="delete">delete</span>
-            </div>
-        </li>
-    `
-    });
-    return html
-}
 class ListElement {
     constructor(items) {
         this.items = items;
@@ -156,7 +56,7 @@ class ModalWindow {
         const modalDiv = $('#modals-wrap.active').find('.modal.active');
         if (modalDiv.length == 0)
             return
-            
+
         const elementId = modalDiv.find('.params').attr('data-id');
         const element = main.configGraph.getElementById(elementId);
         let modalWindow;
@@ -179,6 +79,7 @@ class ElementModal extends ModalWindow{
         this.tabs = element.elementConfig.tabs;
         this.params = element.elementConfig;
         this.values = element.elementValues;
+        this.path = main.configGraph.getElementPath(element.id);
     }
     render(){
         this.html = `
@@ -188,7 +89,7 @@ class ElementModal extends ModalWindow{
                 </div>
                 <div class='modal-head'>
                     <h2 class='modal-title'>${this.title}<span class='edited'>*</span></h2>
-                    <span class='path'></span>
+                    <span class='path'>${this.path}</span>
                 </div>
                 <div class='modal-content'></div>
             </div>
@@ -229,7 +130,6 @@ class ElementModal extends ModalWindow{
                 html += this.renderElementFields(name, fields["type"], fields);
             } else if (name == 'type') {
                 html += this.renderElementFields(name, 'text', {type: 'type', text: 'type'});
-                // html += this.renderTypeFields(name, fields); 
             };
         })
         return html;

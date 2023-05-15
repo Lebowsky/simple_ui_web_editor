@@ -208,6 +208,14 @@ class ClientConfiguration {
 	getElementById(elementId) {
 		return this.elements.find((el) => el.id == elementId)
 	}
+	getElementPath(elementId, path=[]){
+		let element = this.getElementById(elementId);
+		if (element.title){
+			path.unshift(element.title);
+			this.getElementPath(element.parentId, path);
+		}
+		return path.join(' / ');
+	}
 	getElementChildrensTypes(elementId) {
 		const element = this.getElementById(elementId);
 		const elementType = element.parentConfig.type;
