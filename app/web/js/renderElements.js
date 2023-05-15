@@ -111,12 +111,12 @@ class ElementModal extends ModalWindow{
         return html;
     }
     renderTabs() {
-        const html = ''
+        let html = ''
         const arrTabs = this.tabs
-        if (arrTabs && arrTabs.length > 1) {
-            html = `<div class='tabs'>`
+        if (arrTabs && Object.keys(arrTabs).length > 1) {
+            html = `<div class='tabs'>`;
             $.each(this.tabs, function (tabName, tabValue) {
-                html += `<div onclick="selectModalTab(this)" class="tab ${tabName == arrTabs[0] ? 'active' : ''}" data-tab="${tabName}">${tabValue}</div>`
+                html += `<div onclick="selectModalTab(this)" class="tab" data-tab="${tabName}">${tabValue}</div>`
             })
             html += '</div>'
         }
@@ -318,6 +318,12 @@ class ElementModal extends ModalWindow{
             } 
         });
         return values;
+    }
+    show(){
+        super.show();
+        const tabs = $(this.modal).find('.tab');
+        if (tabs.length > 1)
+            selectModalTab(tabs[0])
     }
 }
 class SelectTypeModal extends ModalWindow {
