@@ -8,7 +8,6 @@ async function pickFile() {
 	if (checkAskFileResult(result)){
 		conf = await loadConfiguration(result.file_path);
 		initReadedConf(conf, result.file_path);
-		saveConfiguration();
 	};
 };
 
@@ -17,7 +16,6 @@ async function pickNewFileProject() {
 	if (checkAskFileResult(result)){
 		conf = await getNewConfiguration()
 		initReadedConf(conf, result.file_path)
-		saveConfiguration();
 	}
 }
 

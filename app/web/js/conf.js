@@ -1,24 +1,28 @@
 const selectors = {
-	processList: "#processes",
-	operationsList: "#operations",
-	handlersList: "#handlers",
+        processList: "#processes",
+        operationsList: "#operations",
+        commonHandlers: '#common-handlers',
+        handlersList: "#handlers",
         pyFilesList: "#py-files",
+        mediaFiles: '#media-files',
+        shedulers: '#shedulers',
+        styles: '#styles',
         mainMenuList: "#main-menu",
-	listWrap: ".list-wrap",
-	list: ".list",
-	listItem: ".list-item",
-	btnEdit: ".edit",
-	btnDelete: ".delete",
-	btnSave: ".save-element",
-	btnAdd: ".btn-add",
-	btnCloseModal: ".close-modal",
-	modal: ".modal",
-	modalTitle: ".modal",
-	modalContent: ".modal-content",
+        listWrap: ".list-wrap",
+        list: ".list",
+        listItem: ".list-item",
+        btnEdit: ".edit",
+        btnDelete: ".delete",
+        btnSave: ".save-element",
+        btnAdd: ".btn-add",
+        btnCloseModal: ".close-modal",
+        modal: ".modal",
+        modalTitle: ".modal",
+        modalContent: ".modal-content",
 };
 
 const newElements = {
-	Process: {
+        Processes: {
                 type: "Process",
                 ProcessName: "New Process",
                 PlanFactHeader: "",
@@ -27,8 +31,8 @@ const newElements = {
                 login_screen: false,
                 SC: false,
                 Operations: []
-	},
-	Operation: {
+        },
+        Operations: {
                 type: "Operation",
                 Name: "New Screen",
                 Timer: false,
@@ -47,8 +51,8 @@ const newElements = {
                 Elements: [],
                 Handlers: [],
                 onlineOnAfterStart: false
-	},
-	Elements: {
+        },
+        Elements: {
                 Value: "",
                 Variable: "",
                 type: "LinearLayout",
@@ -60,27 +64,64 @@ const newElements = {
                 BackgroundColor: "",
                 StrokeWidth: "",
                 Padding: ""
-	},
-	CommonHandler: {
-                type: "CommonHandler",
+        },
+        CommonHandlers: {
+                type: "CommonHandlers",
                 action: "",
                 event: "onLaunch",
                 method: "",
                 postExecute: "",
                 alias: ""
-	},
-	Handlers: {
+        },
+        Handlers: {
                 type: "Handlers",
                 action: "",
                 event: "onLaunch",
                 method: "",
                 postExecute: "",
-	},
+        },
         PyFiles: {
                 type: "PyFiles",
                 PyFileData: '',
                 file_path: '',
                 PyFileKey: 'Python module'
+        },
+        Mediafile: {
+                type: "Mediafile",
+                MediafileData: 'New media file',
+                MediafileExt: '',
+                MediafileKey: ''
+        },
+        StyleTemplates: {
+                type: 'StyleTemplates',
+                BackgroundColor: '',
+                Padding: '',
+                StrokeWidth: '',
+                TextBold: '',
+                TextColor: '',
+                TextItalic: '',
+                TextSize: '',
+                gravity_horizontal: '',
+                gravity_vertical: '',
+                height: '',
+                name: 'New style',
+                orientation: '',
+                weight: '',
+                width: '',
+        },
+        PyTimerTask: {
+                type: 'PyTimerTask',
+                PyTimerTaskBuilIn: '',
+                PyTimerTaskDef: 'New shedule',
+                PyTimerTaskKey: '',
+                PyTimerTaskPeriod: ''
+        },
+        MainMenu: {
+                type: 'MainMenu',
+                MenuId: '',
+                MenuItem: '',
+                MenuTitle: 'New menu',
+                MenuTop: ''
         }
 }
 
@@ -92,40 +133,78 @@ const listElements = {
         Processes: {
                 node: selectors.processList,
                 type: 'Process',
+                parentType: 'Processes',
                 path: '',
-                rowKey: ['ProcessName', 'CVOperationName']
+                rowKeys: ['ProcessName', 'CVOperationName']
         },
         CommonHandlers: {
-                node: selectors.handlersList,
+                node: selectors.commonHandlers,
                 type: 'CommonHandler',
+                parentType: 'CommonHandlers',
                 path: '',
-                rowKey: 'event'
+                rowKeys: ['event']
         },
         PyFiles: {
                 node: selectors.pyFilesList,
-                type: 'PyFiles',
+                type: 'PyFile',
+                parentType: 'PyFiles',
                 path: '',
-                rowKey: 'PyFileKey'
+                rowKeys: ['PyFileKey']
         },
         MainMenu: {
                 node: selectors.mainMenuList,
-                type: 'MainMenu',
+                type: 'MenuItem',
+                parentType: 'MainMenu',
                 path: '',
-                rowKey: 'MenuTitle'
+                rowKeys: ['MenuTitle']
         },
         Operations: {
                 node: selectors.operationsList,
                 type: 'Operation',
+                parentType: 'Operations',
                 path: '',
-                rowKey: 'Name',
+                rowKeys: ['Name'],
+        },
+        Mediafile: {
+                node: selectors.mediaFiles,
+                type: 'Mediafile',
+                parentType: 'Mediafile',
+                path: '',
+                rowKeys: ['MediafileData']
+        },
+        StyleTemplates:{
+                node: selectors.styles,
+                type: 'StyleTemplate',
+                parentType: 'StyleTemplates',
+                path: '',
+                rowKeys: ['name']        
+        },
+        PyTimerTask:{
+                node: selectors.shedulers,
+                type: 'PyTimerTask',
+                parentType: 'PyTimerTask',
+                path: '',
+                rowKeys: ['PyTimerTaskDef']
+        },
+        CVFrames: {
+                node: selectors.operationsList,
+                type: 'CVFrame',
+                parentType: 'CVFrames',
+                path: '',
+                rowKeys: ['Name'],
+        },
+        Handlers: {
+                node: '.modal.active #handlers',
+                type: 'Handler',
+                parentType: 'Handlers',
+                path: '',
+                rowKeys: ['event']
+        },
+        Elements: {
+                node: '.modal.active #elements',
+                type: 'Element',
+                parentType: 'Elements',
+                path: '',
+                rowKeys: ['type']
         }
-
-        // CVFrames: 'CVFrame',
-        // MainMenu: mainMenuList 'MainMenu',
-        // PyFiles: 'PyFiles' ,
-        // PyTimerTask: 'PyTimerTask',
-        
-        // Handlers: 'Handlers',
-         
-        // Mediafile: 'Mediafile',
 }

@@ -26,7 +26,7 @@ class MainMenuModel(BaseConfigModel):
     menu_top: bool = Field(default=False, alias='MenuTop')
 
     class Config:
-        title = 'MainMenu'
+        title = 'MenuItem'
 
 
 class MediaFileModel(BaseConfigModel):
@@ -35,7 +35,7 @@ class MediaFileModel(BaseConfigModel):
     media_file_key: str = Field(default='', alias='MediafileKey')  # media
 
     class Config:
-        title = 'MediaFile'
+        title = 'Mediafile'
 
 
 class SQLQueryModel(BaseConfigModel):
@@ -63,7 +63,7 @@ class PyTimerTaskModel(BaseConfigModel):
         title = 'PyTimerTask'
 
 
-class StyleTemplates(DimensionElement, TextElement):
+class StyleTemplate(DimensionElement, TextElement):
     name: str
 
 
@@ -73,7 +73,7 @@ class PyFilesModel(BaseConfigModel):
     py_file_data: str = Field(alias='PyFileData', title='PyFileData')
 
     class Config:
-        title = 'PyFiles'
+        title = 'PyFile'
 
 
 class ConfigurationSettingsModel(BaseConfigModel):
@@ -214,17 +214,17 @@ class ClientConfigurationModel(BaseConfigModel):
     launch: Optional[LaunchType] = Field(alias='Launch', title='Menu type')  # Tiles
     launch_process: Optional[str] = Field(alias='LaunchProcess')  # process
     launch_var: Optional[str] = Field(alias='LaunchVar')  # field
-    main_menu: Optional[List[MainMenuModel]] = Field(alias='MainMenu')
+    main_menu: Optional[List[MainMenuModel]] = Field(default=[], alias='MainMenu')
     menu_web_template: Optional[str] = Field(alias='MenuWebTemplate')
-    media_file: Optional[List[MediaFileModel]] = Field(alias='Mediafile')
+    media_file: Optional[List[MediaFileModel]] = Field(default=[], alias='Mediafile')
     offline_on_create: Optional[List[SQLQueryModel]] = Field(alias='OfflineOnCreate')
     # def_service_configuration: Optional[str] = Field(alias='DefServiceConfiguration')
     # online_service_configuration: Optional[str] = Field(alias='OnlineServiceConfiguration')
     py_handlers: Optional[str] = Field(alias='PyHandlers')
     py_handlers_path: Optional[str] = Field(alias='pyHandlersPath')
-    py_timer_task: Optional[List[PyTimerTaskModel]] = Field(alias='PyTimerTask')
+    py_timer_task: Optional[List[PyTimerTaskModel]] = Field(default=[], alias='PyTimerTask')
     py_files: Optional[List[PyFilesModel]] = Field(default=[], alias='PyFiles')
-    style_templates: Optional[List[StyleTemplates]] = Field(alias='StyleTemplates')
+    style_templates: Optional[List[StyleTemplate]] = Field(default=[], alias='StyleTemplates')
     arch2: bool = True
     common_handlers: Optional[List[CommonHandler]] = Field(default=[], alias='CommonHandlers')
 

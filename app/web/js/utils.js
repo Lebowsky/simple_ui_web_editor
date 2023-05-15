@@ -38,6 +38,8 @@ async function saveConfiguration(){
     if (typeof main.conf == 'undefined')
         return;
 
+    main.conf = main.configGraph.getConfig();
+
     const filePath = $('.file-path').text();
 
 	let handlers = await fillBase64Handlers();
@@ -111,24 +113,21 @@ function getHandlers(){
 
 function initReadedConf(conf, filePath){
     main.conf = conf;
+    main.configGraph = new ClientConfiguration(conf.ClientConfiguration);
+
     clearMainSection();
     fillSelectElementsOptions();
     fillDefaultValues();
     fillConfigSettings();
 
     main.renderConfiguration();
-    // main.renderElementsList($(selectors.processList), "Process", "");
-    main.renderListElements({
-        Processes: listElements['Processes'],
-        CommonHandlers: listElements['CommonHandlers'],
-        PyFiles: listElements['PyFiles'],
-        MainMenu: listElements['MainMenu'],
-    });
+    main.configGraph.fillListElements();
     
     $(".file-path").text(filePath);
     $('#preview-button').show();
 
     let pyHandlersPath = getConfParamValue('pyHandlersPath')
+    
     if (pyHandlersPath.length > 0){
         $('#py-handlers-file-path').text(pyHandlersPath)
     }else{
@@ -200,4 +199,10 @@ function getConfParamValue(paramName, def=''){
         return def
     else
         return paramValue
+}
+
+function debug(msg){
+    if (main.debug){
+        console.debug(msg);
+    }
 }
