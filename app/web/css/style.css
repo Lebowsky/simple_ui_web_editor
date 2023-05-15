@@ -219,6 +219,15 @@ footer {
     padding: 15px;
     /*border-bottom: 1px #e7e7e7 solid;*/
 }
+.modal.type-select-modal .param {
+    justify-content: left;
+}
+.type-select-modal .param input[type="radio"] {
+    margin-right: 10px;
+}
+.type-select-modal .param label {
+    line-height: 13px;
+}
 .param:not(.list-param) {
     display: flex;
     flex-wrap: wrap;
@@ -247,7 +256,7 @@ footer {
 span.file-path {
     text-align: center;
     display: block;
-    margin: 20px 0;
+    margin-top: 20px;
     font-size: 13px;
 }
 .modal.active {
@@ -261,7 +270,7 @@ span.path {
     font-weight: 500;
 }
 .modal-head {
-    padding: 20px 20px 0 20px;
+    padding: 20px;
     border-bottom: 1px #e7e7e7 solid;
     position: relative;
 }

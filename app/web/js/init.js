@@ -130,15 +130,13 @@ $(document).ready(function(){
 		// modal.addClass("edited");
 	})
 	$(document).on('change', '.form :input', function(){
-		// if (typeof $(this).attr("data-param-name") == 'undefined')
-		// 	return
-
-		// paramName = $(this).attr("data-param-name");
-		// paramValue = $(this).val();
-		// params = {};
-		// params[paramName] = paramValue;
-
-		// main.saveElement(params, "Configuration", "");
+		const paramName = $(this).attr("data-param-name");
+		
+		if (paramName){
+			$(this).attr('data-id', 1);
+			const value = $(this).prop('type') == 'checkbox'? $(this).prop('type'): $(this).val()
+			main.configGraph.setConfigValues(1, {[paramName]: value});
+		}
 	})
 	$(window).keyup(function(e) {
 		key = e.keyCode;
@@ -150,10 +148,10 @@ $(document).ready(function(){
 		if (e.altKey)
 			key = "alt+"+key;
 
-		console.log(e.keyCode);
+		// console.log(e.keyCode);
 
-		if (typeof(keys[key]) != "undefined") {
-			events[keys[key]]();
+		if (keys[key]) {
+			main.events(keys[key])();
 		};
 	});
 	$(document).on('change', '#vendor-login, #vendor-password', function(){
@@ -186,3 +184,55 @@ $(document).ready(function(){
         return e
     };
 });
+
+function loadedPrev(prevNode) {
+	$(".preload").hide();
+	$(prevNode).addClass("load");
+}
+function togglePrev() {
+	$(".prev-wrap").toggleClass("show");
+}
+function selectTab(tabNode) {
+	$(".tabs .tab").removeClass("active");
+	$(tabNode).addClass("active");
+
+	tabID = $(tabNode).attr("data-tab-id");
+
+	$(".main-conf-wrap section").removeClass("active");
+	$(".main-conf-wrap #" + tabID).addClass("active");
+}
+function selectModalTab(tabNode) {
+	$(".tabs .tab").removeClass("active");
+	$(tabNode).addClass("active");
+
+	tabID = $(tabNode).attr("data-tab");
+
+	$(tabNode).parents(".params").find(".param").removeClass("active");
+	$(tabNode).parents(".params").find(".param[data-tab=" + tabID + "]").addClass("active");
+}
+function hideMain() {
+	if ($(".main-conf-wrap").hasClass("hide")) {
+		$(".main-conf-wrap section .section-header").find("i").removeClass("fa-angle-down").addClass("fa-angle-up");
+	} else {
+		$(".main-conf-wrap section .section-header").find("i").removeClass("fa-angle-up").addClass("fa-angle-down");
+	}
+
+	$(".main-conf-wrap").toggleClass("hide");
+}
+function showList(node, direction = "toggle") {
+	if (direction == "up") {
+		$(node).siblings(selectors.listWrap).slideUp();
+		$(node).find("i").removeClass("fa-angle-up").addClass("fa-angle-down");
+	} else if (direction == "down") {
+		$(node).siblings(selectors.listWrap).slideDown();
+		$(node).find("i").removeClass("fa-angle-down").addClass("fa-angle-up");
+	} else {
+		$(node).siblings(selectors.listWrap).slideToggle();
+
+		if ($(node).find("i").hasClass("fa-angle-down")) {
+			$(node).find("i").removeClass("fa-angle-down").addClass("fa-angle-up");
+		} else if ($(node).find("i").hasClass("fa-angle-up")) {
+			$(node).find("i").removeClass("fa-angle-up").addClass("fa-angle-down");
+		}
+	}
+}

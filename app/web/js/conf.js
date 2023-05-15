@@ -21,6 +21,11 @@ const selectors = {
         modalContent: ".modal-content",
 };
 
+var keys = {
+	"27" : 'closeModal', // Esc
+	"ctrl+13" : 'saveElementModal', // Ctrl+Enter
+}
+
 const newElements = {
         Processes: {
                 type: "Process",

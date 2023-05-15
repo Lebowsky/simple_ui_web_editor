@@ -154,6 +154,9 @@ class ModalWindow {
     }
     static getCurrentModal() {
         const modalDiv = $('#modals-wrap.active').find('.modal.active');
+        if (modalDiv.length == 0)
+            return
+            
         const elementId = modalDiv.find('.params').attr('data-id');
         const element = main.configGraph.getElementById(elementId);
         let modalWindow;
@@ -374,7 +377,7 @@ class ElementModal extends ModalWindow{
     getSelectOptions(params) {
         const { options, value } = params;
         if (options)
-            return `${options.map(option => `<option value="${option}" ${option == value ? 'selected' : ''}>${option}</option>`)}`
+            return `${options.map(option => `<option value="${option}" ${option == value ? 'selected' : ''}>${option}</option>`).join('')}`
     }
     close() {
         let resultConfirm = !this.modal.hasClass('edited') || (this.modal.hasClass('edited') && confirm('Закрыть без сохранения?'));
@@ -399,7 +402,7 @@ class ElementModal extends ModalWindow{
     }
     getValues() {
         const values = {};
-        let inputNode;
+        let inputNode, selectNode;
 
         this.modal.find('.params').children('.param').each((index, paramNode) => {
             inputNode = $(paramNode).find('input');
@@ -407,6 +410,12 @@ class ElementModal extends ModalWindow{
                 const paramName = inputNode.attr('data-param-name')
                 values[paramName] = inputNode.prop('type') == 'checkbox' ? inputNode.is(':checked') : inputNode.val();
             }
+
+            selectNode = $(paramNode).find('select');
+            if (selectNode.length){
+                const paramName = selectNode.attr('data-param-name');
+                values[paramName] = $(selectNode.find('option:selected')).val();
+            } 
         });
         return values;
     }
