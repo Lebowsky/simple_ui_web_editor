@@ -138,13 +138,16 @@ class ElementModal extends ModalWindow{
         let html = '';
 
         if (['elements', 'handlers'].includes(type)) {
+            const elementsList = main.configGraph.elements.filter(
+                (el) => el.parentId == this.element.id && el.parentType == name);
+    
             html += `
                 <div class="param active list-param" data-tab="${fields["tab_name"]}">
-                    <label onclick="showList(this)">${name}
+                    <label onclick="showList(this)">${name} ${elementsList.length ? `(${elementsList.length})`: ''}
                         <i class="fa fa-angle-down" aria-hidden="true"></i>
                     </label>
                     <div class="list-wrap" style="display: none;">
-                        <ul class="list ${type}" id="${type}" data-id="${this.element.id}">${this.renderListElement(name)}</ul>
+                        <ul class="list ${type}" id="${type}" data-id="${this.element.id}">${this.renderListElement(elementsList)}</ul>
                     </div>
                 </div>
             `
@@ -185,10 +188,8 @@ class ElementModal extends ModalWindow{
         })
         return html
     }
-    renderListElement(parentType) {
-        const elementsList = main.configGraph.elements.filter(
-            (el) => el.parentId == this.element.id && el.parentType == parentType);
-
+    renderListElement(elementsList) {
+        
         const listItems = [];
 
         elementsList.forEach((item) => {
