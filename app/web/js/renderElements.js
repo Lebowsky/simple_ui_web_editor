@@ -1,18 +1,17 @@
 class ListElement {
     constructor(items) {
         this.items = items;
+        this.html;
     }
-
     render() {
-        let html = `
+        this.html = `
             <div class="btn-group">
                 <button class="btn-add">Add</button>
             </div>
             ${this.renderRows()}
         `
-        return html;
+        return this;
     }
-
     renderRows() {
         let html = '';
         if (!this.items || this.items.length == 0)
@@ -29,7 +28,11 @@ class ListElement {
             </li>
         `
         });
-        return html
+        return html;
+    }
+    addProcessesButton($node){
+        $node.find('.btn-group').append($('<button class="btn-add-from-file">Add from file</button>'))
+        return this
     }
 }
 class ModalWindow {
@@ -103,8 +106,6 @@ class ElementModal extends ModalWindow{
             <div class="params" data-id="${this.element.id}">
             ${this.renderTabs()}
             ${this.renderItems()}
-            ${this.renderElements()}
-            ${this.renderHandlers()}
             ${this.renderButtons()}
             </div>
             `
@@ -200,15 +201,7 @@ class ElementModal extends ModalWindow{
             });
         })
         const listElement = new ListElement(listItems);
-        return listElement.render();
-    }
-    renderElements() {
-        const html = ''
-        return html;
-    }
-    renderHandlers() {
-        const html = ''
-        return html;
+        return listElement.render().html;
     }
     renderButtons() {
         const html = `
