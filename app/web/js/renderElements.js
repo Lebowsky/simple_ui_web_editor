@@ -19,8 +19,9 @@ class ListElement {
 
         this.items.forEach((item, index) => {
             html += `
-            <li class="list-item">
-                <span class="item-name" data-id=${item.id}>${item.name}</span>
+            <li class="list-item" data-id=${item.id}>
+                <span class="item-name">${item.name}</span>
+                ${item.value ?`<span>${item.value}</span>`: ''}
                 <div class="item-btn">
                     <span class="edit">edit</span>
                     <span class="delete">delete</span>
@@ -113,11 +114,16 @@ class ElementModal extends ModalWindow{
     }
     renderTabs() {
         let html = ''
-        const arrTabs = this.tabs
-        if (arrTabs && Object.keys(arrTabs).length > 1) {
+        const arrTabs = Object.entries(this.tabs).map((el) => {
+            return {[el[0]]: el[1]}}).sort((a, b) => {
+                return (Object.values(a)[0].ordering) -(Object.values(b)[0].ordering)
+            })
+
+        if (arrTabs && (arrTabs).length > 1) {
             html = `<div class='tabs'>`;
-            $.each(this.tabs, function (tabName, tabValue) {
-                html += `<div onclick="selectModalTab(this)" class="tab" data-tab="${tabName}">${tabValue}</div>`
+            arrTabs.forEach((el) => {
+                let [name, value] = Object.entries(el)[0]
+                html += `<div onclick="selectModalTab(this)" class="tab" data-tab="${name}">${value.title}</div>`
             })
             html += '</div>'
         }
@@ -195,10 +201,15 @@ class ElementModal extends ModalWindow{
 
         elementsList.forEach((item) => {
             const name = item.elementValues[item.parentConfig.rowKeys.filter(key => item.elementValues[key])[0]];
-            listItems.push({
+            const itemValues = {
                 name: name,
-                id: item.id
-            });
+                id: item.id    
+            }
+            const value = Object.keys(item.elementValues).find((el) => ['Value', 'method'].includes(el))
+            if (value){
+                itemValues['value'] = item.elementValues[[value]]
+            }
+            listItems.push(itemValues)
         })
         const listElement = new ListElement(listItems);
         return listElement.render().html;
