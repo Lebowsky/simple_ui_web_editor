@@ -293,6 +293,11 @@ class ElementModal extends ModalWindow{
         if (this.modal.siblings(selectors.modal).length) {
             const prevModal = this.modal.prev();
             prevModal.addClass("active");
+            
+            const dataTab = prevModal.find('.param.active').attr('data-tab');
+            if (dataTab)
+                prevModal.find(`.tab[data-tab=${dataTab}]`).addClass('active')
+
         } else {
             this.modal.parents("#modals-wrap").removeClass("active");
             $("body").removeClass("no-scroll");
