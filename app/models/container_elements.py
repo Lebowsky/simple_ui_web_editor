@@ -121,3 +121,10 @@ class File(BaseElement, DimensionElement, TextElement):
 
     class Config:
         title = 'file'
+
+
+class Object(BaseElement, DimensionElement):
+    type: Literal['object']
+
+    class Config:
+        title = 'object'

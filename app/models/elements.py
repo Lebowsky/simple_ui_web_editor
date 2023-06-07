@@ -77,3 +77,7 @@ class ImageSlider(BaseElement):
 
 class MenuItem(BaseElement):
     type: Literal['MenuItem']
+
+
+class Fab(BaseElement):
+    type: Literal['fab']

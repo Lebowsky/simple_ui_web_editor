@@ -7,7 +7,7 @@ from pydantic import BaseModel, Field, validator
 from ..config import su_settings
 
 from .elements import Barcode, HorizontalGallery, Voice, Photo, PhotoGallery, \
-    Signature, Vision, Cart, ImageSlider, MenuItem, DimensionElement, TextElement
+    Signature, Vision, Cart, ImageSlider, MenuItem, DimensionElement, TextElement, Fab
 from .enums import CVDetectorType, LaunchType
 from .containers import Container, Tiles
 from .handlers import CommonHandler, Handler
@@ -104,7 +104,8 @@ Element = Annotated[
         Vision,
         Cart,
         ImageSlider,
-        MenuItem
+        MenuItem,
+        Fab
 
     ], Field(discriminator='type')
 ]
