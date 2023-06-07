@@ -41,6 +41,16 @@ def ask_file(file_type):
 
 
 @eel.expose
+def ask_dir():
+    return dialogs.ask_dir()
+
+
+@eel.expose
+def get_project_config(config_data):
+    return utils.get_project_config(config_data)
+
+
+@eel.expose
 def ask_save_file(file_type):
     """ Ask the user to select a save file """
     file_name = dialogs.ask_save_file(file_type)

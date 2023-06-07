@@ -136,7 +136,7 @@ class ElementModal extends ModalWindow{
             if (fields['type'] && fields["type"] != "operations") {
                 html += this.renderElementFields(name, fields["type"], fields);
             } else if (name == 'type') {
-                html += this.renderElementFields(name, 'text', {type: 'type', text: 'type'});
+                // html += this.renderElementFields(name, 'text', {type: 'type', text: 'type'});
             };
         })
         return html;
@@ -172,28 +172,6 @@ class ElementModal extends ModalWindow{
             `
         }
         return html;
-    }
-    renderTypeFields(name, fields) {
-        let html = '';
-        const renderParams = {
-            ...fields,
-            type: name,
-            value: name,
-        };
-
-        $.each(fields, function (index, typeOptions) {
-            renderParams.text = typeOptions["text"]
-            renderParams.options = typeOptions["options"]
-
-            if (typeOptions.parent == parentType) {
-                html += `
-                    <div class="param active" data-tab="common">
-                    ${this.renderModalElement(renderParams)}
-                    </div>
-                    `
-            }
-        })
-        return html
     }
     renderListElement(elementsList) {
         
