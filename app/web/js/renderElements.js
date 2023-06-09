@@ -1,18 +1,17 @@
 class ListElement {
     constructor(items) {
         this.items = items;
+        this.html;
     }
-
     render() {
-        let html = `
+        this.html = `
             <div class="btn-group">
                 <button class="btn-add">Add</button>
             </div>
             ${this.renderRows()}
         `
-        return html;
+        return this;
     }
-
     renderRows() {
         let html = '';
         if (!this.items || this.items.length == 0)
@@ -20,8 +19,9 @@ class ListElement {
 
         this.items.forEach((item, index) => {
             html += `
-            <li class="list-item">
-                <span class="item-name" data-id=${item.id}>${item.name}</span>
+            <li class="list-item" data-id=${item.id}>
+                <span class="item-name">${item.name}</span>
+                ${item.value ?`<span>${item.value}</span>`: ''}
                 <div class="item-btn">
                     <span class="edit">edit</span>
                     <span class="delete">delete</span>
@@ -29,7 +29,11 @@ class ListElement {
             </li>
         `
         });
-        return html
+        return html;
+    }
+    addProcessesButton($node){
+        $node.find('.btn-group').append($('<button class="btn-add-from-file">Add from file</button>'))
+        return this
     }
 }
 class ModalWindow {
@@ -103,8 +107,6 @@ class ElementModal extends ModalWindow{
             <div class="params" data-id="${this.element.id}">
             ${this.renderTabs()}
             ${this.renderItems()}
-            ${this.renderElements()}
-            ${this.renderHandlers()}
             ${this.renderButtons()}
             </div>
             `
@@ -112,11 +114,16 @@ class ElementModal extends ModalWindow{
     }
     renderTabs() {
         let html = ''
-        const arrTabs = this.tabs
-        if (arrTabs && Object.keys(arrTabs).length > 1) {
+        const arrTabs = Object.entries(this.tabs).map((el) => {
+            return {[el[0]]: el[1]}}).sort((a, b) => {
+                return (Object.values(a)[0].ordering) -(Object.values(b)[0].ordering)
+            })
+
+        if (arrTabs && (arrTabs).length > 1) {
             html = `<div class='tabs'>`;
-            $.each(this.tabs, function (tabName, tabValue) {
-                html += `<div onclick="selectModalTab(this)" class="tab" data-tab="${tabName}">${tabValue}</div>`
+            arrTabs.forEach((el) => {
+                let [name, value] = Object.entries(el)[0]
+                html += `<div onclick="selectModalTab(this)" class="tab" data-tab="${name}">${value.title}</div>`
             })
             html += '</div>'
         }
@@ -129,7 +136,7 @@ class ElementModal extends ModalWindow{
             if (fields['type'] && fields["type"] != "operations") {
                 html += this.renderElementFields(name, fields["type"], fields);
             } else if (name == 'type') {
-                html += this.renderElementFields(name, 'text', {type: 'type', text: 'type'});
+                // html += this.renderElementFields(name, 'text', {type: 'type', text: 'type'});
             };
         })
         return html;
@@ -166,49 +173,24 @@ class ElementModal extends ModalWindow{
         }
         return html;
     }
-    renderTypeFields(name, fields) {
-        let html = '';
-        const renderParams = {
-            ...fields,
-            type: name,
-            value: name,
-        };
-
-        $.each(fields, function (index, typeOptions) {
-            renderParams.text = typeOptions["text"]
-            renderParams.options = typeOptions["options"]
-
-            if (typeOptions.parent == parentType) {
-                html += `
-                    <div class="param active" data-tab="common">
-                    ${this.renderModalElement(renderParams)}
-                    </div>
-                    `
-            }
-        })
-        return html
-    }
     renderListElement(elementsList) {
         
         const listItems = [];
 
         elementsList.forEach((item) => {
             const name = item.elementValues[item.parentConfig.rowKeys.filter(key => item.elementValues[key])[0]];
-            listItems.push({
+            const itemValues = {
                 name: name,
                 id: item.id
-            });
+            }
+            const value = Object.keys(item.elementValues).find((el) => ['Value', 'method'].includes(el))
+            if (value){
+                itemValues['value'] = item.elementValues[[value]]
+            }
+            listItems.push(itemValues)
         })
         const listElement = new ListElement(listItems);
-        return listElement.render();
-    }
-    renderElements() {
-        const html = ''
-        return html;
-    }
-    renderHandlers() {
-        const html = ''
-        return html;
+        return listElement.render().html;
     }
     renderButtons() {
         const html = `
@@ -289,6 +271,11 @@ class ElementModal extends ModalWindow{
         if (this.modal.siblings(selectors.modal).length) {
             const prevModal = this.modal.prev();
             prevModal.addClass("active");
+
+            const dataTab = prevModal.find('.param.active').attr('data-tab');
+            if (dataTab)
+                prevModal.find(`.tab[data-tab=${dataTab}]`).addClass('active')
+
         } else {
             this.modal.parents("#modals-wrap").removeClass("active");
             $("body").removeClass("no-scroll");

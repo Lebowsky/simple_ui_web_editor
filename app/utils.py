@@ -51,7 +51,9 @@ def get_config_from_file(file_path):
                     return check_result
             else:
                 with open(file_path, encoding='utf-8') as json_file:
-                    return RootConfigModel(**json.load(json_file)).dict(by_alias=True, exclude_none=True)
+                    json_data = json.load(json_file)
+                    check_file_paths(json_data, os.path.split(file_path)[0])
+                    return RootConfigModel(**json_data).dict(by_alias=True, exclude_none=True)
         else:
             raise Exception(check_result)
 
@@ -97,6 +99,26 @@ def check_config_version(data: dict):
             for item in check_keys:
                 if item in operation.keys() and operation[item]:
                     raise VersionError('Unsupported configuration version')
+
+
+def check_file_paths(data: dict, path: str):
+    py_files = data['ClientConfiguration']['PyFiles']
+    for item in py_files:
+        if item.get('file_path') and not os.path.exists(item['file_path']):
+            item['file_path'] = ''
+
+        file_path = os.path.join(path, '{}.py'.format(item['PyFileKey']))
+        if os.path.exists(file_path):
+            item['file_path'] = file_path
+
+    file_path = data['ClientConfiguration']['pyHandlersPath']
+    if file_path and not os.path.exists(file_path):
+        data['ClientConfiguration']['pyHandlersPath'] = ''
+
+    file_path = os.path.join(path, 'main.py')
+    if os.path.exists(file_path):
+        data['ClientConfiguration']['pyHandlersPath'] = file_path
+
 
 
 def convert_config_version(file_path):
