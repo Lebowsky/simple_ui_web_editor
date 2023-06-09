@@ -40,6 +40,37 @@ async function pickHandlersFile(){
 	$('#py-handlers-file-path').text(filePathText);
 };
 
+async function pickWorkingDir(){
+	if (! main.conf)
+		return
+
+	const resultAsk = await askDir();
+
+	if (resultAsk && resultAsk.path){
+		$('#working-dir-path').text(resultAsk.path);
+		const projectConfigPath = $('#project-config-path').text() || `${resultAsk.path}\sui_config.json`
+
+		const configData = {
+			workDir: resultAsk.path,
+			filePath: projectConfigPath,
+			PyHandlers : main.conf.ClientConfiguration['PyHandlers'] || '',
+			PyFiles : main.conf.ClientConfiguration['PyFiles'] || [],
+			Mediafile : main.conf.ClientConfiguration['Mediafile'] || []
+		}
+		const projectConfig = getProjectConfig(configData);
+		// if (resultCheck && !resultAsk.error){
+		// 	$('#project-config-path').text(resultAsk.file_path);
+		// }
+	}
+};
+
+async function pickProjectConfigFile(){
+	if (! main.conf)
+		return
+
+	
+};
+
 const showQRSettings = async (event) => {
     let img = $("#qr-preview"),
     	imgBase64 = await getQRByteArrayAsBase64(),

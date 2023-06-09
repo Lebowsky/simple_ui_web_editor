@@ -33,6 +33,7 @@ class Tab:
                     'Variable',
                     'style_name'
                 ],
+                'ordering': 1
             },
             'dimensions': {
                 'title': 'Dimensions',
@@ -47,6 +48,7 @@ class Tab:
                     'gravity_vertical',
                     'weight',
                 ],
+                'ordering': 2
             },
             'text': {
                 'title': 'Text',
@@ -56,16 +58,29 @@ class Tab:
                     'TextBold',
                     'TextItalic',
                 ],
+                'ordering': 3
             },
             'other': {
                 'title': 'Other',
-                'items': []
+                'items': [],
+                'ordering': 4
+            },
+            'elements': {
+                'title': 'Elements',
+                'items': ['Elements'],
+                'ordering': 5
+            },
+            'handlers': {
+                'title': 'Handlers',
+                'items': ['Handlers'],
+                'ordering': 6
             }
         }
         self.name = self.get_field_tab(field)
         self.title = self.tabs[self.name].get('title', 'Other')
+        self.ordering = self.tabs[self.name].get('ordering', 0)
 
-    def get_field_tab(self, field, default='other'):
+    def get_field_tab(self, field, default='common'):
         tab_name = default
         for tab, value in self.tabs.items():
             if field in value['items']:
@@ -145,7 +160,10 @@ class BaseElement(BaseModel):
                 tab = Tab(key)
                 value.tab_name = tab.name
                 if tab.name not in [key for key in values['tabs']]:
-                    values['tabs'][tab.name] = tab.title
+                    values['tabs'][tab.name] = {
+                        'title': tab.title,
+                        'ordering': tab.ordering
+                    }
 
         return values
 

@@ -273,7 +273,7 @@ class ClientConfiguration {
 
 		const listElement = new ListElement(listItems);
 		$(node).attr('data-id', elements.length ? elements[0].parentId : 1);
-		$(node).html(listElement.render());
+		$(node).html(listElement.render().html);
 	}
 	fillListElementValues(type, node, parentId = 1) {
 		const elements = this.elements.filter((element) => element.parentType == type && element.parentId == parentId);
@@ -289,7 +289,11 @@ class ClientConfiguration {
 		})
 
 		const listElement = new ListElement(listItems);
+		listElement.render();
+
 		$(node).attr('data-id', elements.length ? elements[0].parentId : 1);
-		$(node).html(listElement.render());
+		$(node).html(listElement.html);
+		if (type == 'Processes')
+			listElement.addProcessesButton($(node));
 	}
 }

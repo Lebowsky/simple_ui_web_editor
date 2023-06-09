@@ -42,6 +42,7 @@
 				<button id="open-project" onclick="pickNewFileProject(main)">New Project</button>
 				<button id="open-project" onclick="pickFile(main)">Open Project</button>
 				<button id="open-project" onclick="fileLocationSave()">Save Project</button>
+				<button id="open-project" onclick="showQRSettings()">Show QR</button>
 				<button id="preview-button" onclick="togglePrev()">Preview</button>
 			</div>
 			<span class="file-path"></span>
@@ -57,6 +58,9 @@
 					<div onclick="selectTab(this)" class="tab" data-tab-id="main-conf-media-files">Media files
 					</div>
 					<div onclick="selectTab(this)" class="tab" data-tab-id="main-conf-common-handlers">Common handlers
+					</div>
+					<div onclick="selectTab(this)" class="tab" data-tab-id="main-conf-project-settings">
+						Project
 					</div>
 				</div>
 				<section id="main-conf-common" class="active">
@@ -258,10 +262,32 @@
 						<ul class="list" id="common-handlers">No Items</ul>
 					</div>
 				</section>
+				<section id="main-conf-project-settings">
+					<div class="section-header">Project settings<i class="fa fa-angle-up" aria-hidden="true"></i></div>
+					<div class="list-wrap show">
+						<ul class="list">
+							<li>
+								<button id="open-working-dir" onclick="pickWorkingDir()">Open dir</button>
+								<label>Working dir</label>
+							<li>
+							</li class="param">
+								<span id="working-dir-path" data-param-name="workingDir">&lt;Not selected&gt;</span>
+							</li>
+							<li>
+								<button id="open-project-config" onclick="pickWorkingDir()">Open file</button>
+								<label>Project config file</label>
+							<li>
+							</li class="param">
+								<span id="project-config-path" data-param-name="projectConfig">&lt;Not selected&gt;</span>
+							</li>
+						</ul>
+					</div>
+				</section>
 			</div>
 			<section id="main-conf-process">
-				<div class="section-header" onclick="showList(this)">Processes<i class="fa fa-angle-up"
-						aria-hidden="true"></i></div>
+				<div class="section-header" onclick="showList(this)">Processes
+					<i class="fa fa-angle-up" aria-hidden="true"></i>
+				</div>
 				<div class="list-wrap show">
 					<ul class="list" id="processes">No process</ul>
 				</div>
@@ -275,7 +301,6 @@
 			</section>
 		</div>
 		<div class="prev-wrap">
-
 			<div id="prev">
 				<div class="prev-content">
 					<div class="preload">Project preview</div>

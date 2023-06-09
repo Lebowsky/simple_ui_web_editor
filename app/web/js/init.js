@@ -10,8 +10,7 @@ $(document).ready(function(){
 		}
 	});
 	$(document).on('click', selectors.btnEdit, function(){
-		const item = $(this).parents(selectors.listItem).find(".item-name");
-		const elementId = item.attr('data-id');
+		const elementId = $(this).parents(selectors.listItem).attr('data-id');
 		const element = main.configGraph.getElementById(elementId);
 
 		modal = new ElementModal(element);
@@ -19,8 +18,7 @@ $(document).ready(function(){
 	})
 	$(document).on('click', selectors.btnDelete, function(){
 		if (confirm('Вы уверены?')) {
-			const item = $(this).parents(selectors.listItem).find(".item-name");
-			const elementId = item.attr('data-id');
+			const elementId = $(this).parents(selectors.listItem).attr('data-id');
 			const element = main.configGraph.getElementById(elementId);
 			const type = element.parentType;
 			const node = element.parentConfig['node'];
@@ -102,13 +100,9 @@ $(document).ready(function(){
 	})
 	$(document).on('click', '#processes .list-item', function(e){
 		if ($(e.target).is(this) || $(e.target).is($(this).children("span"))) {
-			const elementId = $(this).children('span.item-name').attr('data-id');
+			const elementId = $(this).attr('data-id');
 			main.configGraph.fillListElementsByParent(elementId, selectors.operationsList);
-		// 	let path = $(this).attr("data-path");
-
-		// 	main.renderElementsList($(selectors.operationsList), "Operation", path);
 			showList($("#main-conf-screen .section-header"), "down");
-		// 	$(selectors.operationsList).find(selectors.btnAdd).attr("data-path", $(this).attr("data-path"));
 		}
 	})
 	$(document).on('click', '.main-conf-wrap .section-header', function(e){
@@ -202,13 +196,21 @@ function selectTab(tabNode) {
 	$(".main-conf-wrap #" + tabID).addClass("active");
 }
 function selectModalTab(tabNode) {
-	$(".tabs .tab").removeClass("active");
+	// $(".tabs .tab").removeClass("active");
+	$(tabNode).siblings().removeClass("active");
 	$(tabNode).addClass("active");
 
 	tabID = $(tabNode).attr("data-tab");
 
 	$(tabNode).parents(".params").find(".param").removeClass("active");
-	$(tabNode).parents(".params").find(".param[data-tab=" + tabID + "]").addClass("active");
+	const $currentTab = $(tabNode).parents(".params").find(".param[data-tab=" + tabID + "]")
+	$currentTab.addClass("active");
+	
+	if (['elements', 'handlers'].includes(tabID)){
+		const label = $currentTab.find('label');
+		showList(label, 'down');
+	}
+
 }
 function hideMain() {
 	if ($(".main-conf-wrap").hasClass("hide")) {
