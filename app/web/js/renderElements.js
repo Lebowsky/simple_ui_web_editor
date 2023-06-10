@@ -61,14 +61,16 @@ class ModalWindow {
         if (modalDiv.length == 0)
             return
 
-        const elementId = modalDiv.find('.params').attr('data-id');
-        const element = main.configGraph.getElementById(elementId);
         let modalWindow;
+        const elementId = modalDiv.find('.params').attr('data-id');
 
         if (modalDiv.hasClass('type-select-modal')) {
             const types = main.configGraph.getElementChildrensTypes(elementId)
             modalWindow = new SelectTypeModal(types);
+        } else if (modalDiv.hasClass('qr')) { 
+            modalWindow = new ImageModal();    
         } else {
+            const element = main.configGraph.getElementById(elementId);
             modalWindow = new ElementModal(element);
         }
         modalWindow.modal = modalDiv;
@@ -363,5 +365,38 @@ class SelectTypeModal extends ModalWindow {
     }
     setSelectedValue(value){
         this.selectedValue = value;
+    }
+}
+class ImageModal extends ModalWindow{
+    constructor() {
+        super();
+        this.modal = $('');
+        this.html = '';
+    }
+    render(){
+        this.html = `
+            <div class='modal qr'>
+                <div class='close-modal'>
+                    <i class='fa fa-times' aria-hidden='true'></i>
+                </div>
+                <div class='modal-head'>
+                    <h2 class='modal-title'>QR Settings<span class='edited'>*</span></h2>
+                </div>
+                <div class='modal-content'></div>
+            </div>
+            `
+        this.modal = $(this.html)
+        return this;
+    }
+    close() {
+        if (this.modal.siblings(selectors.modal).length) {
+            const prevModal = this.modal.prev();
+            prevModal.addClass("active");
+        } else {
+            this.modal.parents("#modals-wrap").removeClass("active");
+            $("body").removeClass("no-scroll");
+            $('.content').removeClass("blur");
+        }
+        this.modal.remove();
     }
 }
