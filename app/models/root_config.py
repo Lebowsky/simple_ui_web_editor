@@ -183,12 +183,53 @@ class ProcessesModel(BaseConfigModel):
     class Config:
         title = 'Process'
 
+'''
+IntentScannerMessage – имя сообщения сканера
+IntentScannerVariable – имя переменной сообщения сканера
+IntentScannerLength – имя переменной, в которой храниться длина штрихкода, если он предаётся в виде байт-массива а не строки
+IntentScanner – режим работы сканера через интент
+CategoryDefault – фильтр по категориям сообщений для сканера штрихкодов
+ExchangeFolder – папка обмена. Выбирает папку обмена, при необходимости создает (создание папки работает в Android до 11 версии)
+RawConfigurationServiceON – произвольная авторизация
+GitFormat – формат для хранения конфигураций на github.com
+RawConfigurationURL – URL при варианте произвольной авторизации
+RawConfigurationServiceAuth – строка авторизации, заданная вручную для произвольной авторизации
+GitCommitsURL – URL коммитов с GitHub
+GitStoreURL – URL репозитория на GitHub для использования в качестве магазина
+OnlineSplitMode – «разделенный режим» конфигурации и обработчиков
+onlineURLListener – URL обработчиков для разделенного режима
+onlineURL – URL конфигурации для любого режима
+onlineUser – пользователь конфигурации для любого режима
+onlineUserListener – пользователь обработчиков для разделенного режима
+onlineCode – код справочника Мобильные клиенты
+onlinePass – пароль пользователя конфигурации для любого режима
+onlinePassListener – пароль пользователя обработчиков
+backendURL – URL PostgREST – устарело. Для соединения с Postgre
+backendUser – пользователь Postrgre
+oDataURL – URL OData
+Service_URL – URL сервиса технической информации (подписка на изменение настроек)
+offSettings – запрет на настройки
+offChat – отключение чата
+offToDo – отключение списка дел
+offlineMode – принудительный оффлайн режим
+beep – сигнал при каждом сканировании
+torch – подсветка при сканировании камерой
+dialogOnBackPressed – задавать вопрос при закрытии основной программы
+gps – получение координат GPS в Переменные перманентно
+timer – интервал таймера
+connection_limit – максимальное время попытки соединения для онлайн обработчиков, 0 – неограничено
+hardwarescan – отключение кнопки сканирование камерой для экранов со штрих-кодом (для аппаратного сканера)
+conf_id – ID конфигурации для запросов вида /get_configuration?confid=…
+configuration - загрузка текста конфигурации. Можно передать в настройках конфигурацию (через файл), она будет сразу же загружена'''
+
 
 class QRCodeConfig(BaseModel):
     raw_url: str = Field(alias='RawConfigurationURL')
     raw_service_auth: str = Field(default='', alias='RawConfigurationServiceAuth')
     raw_service_on: bool = Field(default=True, alias='RawConfigurationServiceON')
     online_split_mode: bool = Field(default=True, alias='OnlineSplitMode')
+    online_url_listener: str = Field(default='', alias='onlineURLListener')
+    online_user_listener: str = Field(default='', alias='onlineUserListener')
 
 
 class ClientConfigurationModel(BaseConfigModel):

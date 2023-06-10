@@ -154,8 +154,13 @@ def get_qr_code_config():
     host = socket.gethostbyname(socket.gethostname())
     port = 5000
     url = f'http://{host}:{port}/get_conf'
+    online_url = f'http://{host}:2076'
 
-    qr_config = QRCodeConfig(RawConfigurationURL=url)
+    qr_config = QRCodeConfig(
+        RawConfigurationURL=url,
+        onlineURLListener=online_url,
+        onlineUserListener='usr'
+    )
     img = qrcode.make(qr_config.json(by_alias=True, exclude_none=True))
     buffer = io.BytesIO()
     img.save(buffer, format="PNG")
