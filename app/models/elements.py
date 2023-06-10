@@ -25,8 +25,8 @@ class DimensionElement(BaseModel):
     gravity_horizontal: Optional[GravityHorizontalEnum] = Field(default=GravityHorizontalEnum.center, title='Gravity horizontal')
     gravity_vertical: Optional[GravityVerticalEnum] = Field(default=GravityVerticalEnum.center, title='Vertical gravity')
     weight: Optional[str] = Field(title='Weight')
-    # height_value: Optional[str]
-    # width_value: Optional[str]
+    height_value: Optional[str]
+    width_value: Optional[str]
 
 
 class TextElement(BaseModel):

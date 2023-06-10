@@ -124,6 +124,10 @@ class OperationsModel(BaseConfigModel):
     elements: List[Element] = Field(default=[], alias='Elements')
     handlers: Optional[List[Handler]] = Field(default=[], alias='Handlers')
 
+    online_on_start: bool = Field(default=False, alias='onlineOnStart')
+    online_on_after_start: bool = Field(default=False, alias='onlineOnAfterStart')
+    online_on_input: bool = Field(default=False, alias='onlineOnInput')
+
     class Config:
         title = 'Operation'
 
