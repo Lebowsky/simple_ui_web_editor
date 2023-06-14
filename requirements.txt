@@ -10,3 +10,4 @@ jsonref~=1.1.0
 fastapi_socketio
 lxml
 uiweb
+requests

@@ -4,6 +4,7 @@ import socket
 import base64
 import glob
 import pathlib
+import requests
 import json
 import jsonref
 from eel import chrome
@@ -395,6 +396,59 @@ class ProjectConfig:
         frame = f'#{frame[1:-1]}#'
 
         return '\n'.join([frame, delimiter, frame])
+
+
+class SQLQueryManager:
+    def __init__(self, device_host, db_name, **kwargs):
+        self.device_host = device_host
+        self.db_name = db_name
+        self.mode = 'SQLQueryText'
+        self.port = '8095'
+        self.query = ''
+        self.params = ''
+
+    def send_query(self, query: str, params='', **kwargs):
+        self.query = query
+        self.params = params
+        result = {'error': '', 'content': '', 'data': None}
+        try:
+            response = requests.post(
+                self.get_url(),
+                headers={'Content-Type': 'Application/json; charset=utf-8'}
+            )
+            result['content'] = response.text
+            if response.status_code == 200:
+                result['data'] = self.parse_data(result['content'])
+            else:
+                result['error'] = str(response.status_code)
+
+        except requests.exceptions.RequestException as e:
+            result['error'] = 'Device connection error'
+            result['content'] = str(e.args[0])
+
+        return result
+
+    @staticmethod
+    def parse_data(content):
+        content_data = content.splitlines()
+        if len(content_data) > 1:
+            return {
+                'header': content_data[0],
+                'data': content_data[1:]
+            }
+
+    def get_url(self):
+        if self.device_host:
+            return 'http://{}:{}/?mode={}&query={}&params={}&db_name={}'.format(
+                self.device_host,
+                self.port,
+                self.mode,
+                self.query,
+                self.params,
+                self.db_name
+            )
+        else:
+            raise requests.exceptions.RequestException()
 
 
 class VersionError(Exception):

@@ -90,8 +90,18 @@ def save_handlers_files(handlers: dict) -> dict:
     return result
 
 
+@eel.expose
+def send_sql_query(query_params):
+    manager = utils.SQLQueryManager(**query_params)
+    return manager.send_query(**query_params)
+
+
 async def get_current_file_path():
     return eel.getCurrentFilePath()()
+
+
+async def set_device_host(device_host):
+    return eel.setDeviceHost(device_host)
 
 
 def start(open_mode):
