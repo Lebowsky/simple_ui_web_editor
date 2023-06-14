@@ -238,3 +238,27 @@ function showList(node, direction = "toggle") {
 		}
 	}
 }
+async function sendSQLQuery(){
+	if (!main.deviceHost){
+		notificate('Device connection error');
+		return
+	}
+
+	const query_params = {
+		device_host: main.deviceHost || '',
+		db_name: $('#db-name').val(),
+		query: $('#sql-query').val(),
+		params: $('#query-params').val()
+	};
+	const result = await sendSqlQueryToDevice(query_params);
+
+	if (result){
+		if (result.error){
+			notificate(result.content);
+		} else if (result.data){
+			modal = ModalWindow.getCurrentModal();
+			modal.renderSqlQueryResult(result.data);
+		}
+	}
+}
+

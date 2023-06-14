@@ -68,7 +68,10 @@ class ModalWindow {
             const types = main.configGraph.getElementChildrensTypes(elementId)
             modalWindow = new SelectTypeModal(types);
         } else if (modalDiv.hasClass('qr')) { 
-            modalWindow = new ImageModal();    
+            modalWindow = new ImageModal();
+        } else if (modalDiv.hasClass('sql-query')){
+            modalWindow = new SQLQueryModal();
+            modalWindow.modal = modalDiv;
         } else {
             const element = main.configGraph.getElementById(elementId);
             modalWindow = new ElementModal(element);
@@ -386,8 +389,10 @@ class ImageModal extends ModalWindow{
             </div>
             `
         this.modal = $(this.html)
+        
         return this;
     }
+    
     close() {
         if (this.modal.siblings(selectors.modal).length) {
             const prevModal = this.modal.prev();
@@ -398,5 +403,78 @@ class ImageModal extends ModalWindow{
             $('.content').removeClass("blur");
         }
         this.modal.remove();
+    }
+}
+class SQLQueryModal extends ModalWindow{
+    constructor(ipAddress) {
+        super();
+        this.modal = $('');
+        this.html = '';
+        this.ipAddress = ipAddress;
+        this.dbName = 'SimpleKeep';
+        this.params = '';
+        this.query = 'SELECT * from RS_docs';
+    }
+    render(){
+        this.html = `
+            <div class='modal sql-query'>
+                <div class='close-modal'>
+                    <i class='fa fa-times' aria-hidden='true'></i>
+                </div>
+                <div class='modal-head'>
+                    <h2 class='modal-title'>SQL Queries<span class='edited'>*</span></h2>
+                </div>
+                <div class='modal-content'></div>
+            </div>
+            `
+        this.modal = $(this.html)
+        this.modal.find(selectors.modalContent).html(this.renderContent())
+        return this;
+    } 
+    renderContent(){
+        const html = `
+        <div>
+            <div id="sql-query-content">
+                <div id="query-params">
+                    <label for="ip-address">IP Address</label>
+                    <input type="text" name="ip-address" value="${this.ipAddress}" id="ip-address">
+                    <label for="db-name">DB Name</label>
+                    <input type="text" name="db-name" value="${this.dbName}" id="db-name">
+                    <label for="query-params">Params</label>
+                    <input type="text" name="query-params" value="${this.params}" id="query-params">
+                </div>
+                <div>
+                    <textarea name="query" cols="80" rows="8" id="sql-query">${this.query}</textarea>
+                </div>
+            </div>
+            <div>
+                <button onclick="sendSQLQuery()">select</button>
+            </div>
+        </div>
+        <table>
+        </table>
+        `
+        return html;    
+    }  
+
+    renderSqlQueryResult(data){
+        let html = `
+        <tr>
+            ${data.header.split('|').map((el) => `<th>${el}</th>`).join('\n')}
+        </tr>
+        ${data.data.map((el) => `<tr>${el.split('|').map((el)=>`<td>${el}</td>`).join('\n')}</tr>`).join('\n')}
+        `
+        this.modal.find('table').html(html)
+    }
+    close(){
+        if (this.modal.siblings(selectors.modal).length) {
+            const prevModal = this.modal.prev();
+            prevModal.addClass("active");
+        } else {
+            this.modal.parents("#modals-wrap").removeClass("active");
+            $("body").removeClass("no-scroll");
+            $('.content').removeClass("blur");
+        }
+        this.modal.remove();    
     }
 }

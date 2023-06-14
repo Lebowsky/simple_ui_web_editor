@@ -76,11 +76,15 @@ const showQRSettings = async (event) => {
     	imgBase64 = await getQRByteArrayAsBase64(),
     	img_src = "data:image/png;base64, " + imgBase64;
 
-    // modal = addModal('qr', '', '');
-    
 	modal = new ImageModal();
 	modal.render();
 	modal.modal.append("<img src='"+img_src+"'>");
 	modal.show();
+}
 
+
+const showSqlQueries = async(event) => {
+	modal = new SQLQueryModal(main.deviceHost);
+	modal.render();
+	modal.show();
 }
