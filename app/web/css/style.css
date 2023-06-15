@@ -118,7 +118,7 @@ select {
 }
 .modal {
     position: fixed;
-    width: 1300px;
+    width: 750px;
     background: #fff;
     box-shadow: 0 0 10px #00000096;
     filter: blur(5px) brightness(0.5);
@@ -495,48 +495,6 @@ span.edited {
 .modal.edited span.edited {
     display: inline;
 }
-
-.modal-content table {
-    position: absolute;
-}
-
-.modal-content table th{
-    background-color: #c46a6a;
-    font-size: 14pt;
-    margin: 1%
-
-}
-
-.modal{
-    height: 95%;
-    overflow: scroll;
-    overflow-x: hidden;
-}
-
-.modal-content td{
-    text-align: center;
-    word-break: break-word;
-    border: solid 1px black;
-    border-collapse: collapse;
-}
-
-textarea {
-    margin-left: 12%;
-    margin-top: 3%;
-    width: 75%;
-}
-
-.modal::-webkit-scrollbar {
-  display: none;
-}
-
-#sql-query-content > div:nth-child(1) {
- width: 71%;
- margin-left: auto;
- margin-right: auto;
- margin-top: 2%;
-}
-
 
 @media (max-width: 1376px) {
 .content {
