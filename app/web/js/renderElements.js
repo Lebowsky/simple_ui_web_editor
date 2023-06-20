@@ -436,14 +436,20 @@ class SQLQueryModal extends ModalWindow{
         <div>
             <div id="sql-query-content">
                 <div id="query-params">
-                    <label for="ip-address">IP Address</label>
-                    <input type="text" name="ip-address" value="${this.ipAddress}" id="ip-address">
-                    <label for="db-name">DB Name</label>
-                    <input type="text" name="db-name" value="${this.dbName}" id="db-name">
-                    <label for="query-params">Params</label>
-                    <input type="text" name="query-params" value="${this.params}" id="query-params">
+                    <div class="param">
+                        <label for="ip-address">IP Address</label>
+                        <input type="text" name="ip-address" value="${this.ipAddress}" id="ip-address">
+                    </div>
+                    <div class="param">
+                        <label for="db-name">DB Name</label>
+                        <input type="text" name="db-name" value="${this.dbName}" id="db-name">
+                    </div>
+                    <div class="param">
+                        <label for="query-params">Params</label>
+                        <input type="text" name="query-params" value="${this.params}" id="query-params">
+                    </div>
                 </div>
-                <div>
+                <div class="param">
                     <textarea name="query" cols="80" rows="8" id="sql-query">${this.query}</textarea>
                 </div>
             </div>
@@ -451,7 +457,7 @@ class SQLQueryModal extends ModalWindow{
                 <button onclick="sendSQLQuery()">select</button>
             </div>
         </div>
-        <table>
+        <table class="sql-table">
         </table>
         `
         return html;    

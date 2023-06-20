@@ -496,6 +496,33 @@ span.edited {
     display: inline;
 }
 
+/*-------sql-query-------*/
+table.sql-table {
+    max-width: 100%;
+    display: block;
+    overflow: auto;
+    border-collapse: collapse;
+    padding-bottom: 20px;
+}
+table.sql-table td, th {
+    white-space: nowrap;
+    padding: 10px;
+    border: 1px solid #dbdbdb;
+    text-align: left;
+    cursor: default;
+}
+table.sql-table tr:hover td {
+    background: #dbdbdb;
+}
+#query-params {
+    display: flex;
+}
+.modal-content #sql-query-content .param {
+    width: 100%;
+    display: flex;
+}
+/*-------sql-query-end-------*/
+
 @media (max-width: 1376px) {
 .content {
     width: 59%;

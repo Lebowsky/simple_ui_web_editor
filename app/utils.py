@@ -114,7 +114,7 @@ def check_file_paths(data: dict, path: str):
         if os.path.exists(file_path):
             item['file_path'] = file_path
 
-    file_path = data['ClientConfiguration']['pyHandlersPath']
+    file_path = data['ClientConfiguration'].get('pyHandlersPath')
     if file_path and not os.path.exists(file_path):
         data['ClientConfiguration']['pyHandlersPath'] = ''
 
