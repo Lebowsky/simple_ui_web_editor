@@ -3,7 +3,7 @@ from pydantic import Field, BaseModel
 
 from .container_elements import Tabs, Tab, TextView, Button, EditTextText, EditTextNumeric, EditTextPass, \
     EditTextAuto, EditTextAutocomplete, ModernEditText, Picture, CheckBox, Gauge, Chart, SpinnerLayout, TableLayout, \
-    MultilineText, CardsLayout, CButtons, CButtonsHorizontal, DateField, ProgressButton, HTML, Map, File
+    MultilineText, CardsLayout, CButtons, CButtonsHorizontal, DateField, ProgressButton, HTML, Map, File, Object
 from .elements import BaseElement, DimensionElement, Cart
 
 
@@ -55,7 +55,7 @@ Element = Annotated[
         HTML,
         Map,
         File,
-
+        Object
     ], Field(discriminator='type')
 ]
 

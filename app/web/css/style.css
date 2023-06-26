@@ -124,7 +124,7 @@ select {
     filter: blur(5px) brightness(0.5);
     transition: filter .3s;
 }
-.close-modal {
+.close-modal, .close-type-select-modal{
     display: flex;
     justify-content: center;
     align-items: center;
@@ -139,6 +139,7 @@ select {
     box-shadow: 0 0 7px #0000007a;
     border-radius: 50%;
     cursor: pointer;
+    z-index: 9999;
 }
 .logo {
     display: flex;
@@ -193,12 +194,14 @@ footer {
     background: #e9e9e9;
 }
 .item-btn {
-    display: none;
+    display: flex;
     align-items: center;
+    visibility: hidden;
 }
 .list-item.active .item-btn,
 .list-item:hover .item-btn {
     display: flex;
+    visibility: visible;
 }
 .item-btn span {
     font-size: 12px;
@@ -212,19 +215,29 @@ footer {
     max-height: 600px;
     overflow-y: auto;
     padding-right: 20px;
-    align-items: center;
 }
 .param {
     width: 100%;
     padding: 15px;
-    border-bottom: 1px #e7e7e7 solid;
+    /*border-bottom: 1px #e7e7e7 solid;*/
+}
+.modal.type-select-modal .param {
+    justify-content: left;
+}
+.type-select-modal .param input[type="radio"] {
+    margin-right: 10px;
+}
+.type-select-modal .param label {
+    line-height: 13px;
 }
 .param:not(.list-param) {
     display: flex;
     flex-wrap: wrap;
     align-items: end;
     justify-content: space-between;
+    align-items: center;
 }
+
 .list {
     text-align: center;
     padding: 20px 0;
@@ -245,7 +258,7 @@ footer {
 span.file-path {
     text-align: center;
     display: block;
-    margin: 20px 0;
+    margin-top: 20px;
     font-size: 13px;
 }
 .modal.active {
@@ -259,11 +272,13 @@ span.path {
     font-weight: 500;
 }
 .modal-head {
-    padding: 20px 20px 0 20px;
+    padding: 20px;
     border-bottom: 1px #e7e7e7 solid;
+    position: relative;
 }
 .modal-content {
     padding: 0 5px 20px 20px;
+    position: relative;
 }
 .content.blur {
     filter: blur(5px);
@@ -290,6 +305,7 @@ label i,
 }
 .modal-btn {
     margin-top: 20px;
+    width: 100%;
 }
 .list .param:last-child {
     border: none;
@@ -343,9 +359,12 @@ label i,
     border-radius: 300px;
 }
 .modal .tabs {
-    margin-top: 0;
-    margin-right: 50px;
-    top: auto;
+    margin: auto 50px auto auto;
+    top: 0;
+    bottom: 0;
+    height: 90px;
+    display: flex;
+    justify-content: center;
 }
 .tab:not(.active):hover {
     box-shadow: 0 0 10px #0000001c;
@@ -447,6 +466,7 @@ div.ui-resizable-e:after {
 }
 .modal-content .param.active:not(.list-param) {
     display: flex;
+    width: 50%;
 }
 .modal-content .param.active {
     display: block;
@@ -454,7 +474,54 @@ div.ui-resizable-e:after {
 .modal-content .param {
     display: none;
 }
+.param.list-param.active {
+    border-bottom: 1px #e7e7e7 solid;
+    border-top: 1px #e7e7e7 solid;
+    margin-top: -1px;
+    padding: 11px 15px;
+}
+.modal.active:before {
+    content: '';
+    display: block;
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+}
+span.edited {
+    display: none;
+}
+.modal.edited span.edited {
+    display: inline;
+}
 
+/*-------sql-query-------*/
+table.sql-table {
+    max-width: 100%;
+    display: block;
+    overflow: auto;
+    border-collapse: collapse;
+    padding-bottom: 20px;
+}
+table.sql-table td, th {
+    white-space: nowrap;
+    padding: 10px;
+    border: 1px solid #dbdbdb;
+    text-align: left;
+    cursor: default;
+}
+table.sql-table tr:hover td {
+    background: #dbdbdb;
+}
+#query-params {
+    display: flex;
+}
+.modal-content #sql-query-content .param {
+    width: 100%;
+    display: flex;
+}
+/*-------sql-query-end-------*/
 
 @media (max-width: 1376px) {
 .content {

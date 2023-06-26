@@ -78,6 +78,7 @@ class EventHandlerEnum(str, Enum):
 class ActionHandlerEnum(str, Enum):
     run: str = 'run'
     run_async: str = 'runasync'
+    run_progress: str = 'runprogress'
 
 
 class HandlerType(str, Enum):

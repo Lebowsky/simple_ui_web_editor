@@ -20,7 +20,6 @@ function checkAskFileResult(answer){
 
     return result;
 }
-
 function checkSaveFileResult(answer){
     let result = false
     
@@ -33,17 +32,18 @@ function checkSaveFileResult(answer){
 
     return result
 }
-
 async function saveConfiguration(){
     if (typeof main.conf == 'undefined')
         return;
 
+    main.conf = main.configGraph.getConfig();
     const filePath = $('.file-path').text();
 
 	let handlers = await fillBase64Handlers();
-	saveConfFiles(main.conf, filePath, handlers)
+	if (saveConfFiles(main.conf, filePath, handlers)){
+        main.configGraph = new ClientConfiguration(main.conf.ClientConfiguration);
+    }
 }
-
 async function saveConfFiles(conf, filePath, pyHandlers){
     let result_save = await saveConf(conf, filePath)
     let result_check = checkSaveFileResult(result_save)
@@ -57,11 +57,10 @@ async function saveConfFiles(conf, filePath, pyHandlers){
         notificate('Ошибка сохранения файла: ' + result_save.msg, 'danger') 
     else
         notificate('Файл успешно сохранен', 'success')
-        loadPrev();
+        // loadPrev();
 
     return result_check
 }
-
 async function fillBase64Handlers(){
     let result = null;
     const filePath = $('#py-handlers-file-path').attr('data-path');
@@ -73,7 +72,7 @@ async function fillBase64Handlers(){
 
     if (result != null && result.length > 0){
         conf.PyHandlers = result;
-		main.saveElement(getSaveParamValueById('py-handlers-file-path', 'path'), "Configuration", "");
+		// main.saveElement(getSaveParamValueById('py-handlers-file-path', 'path'), "Configuration", "");
     }else{
         conf.pyHandlersPath = ''
     };
@@ -90,7 +89,6 @@ async function fillBase64Handlers(){
     }
     return getHandlers()
 }
-
 function getHandlers(){
     let handlers = {};
     const conf = main.conf.ClientConfiguration;
@@ -108,77 +106,9 @@ function getHandlers(){
     };
     return handlers;
 }
-
 function initReadedConf(conf, filePath){
-    main.conf = conf;
-    clearMainSection();
-    fillSelectElementsOptions();
-    fillDefaultValues();
-    fillConfigSettings();
-
-    main.renderConfiguration();
-    main.renderElementsList($(selectors.processList), "Process", "");
-    main.renderElementsList($(selectors.handlersList), "CommonHandler", "");
-    main.renderElementsList($(selectors.pyFilesList), "PyFiles", "");
-
-    $(".file-path").text(filePath);
-    $('#preview-button').show();
-
-    let pyHandlersPath = getConfParamValue('pyHandlersPath')
-    if (pyHandlersPath.length > 0){
-        $('#py-handlers-file-path').text(pyHandlersPath)
-    }else{
-        $('#py-handlers-file-path').text(constants.pyHandlersEmptyPath)
-    }
-    $('#py-handlers-file-path').attr('data-path', pyHandlersPath)
-
-    loadPrev();
+    main.initUIConf(conf, filePath);
 }
-
-function fillSelectElementsOptions(){
-    $.each(main.elementParams.ClientConfiguration, function(key, value){
-        if (value.type == 'select'){
-            selectNode = $('#' + key)
-            selectNode.empty()
-            $.each(value.options, function (index, option) {
-                selectNode.append($('<option>', {
-                    value: option,
-                    text: option
-                }));
-            })
-        }
-    });
-}
-
-function fillConfigSettings(){
-    const settings = main.conf.ClientConfiguration.ConfigurationSettings,
-          {vendor_auth: vendorAuth = '', handler_auth: handlerAuth = ''} = settings;
-
-    let vendorLogin = '',
-        vendorPassword = '',
-        handlersLogin = '',
-        handlersPassword = ''
-    
-    if (vendorAuth){
-        try {
-            [vendorLogin = '', vendorPassword = ''] = decodeURIComponent(atob(vendorAuth.split(' ')[1])).split(':');
-        }catch(error){
-            console.log(error);
-        };
-    };
-    $('#vendor-login').val(vendorLogin);
-    $('#vendor-password').val(vendorPassword);
-
-    if (handlerAuth){
-        try{
-            [handlersLogin = '', handlersPassword = ''] = decodeURIComponent(atob(handlerAuth.split(' ')[1])).split(':');
-        }catch(error){
-            console.log(error);
-        };
-    };
-    $('#handlers-login').val(handlersLogin);
-    $('#handlers-password').val(handlersPassword);
-};
 
 function getSaveParamValueById(id, valueParamName){
     let filePathElement = $('#'+id)
@@ -196,4 +126,17 @@ function getConfParamValue(paramName, def=''){
         return def
     else
         return paramValue
+}
+
+function debug(msg){
+    if (main.debug){
+        console.debug(msg);
+    }
+}
+
+function updateDeviceHost(){
+    const query_modal = $('.modal.sql-query.active')
+    if (main.deviceHost && query_modal.length){
+        query_modal.find('#ip-address').val(main.deviceHost)
+    }
 }

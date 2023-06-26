@@ -1,451 +1,300 @@
 var Main = {
-	renderConfiguration: function () {
-		let configuration = this.conf.ClientConfiguration;
+	initUIConf(conf, filePath){
+		this.conf = conf;
+		this.configGraph = new ClientConfiguration(conf.ClientConfiguration);
 
-		$.each(configuration, function(confParamName, confParamValue){
-			if (typeof confParamValue !== 'object') {
-				inputNode = $("#"+confParamName);
+		this.clearMainSection();
+		this.fillSelectElementsOptions();
+		this.fillDefaultValues();
+		this.fillConfigSettings();
+		this.renderConfiguration();
 
-				if (inputNode.length > 0) {
-					if (typeof confParamValue == 'boolean')
-						inputNode.prop('checked', confParamValue);
-					else
-						inputNode.val(confParamValue);
-				}
-			}
-		})
-		$.each(this.conf.ClientConfiguration.ConfigurationSettings, function(confParamName, confParamValue){
-			if (typeof confParamValue !== 'object') {
-				inputNode = $("#"+confParamName);
+		this.configGraph.fillListElements();
 
-				if (inputNode.length > 0) {
-					if (typeof confParamValue == 'boolean')
-						inputNode.prop('checked', confParamValue);
-					else
-						inputNode.val(confParamValue);
-				}
-			}
-		})
-	},
-	renderElementsList: function (listNode, type, path) {
-		let elementsItems = {},
-			nameProp      = "type",
-			btnType       = type,
-			elementInfo   = this.getElementByPath(type, path),
-			elementPath   = "",
-			parentType    = "";
+		$(".file-path").text(filePath);
+    	// $('#preview-button').show();
 
-		if (type == "Process" || type == "Configuration") {
-			nameProp = "ProcessName";
-			elements = elementInfo.parent.Processes;
-			if (type == "Process") {
-				parentType = "Process";
-			} else if (type == "Configuration") {
-				parentType = "Configuration";
-			}
-		} else if (type == "CommonHandler") {
-			nameProp = "event";
-			elements = elementInfo.parent.CommonHandlers;
-		} else if (type == "PyFiles") {
-			nameProp = "PyFileKey";
-			elements = elementInfo.parent.PyFiles;
-		} else if (type == "Handlers") {
-			nameProp = "event";
-			elements = elementInfo.parent.Handlers;
-			parentType = "handlers";
-		} else if (type == "Operation") {
-			nameProp = "Name";
-			elements = elementInfo.parent.Operations;
-		} else {
-			elements = elementInfo.element.Elements;
-			parentType = elementInfo.element.type;
-			btnType = "Elements";
+		const pyHandlersPath = getConfParamValue('pyHandlersPath')
+		this.conf.ClientConfiguration['pyHandlersPath']
+		if (pyHandlersPath){
+			$('#py-handlers-file-path').text(pyHandlersPath)
+		}else{
+			$('#py-handlers-file-path').text(constants.pyHandlersEmptyPath)
 		}
+		$('#py-handlers-file-path').attr('data-path', pyHandlersPath)
 
-		if (path != "") 
-			elementPath = String(path)+"-";
-
-		$.each(elements, function(elementIndex, elementParams){
-			let elementName = elementParams[nameProp],
-				elementType = elementParams.type;
-
-			if (type == "CommonHandler")
-				elementType = "CommonHandler";
-
-			if (type == "Handlers")
-				elementType = "Handlers";
-
-			if (type == "PyFiles")
-				elementType = "PyFiles";
-
-			if (typeof elementName !== 'undefined') {
-				elementsItems[elementIndex] = {
-					itemName: elementName,
-					dataAttr: {
-						"type": elementType,
-						//"parent-type": parentType,
-						"path": elementPath+String(elementIndex),
-					}
-				};
+		// this.loadPrev();
+	},
+	clearMainSection() {
+		$(selectors.processList).html("No processes");
+		$(selectors.operationsList).html("No operations");
+		$(selectors.commonHandlers).html("No handlers");
+	},
+	fillSelectElementsOptions(){
+		$.each(main.elementParams.ClientConfiguration, function(key, value){
+			if (value.type == 'select'){
+				selectNode = $('#' + key)
+				selectNode.empty()
+				$.each(value.options, function (index, option) {
+					selectNode.append($('<option>', {
+						value: option,
+						text: option
+					}));
+				})
 			}
 		});
-
-		this.renderList(listNode, elementsItems, btnType, path, parentType);
 	},
-	renderList: function (parentNode, items, type, path, parentType) {
-		html = '<div class="btn-group"><button class="btn-add" data-type="'+type+'" data-parent-type="'+parentType+'" data-path="'+path+'">Add</button></div>';
-
-		if (Object.keys(items).length > 0) {
-			activeNodePath = String(parentNode.find(".list-item.active").attr("data-path"));
-
-			$.each(items, function (itemIndex, item) {
-				if (activeNodePath == item.dataAttr.path) {
-					html += '<li class="list-item active" ';
-				} else {
-					html += '<li class="list-item" ';
-				}
-				
-				html += 'data-parent-type="'+parentType+'"';
-	
-				$.each(item["dataAttr"], function (attrName, attrValue) {
-					html += 'data-'+attrName+'="'+attrValue+'"';
-				})
-	
-				html += '><span class="item-name">'+item["itemName"]+'</span><div class="item-btn"><span class="edit">edit</span><span class="delete">delete</span></div></li>';
-			});
-		} else {
-			html += "No Items";
-		}
-
-		parentNode.html(html);
+	fillDefaultValues() {
+		$.each(main.elementParams.ClientConfiguration, function (key, val) {
+			el = $('#' + key)
+			if (el.length && val.default_value != undefined)
+				if (val.type == 'checkbox')
+					el.prop('checked', val.default_value)
+				else if (val.type == 'text')
+					el.val(val.default_value)
+		});
 	},
-	renderModalParams: function (modalNode, type, path, parentType) {
-		element  = this.getElementByPath(type, path).element;
-		html     = '<div class="params">';
-		renderElements = false;
-		renderHandlers = false;
-		elementParams = this.elementParams;
-		arrTabs = Object.keys(elementParams[type]["tabs"]);
+	fillConfigSettings(){
+		const settings = main.conf.ClientConfiguration.ConfigurationSettings,
+			  {vendor_auth: vendorAuth = '', handler_auth: handlerAuth = ''} = settings;
 
-		const namePath = {
-			Process: element.ProcessName,
-			CommonHandler: element.event,
-			Operation: element.Name
-		}
-		elementName = namePath[type] || type
+		let vendorLogin = '',
+			vendorPassword = '',
+			handlersLogin = '',
+			handlersPassword = ''
 
-		pathText = this.getElementByPath(type, path).path;
-
-		if (arrTabs.length > 1) {
-			html += "<div class='tabs'>";
-			$.each(elementParams[type]["tabs"], function (tabName, tabValue) {
-				html += `<div onclick="selectModalTab(this)" class="tab ${tabName == arrTabs[0] ? 'active' : ''}" data-tab="${tabName}">${tabValue}</div>`;
-			})
-			html += "</div>";
-		}
-
-		$.each(elementParams[type], function (configName, paramFields) {
-			let renderParams = {
-				...paramFields,
-				name: configName,
-				value: element[configName],
+		if (vendorAuth){
+			try {
+				[vendorLogin = '', vendorPassword = ''] = decodeURIComponent(atob(vendorAuth.split(' ')[1])).split(':');
+			}catch(error){
+				console.log(error);
 			};
+		};
+		$('#vendor-login').val(vendorLogin);
+		$('#vendor-password').val(vendorPassword);
 
-			if (paramFields["type"] && paramFields["type"] != "operations") {
-				let isListParam = paramFields["type"] == "elements" || paramFields["type"] == "handlers";
-
-				html += `
-					<div class="param ${isListParam ? 'list-param' : ''} ${paramFields["tab_name"] == arrTabs[0] ? 'active' : ''}" data-tab="${paramFields["tab_name"]}">
-					${getRenderModalElement(renderParams)}
-					</div>
-				`
-				if (paramFields["type"] == "elements")
-					renderElements = true;
-
-				if (paramFields["type"] == "handlers")
-					renderHandlers = true;
-
-			}else if (configName == "type") {
-				renderParams.type = configName
-
-				$.each(paramFields, function(index, typeOptions) {
-					renderParams.text = typeOptions["text"]
-					renderParams.options = typeOptions["options"]
-
-					if (typeOptions.parent == parentType) {
-						html += `
-							<div class="param active" data-tab="${arrTabs[0]}">
-							${getRenderModalElement(renderParams)}
-							</div>
-							`	
-					}
-				})
+		if (handlerAuth){
+			try{
+				[handlersLogin = '', handlersPassword = ''] = decodeURIComponent(atob(handlerAuth.split(' ')[1])).split(':');
+			}catch(error){
+				console.log(error);
 			};
+		};
+		$('#handlers-login').val(handlersLogin);
+		$('#handlers-password').val(handlersPassword);
+	},
+	renderConfiguration: function () {
+		this.configGraph.fillConfigValues('ClientConfiguration');
+	},
+	loadPrev() {
+		$("#prev .prev-content").html('<div class="preload">Load preview...</div><iframe onload="loadedPrev(this)" id="prev-if" src="http://localhost:5000/prev?' + Date.now() + '"></iframe>');
+	},
+	events(event) {
+		return {
+			closeModal: () => {
+				modal = ModalWindow.getCurrentModal();
+				if (modal)
+					modal.close();
+			},
+			saveElementModal: () => {
+				modal = ModalWindow.getCurrentModal();
+				if (!modal)
+					return
+
+				this.configGraph.setConfigValues(modal.element.id, modal.getValues());
+				modal.removeClass('edited');
+				modal.close();
+
+				elementId = modal.element.id;
+				element = main.configGraph.getElementById(elementId);
+				main.configGraph.fillListElementValues(element.parentType, element.parentConfig['node'], element.parentId)
+			}
+		}[event];
+	}
+}
+
+class ClientConfiguration {
+	constructor(config) {
+		this.elements = [];
+		this.lastId = 0;
+		this.addElementFromDict(config)
+	}
+	addElementFromDict(element, parentId = 0, parentType = 'ClientConfiguration') {
+		const elementValues = {}
+		const elementId = this.getNewId()
+		$.each(element, (key, value) => {
+			if (Array.isArray(value) && value.length)
+				this.addElementsFromArray(value, elementId, key);
+			else
+				elementValues[key] = value
+		});
+		this.addElement(elementId, parentId, parentType, elementValues)
+	}
+	addElementsFromArray(array, parentId, parentType) {
+		array.forEach((value) => {
+			this.addElementFromDict(value, parentId, parentType);
 		})
+	}
+	addElement(id = '', parentId, parentType, elementValues) {
+		let elementConfig;
 
-		html += '<div class="btn-group modal-btn"><button class="save-element">Save</button></div></div>';
-
-		modalNode.find(selectors.modalContent).html(html);
-
-		if (renderElements)
-			this.renderElementsList(modalNode.find('.elements'), "Elements", path);
-
-		if (renderHandlers)
-			this.renderElementsList(modalNode.find('.handlers'), "Handlers", path);
-	},
-	saveElement: function (params, type, path) {
-		element = this.getElementByPath(type, path).element;
-
-		if (typeof element == 'undefined')
-			return
-
-		$.each(params, function (paramName, paramValue) {
-			element[paramName] = paramValue;
-		})
-	},
-	deleteElement: function (type, path) {
-		let parent     = this.getElementByPath(type, path).parent,
-			arrPath      = String(path).split('-'),
-			elementIndex = arrPath[arrPath.length - 1];
-
-		if (type == "Process") {
-			parent.Processes.splice(elementIndex, 1);
-		} else if (type == "Operation") {
-			parent.Operations.splice(elementIndex, 1);
-		} else if (type == "CommonHandler") {
-			parent.CommonHandlers.splice(elementIndex, 1);
-		} else if (type == "PyFiles") {
-			parent.PyFiles.splice(elementIndex, 1);
-		} else if (type == "Handlers") {
-			parent.Handlers.splice(elementIndex, 1);
-		} else {
-			parent.Elements.splice(elementIndex, 1);
-		}
-	},
-	addElement: function (type, path) {
-		elementInfo = this.getElementByPath(type, path);
-		newElementsJson = JSON.stringify(newElements);
-		newElementsConf = JSON.parse(newElementsJson);
-		newElement = newElementsConf[type];
-
-		if (type == "Process") {
-			elements = elementInfo.parent.Processes;
-		} else if (type == "Operation") {
-			elements = elementInfo.parent.Operations;
-		}  else if (type == "CommonHandler") {
-			elements = elementInfo.parent.CommonHandlers;
-		}  else if (type == "PyFiles") {
-			elements = elementInfo.parent.PyFiles;
-		}  else if (type == "Handlers") {
-			elements = elementInfo.parent.Handlers;
-		} else {
-			elements = elementInfo.element.Elements;
+		try {
+			elementConfig = main.elementParams[elementValues.type] || main.elementParams[listElements[parentType]['type']]
+		} catch {
+			console.debug(parentType)
 		}
 
-		length = elements.push(newElement);
-		elementIndex = length-1;
+		const parentConfig = { ...listElements[parentType] };
+		let title = parentConfig && parentConfig.rowKeys && parentConfig.rowKeys.length ? elementValues[parentConfig.rowKeys.filter(key => elementValues[key])[0]] : elementValues['type'];
+		title = title || elementValues['type']
 
-		if (path != "") {
-			elementPath = path+"-"+elementIndex;
-		} else {
-			elementPath = elementIndex;
+		if (parentConfig.type == 'Element') {
+			parentConfig.type = elementValues['type'];
 		}
 
-		newElement["path"] = elementPath;
+		const newElement = {
+			id: Number(id),
+			parentId: Number(parentId),
+			parentType: parentType,
+			title: title,
+			parentConfig: parentConfig,
+			elementConfig: elementConfig,
+			elementValues: elementValues
+		}
+		this.elements.push(newElement);
 
 		return newElement;
-	},
-	getElementParamsByForm: function (elemntParamsNode) {
-		inputs = elemntParamsNode.find(":input");
-		params = {};
+	}
+	newElement(parentId, parentConfig, elementValues) {
+		const parentType = parentConfig['parentType'];
 
-		for (var i = 0; i < inputs.length; i++) {
-			paramValue = $(inputs[i]).val();
-			paramName  = $(inputs[i]).attr("data-param-name");
+		if (!elementValues)
+			elementValues = { ...newElements[parentType] };
 
-			if (typeof paramName != 'undefined') {
-				if ($(inputs[i]).attr("type") == "checkbox") {
-					if ($(inputs[i]).is(':checked')) {
-						paramValue = true;
-					} else {
-						paramValue = false;
-					}
+		return this.addElement(this.getNewId(), parentId, parentType, elementValues);
+	}
+	removeElement(element) {
+		const index = this.elements.indexOf(element);
+		if (index > -1) {
+			this.elements.splice(index, 1);
+		}
+	}
+	getNewId() {
+		return ++this.lastId
+	}
+	getConfig() {
+		let firstElement = this.elements.find((el) => el.parentId == 0);
+		const clientConfig = {
+			[firstElement.parentType]: { ...firstElement.elementValues }
+		};
+
+		let addElements = (configLevel, id) => {
+			let elements = this.elements.filter((el) => el.parentId == id);
+			elements.forEach((element) => {
+				let index;
+				if (configLevel[element.parentType]) {
+					index = configLevel[element.parentType].push({ ...element.elementValues }) - 1;
+				} else {
+					configLevel[element.parentType] = [{ ...element.elementValues }];
+					index = 0;
 				}
+				if (index != undefined)
+					addElements(configLevel[element.parentType][index], element.id);
+			})
+		}
+		addElements(clientConfig[firstElement.parentType], 1);
+		return clientConfig
+	}
+	getElementById(elementId) {
+		return this.elements.find((el) => el.id == elementId)
+	}
+	getElementPath(elementId, path=[]){
+		let element = this.getElementById(elementId);
+		if (element.title){
+			path.unshift(element.title);
+			this.getElementPath(element.parentId, path);
+		}
+		return path.join(' / ');
+	}
+	getElementChildrensTypes(elementId) {
+		const element = this.getElementById(elementId);
+		const elementType = element.parentConfig.type;
+		const types = Object.entries(main.elementParams)
+			.filter((el) => el[1]['type'].find((el) => el['parent'] && el['parent'] == elementType))
+			.map((el) => el[0])
 
-				params[paramName] = paramValue;
+		return types;
+	}
+	setConfigValues(elementId, values) {
+		const element = this.getElementById(elementId);
+		$.each(values, (name, value) => {
+			element.elementValues[name] = value;
+		})
+	}
+	fillConfigValues(type) {
+		const element = this.elements.find((element) => element.parentType == type);
+		this.fillElementValuesById(element, element.elementValues);
+	}
+	fillElementValuesById(element, values) {
+		$.each(values, (key, value) => {
+			if (typeof value == 'object') {
+				this.fillElementValuesById(element, value);
+			} else {
+				const inputNode = $("#" + key);
+				if (inputNode.length) {
+					typeof value == 'boolean' ? inputNode.prop('checked', value) : inputNode.val(value);
+					inputNode.attr('data-id', element.id)
+				} else {
+					debug(`Property ${key} not filled`);
+				}
 			}
-		}
-
-		return params;
-	},
-	getElementByPath: function (type, path) {
-		if (typeof this.conf == 'undefined')
-			return {element: undefined}
-
-		let res = {
-				element: this.conf.ClientConfiguration,
-				parent: {},
-				elements: {},
-				path: ""
+		})
+	}
+	fillListElements() {
+		Object.entries(listElements).forEach((el) => {
+			const [type, values] = el;
+			if (values.node) {
+				this.fillListElementValues(type, values.node);
 			}
-
-		arrPath = String(path).split('-');
-		
-		if (type == "Configuration") {
-			return res;
-		}
-
-		if (type == "ConfigurationSettings") {
-			res.element = res.element.ConfigurationSettings;
-			return res;
-		}
-
-		if (type == "Process") {
-			res.parent    = res.element;
-			res.element   = res.element.Processes[arrPath[0]];
-
-		} else if (type == "CommonHandler") {
-			res.parent    = res.element;
-			res.element   = res.element.CommonHandlers[arrPath[0]];
-
-		} else if (type == "PyFiles") {
-			res.parent    = res.element;
-			res.element   = res.element.PyFiles[arrPath[0]];
-
-
-		} else if (type == "Handlers") {
-			processIndex   = arrPath[0];
-			operationIndex = arrPath[1];
-			handlersIndex  = arrPath[2];
-			res.parent     = res.element.Processes[processIndex].Operations[operationIndex];
-			res.element    = res.element.Processes[processIndex].Operations[operationIndex].Handlers[handlersIndex];
-
-		} else if (type == "Operation") {
-			processIndex   = arrPath[0];
-			operationIndex = arrPath[1];
-			res.parent     = res.element.Processes[processIndex];
-			res.element    = res.element.Processes[processIndex].Operations[operationIndex];
-
-		} else {
-			processIndex   = arrPath[0];
-			operationIndex = arrPath[1];
-			res.parent     = res.element.Processes[processIndex].Operations[operationIndex];
-			res.element    = res.element.Processes[processIndex].Operations[operationIndex];
-
-			arrPath.splice(0, 2);
-
-			for (var i = 0; i < arrPath.length; i++) {
-				res.parent  = res.element;
-				res.element = res.element.Elements[arrPath[i]];
-			}
-		}
-		return res;
-	},
-	pathPop: function (path) {
-		arrPath = String(path).split('-');
-		arrPath.pop();
-		path    = arrPath.join("-");
-
-		return path;
+		})
 	}
-}
+	fillListElementsByParent(parentId, node) {
+		const elements = this.elements.filter((element) => element.parentId == parentId);
+		const listItems = [];
 
-function clearMainSection () {
-	$(selectors.processList).html("No processes");
-	$(selectors.operationsList).html("No operations");
-	$(selectors.handlersList).html("No handlers");
-}
+		elements.forEach((item) => {
+			let name = item.elementValues[item.parentConfig.rowKeys.filter(key => item.elementValues[key])[0]];
+			name = name || item.elementValues['type'];
+			listItems.push({
+				name: name,
+				id: item.id
+			});
+		})
 
-function fillDefaultValues(){
-	$.each(main.elementParams.ClientConfiguration, function(key, val){
-		el = $('#' + key)
-		if (el.length && val.default_value != undefined)
-			if (val.type == 'checkbox')
-				el.prop('checked', val.default_value)
-			else if(val.type == 'text')
-				el.val(val.default_value)
-	});
-}
-
-function addModal (className, type, path = "", parentType = "", modalTitle, modalPath) {
-	$("#modals-wrap").addClass("active");
-	modal = $("<div class='modal "+className+"' data-type='"+type+"' data-parent-type='"+parentType+"' data-path='"+path+"'><div class='close-modal'><i class='fa fa-times' aria-hidden='true'></i></div><div class='modal-head'><h2 class='modal-title'>"+modalTitle+"</h2><span class='path'>"+modalPath+"</span></div><div class='modal-content'></div></div>").appendTo("#modals-wrap");
-	$('.content').addClass("blur");
-
-	$("body").addClass("no-scroll");
-
-	return modal;
-}
-
-function closeModal (modalNode) {
-	if (modalNode.siblings(selectors.modal).length == 0) {
-		modalNode.parents("#modals-wrap").removeClass("active");
+		const listElement = new ListElement(listItems);
+		$(node).attr('data-id', elements.length ? elements[0].parentId : 1);
+		$(node).html(listElement.render().html);
 	}
+	fillListElementValues(type, node, parentId = 1) {
+		const elements = this.elements.filter((element) => element.parentType == type && element.parentId == parentId);
+		const listItems = [];
 
-	modalNode.remove();
-	
-	if ($(".modal").length == 0)
-		$("body").removeClass("no-scroll");
-}
+		elements.forEach((item) => {
+			let name = item.elementValues[item.parentConfig.rowKeys.filter(key => item.elementValues[key])[0]];
+			name = name || item.elementValues['type'];
+			listItems.push({
+				name: name,
+				id: item.id
+			});
+		})
 
-function showList (node, direction = "toggle") {
-	if (direction == "up") {
-		$(node).siblings(selectors.listWrap).slideUp();
-		$(node).find("i").removeClass("fa-angle-up").addClass("fa-angle-down");
-	} else if (direction == "down") {
-		$(node).siblings(selectors.listWrap).slideDown();
-		$(node).find("i").removeClass("fa-angle-down").addClass("fa-angle-up");
-	} else {
-		$(node).siblings(selectors.listWrap).slideToggle();
-
-		if ($(node).find("i").hasClass("fa-angle-down")) {
-			$(node).find("i").removeClass("fa-angle-down").addClass("fa-angle-up");
-		} else if ($(node).find("i").hasClass("fa-angle-up")) {
-			$(node).find("i").removeClass("fa-angle-up").addClass("fa-angle-down");
-		}
-	}
-}
-
-function hideMain () {
-	if ($(".main-conf-wrap").hasClass("hide")) {
-		$(".main-conf-wrap section .section-header").find("i").removeClass("fa-angle-down").addClass("fa-angle-up");
-	} else {
-		$(".main-conf-wrap section .section-header").find("i").removeClass("fa-angle-up").addClass("fa-angle-down");
-	}
-
-	$(".main-conf-wrap").toggleClass("hide");
-}
-
-function selectTab (tabNode) {
-	$(".tabs .tab").removeClass("active");
-	$(tabNode).addClass("active");
-
-	tabID = $(tabNode).attr("data-tab-id");
-
-	$(".main-conf-wrap section").removeClass("active");
-	$(".main-conf-wrap #"+tabID).addClass("active");
-}
-
-function selectModalTab (tabNode) {
-	$(".tabs .tab").removeClass("active");
-	$(tabNode).addClass("active");
-
-	tabID = $(tabNode).attr("data-tab");
+		const listElement = new ListElement(listItems);
+		listElement.render();
 
 	$(tabNode).parents(".params").find(".param").removeClass("active");
 	$(tabNode).parents(".params").find(".param[data-tab="+tabID+"]").addClass("active");
 }
 
 function togglePrev () {
-	saveConfiguration();
 	$(".prev-wrap").toggleClass("show");
-}
-
-function loadPrev () {
-    $("#prev .prev-content").html('<div class="preload">Load preview...</div><iframe onload="loadedPrev(this)" id="prev-if" src="http://localhost:5000/prev?'+Date.now()+'"></iframe>');
-}
-
-function loadedPrev (prevNode) {
-	$(".preload").hide();
-	$(prevNode).addClass("load");
 }

@@ -7,7 +7,7 @@ from pydantic import BaseModel, Field, validator
 from ..config import su_settings
 
 from .elements import Barcode, HorizontalGallery, Voice, Photo, PhotoGallery, \
-    Signature, Vision, Cart, ImageSlider, MenuItem, DimensionElement, TextElement
+    Signature, Vision, Cart, ImageSlider, MenuItem, DimensionElement, TextElement, Fab
 from .enums import CVDetectorType, LaunchType
 from .containers import Container, Tiles
 from .handlers import CommonHandler, Handler
@@ -26,7 +26,7 @@ class MainMenuModel(BaseConfigModel):
     menu_top: bool = Field(default=False, alias='MenuTop')
 
     class Config:
-        title = 'MainMenu'
+        title = 'MenuItem'
 
 
 class MediaFileModel(BaseConfigModel):
@@ -35,7 +35,7 @@ class MediaFileModel(BaseConfigModel):
     media_file_key: str = Field(default='', alias='MediafileKey')  # media
 
     class Config:
-        title = 'MediaFile'
+        title = 'Mediafile'
 
 
 class SQLQueryModel(BaseConfigModel):
@@ -63,7 +63,7 @@ class PyTimerTaskModel(BaseConfigModel):
         title = 'PyTimerTask'
 
 
-class StyleTemplates(DimensionElement, TextElement):
+class StyleTemplate(DimensionElement, TextElement):
     name: str
 
 
@@ -73,7 +73,7 @@ class PyFilesModel(BaseConfigModel):
     py_file_data: str = Field(alias='PyFileData', title='PyFileData')
 
     class Config:
-        title = 'PyFiles'
+        title = 'PyFile'
 
 
 class ConfigurationSettingsModel(BaseConfigModel):
@@ -104,7 +104,8 @@ Element = Annotated[
         Vision,
         Cart,
         ImageSlider,
-        MenuItem
+        MenuItem,
+        Fab
 
     ], Field(discriminator='type')
 ]
@@ -122,6 +123,10 @@ class OperationsModel(BaseConfigModel):
 
     elements: List[Element] = Field(default=[], alias='Elements')
     handlers: Optional[List[Handler]] = Field(default=[], alias='Handlers')
+
+    online_on_start: bool = Field(default=False, alias='onlineOnStart')
+    online_on_after_start: bool = Field(default=False, alias='onlineOnAfterStart')
+    online_on_input: bool = Field(default=False, alias='onlineOnInput')
 
     class Config:
         title = 'Operation'
@@ -178,12 +183,53 @@ class ProcessesModel(BaseConfigModel):
     class Config:
         title = 'Process'
 
+'''
+IntentScannerMessage – имя сообщения сканера
+IntentScannerVariable – имя переменной сообщения сканера
+IntentScannerLength – имя переменной, в которой храниться длина штрихкода, если он предаётся в виде байт-массива а не строки
+IntentScanner – режим работы сканера через интент
+CategoryDefault – фильтр по категориям сообщений для сканера штрихкодов
+ExchangeFolder – папка обмена. Выбирает папку обмена, при необходимости создает (создание папки работает в Android до 11 версии)
+RawConfigurationServiceON – произвольная авторизация
+GitFormat – формат для хранения конфигураций на github.com
+RawConfigurationURL – URL при варианте произвольной авторизации
+RawConfigurationServiceAuth – строка авторизации, заданная вручную для произвольной авторизации
+GitCommitsURL – URL коммитов с GitHub
+GitStoreURL – URL репозитория на GitHub для использования в качестве магазина
+OnlineSplitMode – «разделенный режим» конфигурации и обработчиков
+onlineURLListener – URL обработчиков для разделенного режима
+onlineURL – URL конфигурации для любого режима
+onlineUser – пользователь конфигурации для любого режима
+onlineUserListener – пользователь обработчиков для разделенного режима
+onlineCode – код справочника Мобильные клиенты
+onlinePass – пароль пользователя конфигурации для любого режима
+onlinePassListener – пароль пользователя обработчиков
+backendURL – URL PostgREST – устарело. Для соединения с Postgre
+backendUser – пользователь Postrgre
+oDataURL – URL OData
+Service_URL – URL сервиса технической информации (подписка на изменение настроек)
+offSettings – запрет на настройки
+offChat – отключение чата
+offToDo – отключение списка дел
+offlineMode – принудительный оффлайн режим
+beep – сигнал при каждом сканировании
+torch – подсветка при сканировании камерой
+dialogOnBackPressed – задавать вопрос при закрытии основной программы
+gps – получение координат GPS в Переменные перманентно
+timer – интервал таймера
+connection_limit – максимальное время попытки соединения для онлайн обработчиков, 0 – неограничено
+hardwarescan – отключение кнопки сканирование камерой для экранов со штрих-кодом (для аппаратного сканера)
+conf_id – ID конфигурации для запросов вида /get_configuration?confid=…
+configuration - загрузка текста конфигурации. Можно передать в настройках конфигурацию (через файл), она будет сразу же загружена'''
+
 
 class QRCodeConfig(BaseModel):
     raw_url: str = Field(alias='RawConfigurationURL')
     raw_service_auth: str = Field(default='', alias='RawConfigurationServiceAuth')
     raw_service_on: bool = Field(default=True, alias='RawConfigurationServiceON')
     online_split_mode: bool = Field(default=True, alias='OnlineSplitMode')
+    online_url_listener: str = Field(default='', alias='onlineURLListener')
+    online_user_listener: str = Field(default='', alias='onlineUserListener')
 
 
 class ClientConfigurationModel(BaseConfigModel):
@@ -214,17 +260,17 @@ class ClientConfigurationModel(BaseConfigModel):
     launch: Optional[LaunchType] = Field(alias='Launch', title='Menu type')  # Tiles
     launch_process: Optional[str] = Field(alias='LaunchProcess')  # process
     launch_var: Optional[str] = Field(alias='LaunchVar')  # field
-    main_menu: Optional[List[MainMenuModel]] = Field(alias='MainMenu')
+    main_menu: Optional[List[MainMenuModel]] = Field(default=[], alias='MainMenu')
     menu_web_template: Optional[str] = Field(alias='MenuWebTemplate')
-    media_file: Optional[List[MediaFileModel]] = Field(alias='Mediafile')
+    media_file: Optional[List[MediaFileModel]] = Field(default=[], alias='Mediafile')
     offline_on_create: Optional[List[SQLQueryModel]] = Field(alias='OfflineOnCreate')
     # def_service_configuration: Optional[str] = Field(alias='DefServiceConfiguration')
     # online_service_configuration: Optional[str] = Field(alias='OnlineServiceConfiguration')
     py_handlers: Optional[str] = Field(alias='PyHandlers')
-    py_handlers_path: Optional[str] = Field(alias='pyHandlersPath')
-    py_timer_task: Optional[List[PyTimerTaskModel]] = Field(alias='PyTimerTask')
+    py_handlers_path: Optional[str] = Field(default='', alias='pyHandlersPath')
+    py_timer_task: Optional[List[PyTimerTaskModel]] = Field(default=[], alias='PyTimerTask')
     py_files: Optional[List[PyFilesModel]] = Field(default=[], alias='PyFiles')
-    style_templates: Optional[List[StyleTemplates]] = Field(alias='StyleTemplates')
+    style_templates: Optional[List[StyleTemplate]] = Field(default=[], alias='StyleTemplates')
     arch2: bool = True
     common_handlers: Optional[List[CommonHandler]] = Field(default=[], alias='CommonHandlers')
 

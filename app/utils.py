@@ -2,14 +2,17 @@ import io
 import os
 import socket
 import base64
-
+import glob
+import pathlib
+import requests
 import json
 import jsonref
 from eel import chrome
 from pydantic import ValidationError
 import qrcode
 
-from .models import ui_config
+
+from .models import ui_config, project_config
 from .models.handlers import Handler
 from .models.root_config import RootConfigModel, QRCodeConfig
 
@@ -51,7 +54,9 @@ def get_config_from_file(file_path):
                     return check_result
             else:
                 with open(file_path, encoding='utf-8') as json_file:
-                    return RootConfigModel(**json.load(json_file)).dict(by_alias=True, exclude_none=True)
+                    json_data = json.load(json_file)
+                    check_file_paths(json_data, os.path.split(file_path)[0])
+                    return RootConfigModel(**json_data).dict(by_alias=True, exclude_none=True)
         else:
             raise Exception(check_result)
 
@@ -99,6 +104,26 @@ def check_config_version(data: dict):
                     raise VersionError('Unsupported configuration version')
 
 
+def check_file_paths(data: dict, path: str):
+    py_files = data['ClientConfiguration']['PyFiles']
+    for item in py_files:
+        if item.get('file_path') and not os.path.exists(item['file_path']):
+            item['file_path'] = ''
+
+        file_path = os.path.join(path, '{}.py'.format(item['PyFileKey']))
+        if os.path.exists(file_path):
+            item['file_path'] = file_path
+
+    file_path = data['ClientConfiguration'].get('pyHandlersPath')
+    if file_path and not os.path.exists(file_path):
+        data['ClientConfiguration']['pyHandlersPath'] = ''
+
+    file_path = os.path.join(path, 'main.py')
+    if os.path.exists(file_path):
+        data['ClientConfiguration']['pyHandlersPath'] = file_path
+
+
+
 def convert_config_version(file_path):
     with open(file_path, encoding='utf-8') as json_file:
         data = json.load(json_file)
@@ -130,8 +155,13 @@ def get_qr_code_config():
     host = socket.gethostbyname(socket.gethostname())
     port = 5000
     url = f'http://{host}:{port}/get_conf'
+    online_url = f'http://{host}:2076'
 
-    qr_config = QRCodeConfig(RawConfigurationURL=url)
+    qr_config = QRCodeConfig(
+        RawConfigurationURL=url,
+        onlineURLListener=online_url,
+        onlineUserListener='usr'
+    )
     img = qrcode.make(qr_config.json(by_alias=True, exclude_none=True))
     buffer = io.BytesIO()
     img.save(buffer, format="PNG")
@@ -200,6 +230,225 @@ def update_python_modules(new_modules: dict):
 
 def get_python_modules():
     return python_modules
+
+
+class ProjectConfig:
+    def __init__(self, config_data):
+        self.config_data = project_config.ConfigData(**config_data)
+        self.default_handlers = 'handlers'
+        self.default_external_modules = 'external_modules'
+        self.default_media_data = 'media_data'
+        self.default_config_name = 'sui_config.json'
+        self.config = None
+
+    def get_config(self):
+        if os.path.exists(self.config_data.work_dir):
+            self._init_config()
+            self._create_folders()
+            self._save_project_files()
+            return self._create_config().dict(by_alias=True)
+
+    def _get_config_file_path(self):
+        file_paths = [
+            self.config_data.file_path,
+            os.path.join(self.config_data.work_dir, self.default_config_name)
+        ]
+
+        for file_path in file_paths:
+            if os.path.exists(file_path):
+                return file_path
+
+    def _save_config_file(self, file_name):
+        file_path = os.path.join(
+            self.config_data.work_dir, file_name)
+
+        with open(file_path, 'w', encoding='utf-8') as f:
+            json.dump(self.config.dict(by_alias=True), f, ensure_ascii=False, indent=2)
+            self.file_path = file_path
+
+    def _init_new(self):
+        self.config = project_config.ProjectConfig(
+            py_handlers=f'{self.default_handlers}/*.py',
+            py_files=f'{self.default_external_modules}/*.py',
+            media_files=f'{self.default_media_data}/*.*'
+        )
+        self._save_config_file(self.default_config_name)
+
+    def _init_config(self):
+        file_path = self._get_config_file_path()
+
+        if file_path:
+            self.file_path = file_path
+            with open(file_path, encoding='utf-8') as f:
+                self.config = project_config.ProjectConfig.parse_raw(f.read())
+        else:
+            self._init_new()
+
+    def _create_folders(self):
+        for key, value in self.config.dict().items():
+            if isinstance(value, list):
+                for item in value:
+                    dir_name = os.path.join(self.config_data.work_dir, os.path.dirname(item))
+
+                    if dir_name and not os.path.exists(dir_name):
+                        os.makedirs(dir_name)
+            else:
+                dir_name = os.path.join(self.config_data.work_dir, os.path.dirname(value))
+                if dir_name and not os.path.exists(dir_name):
+                    os.makedirs(dir_name)
+
+    def _get_files_locations(self) -> list:
+        files_locations = []
+
+        if self.config_data.py_handlers:
+            files_locations.append({
+                'path': os.path.join(
+                    self.config_data.work_dir,
+                    self.default_handlers,
+                    'current_handlers.py'),
+                'data': self.config_data.py_handlers
+            })
+
+        for item in self.config_data.py_files:
+            files_locations.append({
+                'path': os.path.join(
+                    self.config_data.work_dir,
+                    self.default_external_modules,
+                    f'{item.py_file_key}'),
+                'data': item.py_file_data
+            })
+
+        for item in self.config_data.media_files:
+            files_locations.append({
+                'path': os.path.join(
+                    self.config_data.work_dir,
+                    self.default_media_data,
+                    f'{item.media_file_key}.{item.media_file_ext}'),
+                'data': item.media_file_data
+            })
+
+        return files_locations
+
+    def _save_project_files(self):
+        files_locations = self._get_files_locations()
+
+        for item in files_locations:
+            content = get_content_from_base64(item['data'])
+            with open(item['path'], 'w', encoding='utf-8') as f:
+                f.write(content)
+
+    def _create_config(self):
+        handlers = glob.glob(
+            os.path.join(self.config_data.work_dir, self.config.py_handlers),
+            recursive=True
+        )
+
+        max_len = max([len(item) for item in handlers])
+        handlers_content = ''
+        for path in handlers:
+            delimiter = self._get_delimiter(path, max_len)
+            with open(path, encoding='utf-8') as f:
+                handlers_content += f'\n{delimiter}\n\n{f.read()}\n'
+
+        py_files = []
+        external_modules = self._get_glob_data(self.config.py_files)
+        for path in external_modules:
+            py_files.append({
+                'py_file_key': os.path.basename(path),
+                'py_file_data': make_base64_from_file(path),
+                'file_path': path
+            })
+
+        media_files = []
+        media_data = self._get_glob_data(self.config.media_files)
+        for data in media_data:
+            path = pathlib.Path(data)
+            media_files.append({
+                'media_file_data': make_base64_from_file(data),
+                'media_file_key': path.stem,
+                'media_file_ext': path.suffix[1:]
+            })
+
+        result = project_config.ConfigData(
+            work_dir=self.config_data.work_dir,
+            file_path=self.file_path,
+            py_handlers=base64.b64encode(handlers_content.encode('utf-8')).decode('utf-8'),
+            py_files=py_files,
+            media_files=media_files,
+        )
+
+        return result
+
+    def _get_glob_data(self, path):
+        return glob.glob(
+            os.path.join(self.config_data.work_dir, path),
+            recursive=True
+        )
+
+    def _get_delimiter(self, path, max_len):
+        gap_len = (max_len - len(path)) // 2
+        indents = ['###' + ' ' * gap_len, ' ' * gap_len + '###']
+
+        max_len = max_len + 6
+
+        delimiter = path.join(indents)
+        frame = '=' * max_len
+        frame = f'#{frame[1:-1]}#'
+
+        return '\n'.join([frame, delimiter, frame])
+
+
+class SQLQueryManager:
+    def __init__(self, device_host, db_name, **kwargs):
+        self.device_host = device_host
+        self.db_name = db_name
+        self.mode = 'SQLQueryText'
+        self.port = '8095'
+        self.query = ''
+        self.params = ''
+
+    def send_query(self, query: str, params='', **kwargs):
+        self.query = query
+        self.params = params
+        result = {'error': '', 'content': '', 'data': None}
+        try:
+            response = requests.post(
+                self.get_url(),
+                headers={'Content-Type': 'Application/json; charset=utf-8'}
+            )
+            result['content'] = response.text
+            if response.status_code == 200:
+                result['data'] = self.parse_data(result['content'])
+            else:
+                result['error'] = str(response.status_code)
+
+        except requests.exceptions.RequestException as e:
+            result['error'] = 'Device connection error'
+            result['content'] = str(e.args[0])
+
+        return result
+
+    @staticmethod
+    def parse_data(content):
+        content_data = content.splitlines()
+        if len(content_data) > 1:
+            return {
+                'header': content_data[0],
+                'data': content_data[1:]
+            }
+
+    def get_url(self):
+        if self.device_host:
+            return 'http://{}:{}/?mode={}&query={}&params={}&db_name={}'.format(
+                self.device_host,
+                self.port,
+                self.mode,
+                self.query,
+                self.params,
+                self.db_name
+            )
+        else:
+            raise requests.exceptions.RequestException()
 
 
 class VersionError(Exception):

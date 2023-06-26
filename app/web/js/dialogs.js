@@ -8,7 +8,6 @@ async function pickFile() {
 	if (checkAskFileResult(result)){
 		conf = await loadConfiguration(result.file_path);
 		initReadedConf(conf, result.file_path);
-		saveConfiguration();
 	};
 };
 
@@ -17,7 +16,6 @@ async function pickNewFileProject() {
 	if (checkAskFileResult(result)){
 		conf = await getNewConfiguration()
 		initReadedConf(conf, result.file_path)
-		saveConfiguration();
 	}
 }
 
@@ -42,11 +40,51 @@ async function pickHandlersFile(){
 	$('#py-handlers-file-path').text(filePathText);
 };
 
+async function pickWorkingDir(){
+	if (! main.conf)
+		return
+
+	const resultAsk = await askDir();
+
+	if (resultAsk && resultAsk.path){
+		$('#working-dir-path').text(resultAsk.path);
+		const projectConfigPath = $('#project-config-path').text() || `${resultAsk.path}\sui_config.json`
+
+		const configData = {
+			workDir: resultAsk.path,
+			filePath: projectConfigPath,
+			PyHandlers : main.conf.ClientConfiguration['PyHandlers'] || '',
+			PyFiles : main.conf.ClientConfiguration['PyFiles'] || [],
+			Mediafile : main.conf.ClientConfiguration['Mediafile'] || []
+		}
+		const projectConfig = getProjectConfig(configData);
+		// if (resultCheck && !resultAsk.error){
+		// 	$('#project-config-path').text(resultAsk.file_path);
+		// }
+	}
+};
+
+async function pickProjectConfigFile(){
+	if (! main.conf)
+		return
+
+	
+};
+
 const showQRSettings = async (event) => {
     let img = $("#qr-preview"),
     	imgBase64 = await getQRByteArrayAsBase64(),
     	img_src = "data:image/png;base64, " + imgBase64;
 
-    modal = addModal('qr', '', '');
-    modal.append("<img src='"+img_src+"'>");
+	modal = new ImageModal();
+	modal.render();
+	modal.modal.append("<img src='"+img_src+"'>");
+	modal.show();
+}
+
+
+const showSqlQueries = async(event) => {
+	modal = new SQLQueryModal(main.deviceHost);
+	modal.render();
+	modal.show();
 }

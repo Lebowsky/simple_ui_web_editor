@@ -37,5 +37,5 @@ class Handler(BaseHandler):
     event: EventHandlerEnum = Field(title='Event')
 
     class Config:
-        title = 'Handlers'
+        title = 'Handler'
 

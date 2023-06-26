@@ -22,11 +22,11 @@ class DimensionElement(BaseModel):
     orientation: Optional[OrientationType] = Field(title='Orientation')
     height: Optional[Union[DimensionsType, str]] = Field(title='Height')
     width: Optional[Union[DimensionsType, str]] = Field(title='Width')
-    gravity_horizontal: Optional[GravityHorizontalEnum] = Field(default=GravityHorizontalEnum.center, title='Gravity horizontal')
-    gravity_vertical: Optional[GravityVerticalEnum] = Field(default=GravityVerticalEnum.center, title='Vertical gravity')
+    gravity_horizontal: Optional[GravityHorizontalEnum] = Field(title='Gravity horizontal')
+    gravity_vertical: Optional[GravityVerticalEnum] = Field(title='Vertical gravity')
     weight: Optional[str] = Field(title='Weight')
-    # height_value: Optional[str]
-    # width_value: Optional[str]
+    height_value: Optional[str]
+    width_value: Optional[str]
 
 
 class TextElement(BaseModel):
@@ -38,6 +38,9 @@ class TextElement(BaseModel):
 
 class Barcode(BaseElement):
     type: Literal['barcode']
+
+    class Config:
+        title = 'barcode'
 
 
 class HorizontalGallery(BaseElement):
@@ -74,3 +77,7 @@ class ImageSlider(BaseElement):
 
 class MenuItem(BaseElement):
     type: Literal['MenuItem']
+
+
+class Fab(BaseElement):
+    type: Literal['fab']

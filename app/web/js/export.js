@@ -4,6 +4,12 @@ function getCurrentFilePath(){
     return result;
 };
 
+eel.expose(setDeviceHost);
+function setDeviceHost(deviceHost){
+	main.deviceHost = deviceHost;
+	updateDeviceHost();
+}
+
 const getQRByteArrayAsBase64 = async () => {
     result = await eel.get_qr_settings()();
     return result
@@ -18,6 +24,14 @@ async function setConfigUIElements() {
 async function askFile(file_type) {
 	return eel.ask_file(file_type)();
 };
+
+async function askDir() {
+	return eel.ask_dir()();
+};
+
+async function getProjectConfig(configData){
+	return eel.get_project_config(configData)();
+}
 
 async function askSaveFile() {
 	return eel.ask_save_file('simple_ui')();
@@ -41,4 +55,8 @@ async function savePyHandlers(pyHandlers){
 
 async function getBase64FromFilePath(filePath){
 	return await eel.get_base64_from_file(filePath)()
+}
+
+async function sendSqlQueryToDevice(query_params){
+	return await eel.send_sql_query(query_params)()
 }

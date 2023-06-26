@@ -1,7 +1,7 @@
 import platform
 
 from tkinter import Tk
-from tkinter.filedialog import askopenfilename, asksaveasfilename
+from tkinter.filedialog import askopenfilename, asksaveasfilename, askdirectory
 from .utils import check_config_file
 
 
@@ -43,3 +43,14 @@ def ask_save_file(file_type='simple_ui'):
     if file_path:
         file_path = file_path if file_path.endswith('.ui') else f'{file_path}.ui'
         return {'file_path': file_path}
+
+
+def ask_dir():
+    root = Tk()
+    root.withdraw()
+    root.wm_attributes('-topmost', 1)
+
+    dir_path = askdirectory()
+
+    if dir_path:
+        return {'path': dir_path}
