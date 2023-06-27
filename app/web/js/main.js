@@ -281,9 +281,14 @@ class ClientConfiguration {
 
 		elements.forEach((item) => {
 			let name = item.elementValues[item.parentConfig.rowKeys.filter(key => item.elementValues[key])[0]];
+			let value = Object.keys(item.elementValues).find((el) => ['Value', 'method'].includes(el));
 			name = name || item.elementValues['type'];
+            if (value){
+                value = item.elementValues[[value]]
+            }
 			listItems.push({
 				name: name,
+				value: value,
 				id: item.id
 			});
 		})

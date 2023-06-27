@@ -118,7 +118,7 @@ select {
 }
 .modal {
     position: fixed;
-    width: 750px;
+    width: 820px;
     background: #fff;
     box-shadow: 0 0 10px #00000096;
     filter: blur(5px) brightness(0.5);
@@ -499,6 +499,7 @@ span.edited {
 /*-------sql-query-------*/
 table.sql-table {
     max-width: 100%;
+    max-height: 300px;
     display: block;
     overflow: auto;
     border-collapse: collapse;
@@ -521,7 +522,33 @@ table.sql-table tr:hover td {
     width: 100%;
     display: flex;
 }
+.modal-content #sql-query-content .param textarea {
+    width: 100%;
+    font-weight: 600;
+    padding: 10px;
+}
 /*-------sql-query-end-------*/
+/*-------dataTable--------*/
+table.dataTable.dtr-inline.collapsed>tbody>tr>td.dtr-control:before,
+table.dataTable.dtr-inline.collapsed>tbody>tr>th.dtr-control:before {
+    left: 7px;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+    border: none;
+    box-shadow: none;
+    background: linear-gradient(-45deg, #21B9E1, #E71F53, #FBAF2E);
+    font-size: 12pt;
+}
+table.dataTable>tbody>tr.child ul.dtr-details {
+    display: block;
+}
+table.dataTable>tbody>tr.child span.dtr-title {
+    margin-right: 20px;
+    min-width: 110px;
+}
+
+/*-------dataTable-end--------*/
 
 @media (max-width: 1376px) {
 .content {

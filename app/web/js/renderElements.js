@@ -457,20 +457,27 @@ class SQLQueryModal extends ModalWindow{
                 <button onclick="sendSQLQuery()">select</button>
             </div>
         </div>
-        <table class="sql-table">
-        </table>
+        <table class="sql-table display nowrap dataTable no-footer dtr-inline collapsed"></table>
         `
         return html;    
     }  
 
     renderSqlQueryResult(data){
         let html = `
-        <tr>
+        <thead>
             ${data.header.split('|').map((el) => `<th>${el}</th>`).join('\n')}
-        </tr>
+        </thead>
+        <tbody>
         ${data.data.map((el) => `<tr>${el.split('|').map((el)=>`<td>${el}</td>`).join('\n')}</tr>`).join('\n')}
+        </tbody>
         `
         this.modal.find('table').html(html)
+        this.modal.find('.sql-table').DataTable({
+            responsive: true,
+            language: {
+              "url": "https://cdn.datatables.net/plug-ins/1.13.4/i18n/ru.json"
+            }
+        });
     }
     close(){
         if (this.modal.siblings(selectors.modal).length) {
