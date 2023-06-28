@@ -23,7 +23,7 @@ var Main = {
 		}
 		$('#py-handlers-file-path').attr('data-path', pyHandlersPath)
 
-		// this.loadPrev();
+		this.loadPrev();
 	},
 	clearMainSection() {
 		$(selectors.processList).html("No processes");
