@@ -83,6 +83,7 @@ class ActionHandlerEnum(str, Enum):
 
 class HandlerType(str, Enum):
     python: str = 'python'
+    pythonreload: str = 'pythonreload'
     online: str = 'online'
     http: str = 'http'
     sql: str = 'sql'
