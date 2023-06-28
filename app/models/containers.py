@@ -7,7 +7,7 @@ from .container_elements import Tabs, Tab, TextView, Button, EditTextText, EditT
 from .elements import BaseElement, DimensionElement, Cart
 
 
-class Container(DimensionElement):
+class LinearLayout(DimensionElement):
     type: Literal['LinearLayout']
     variable: str = Field(default='', alias='Variable')
     elements: List['Element'] = Field(default=[], alias='Elements')
@@ -28,7 +28,7 @@ class Tiles(BaseElement, DimensionElement):
 
 Element = Annotated[
     Union[
-        Container,
+        LinearLayout,
         Tabs,
         Tab,
         TextView,
@@ -59,5 +59,5 @@ Element = Annotated[
     ], Field(discriminator='type')
 ]
 
-Container.update_forward_refs(Element=Element)
+LinearLayout.update_forward_refs(Element=Element)
 Tiles.update_forward_refs(Element=Element)

@@ -9,7 +9,7 @@ from ..config import su_settings
 from .elements import Barcode, HorizontalGallery, Voice, Photo, PhotoGallery, \
     Signature, Vision, Cart, ImageSlider, MenuItem, DimensionElement, TextElement, Fab
 from .enums import CVDetectorType, LaunchType
-from .containers import Container, Tiles
+from .containers import LinearLayout, Tiles
 from .handlers import CommonHandler, Handler
 
 
@@ -93,7 +93,7 @@ class ConfigurationSettingsModel(BaseConfigModel):
 
 Element = Annotated[
     Union[
-        Container,
+        LinearLayout,
         Tiles,
         Barcode,
         HorizontalGallery,

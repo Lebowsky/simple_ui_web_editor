@@ -24,7 +24,7 @@ class DimensionElement(BaseModel):
     width: Optional[Union[DimensionsType, str]] = Field(title='Width')
     gravity_horizontal: Optional[GravityHorizontalEnum] = Field(title='Gravity horizontal')
     gravity_vertical: Optional[GravityVerticalEnum] = Field(title='Vertical gravity')
-    weight: Optional[str] = Field(title='Weight')
+    weight: Optional[str] = Field(default=0, title='Weight')
     height_value: Optional[str]
     width_value: Optional[str]
 
