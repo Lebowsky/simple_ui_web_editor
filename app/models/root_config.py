@@ -10,7 +10,7 @@ from .elements import Barcode, HorizontalGallery, Voice, Photo, PhotoGallery, \
     Signature, Vision, Cart, ImageSlider, MenuItem, DimensionElement, TextElement, Fab
 from .enums import CVDetectorType, LaunchType
 from .containers import LinearLayout, Tiles
-from .handlers import CommonHandler, Handler
+from .handlers import CommonHandler, Handler, CVHandler
 
 
 class BaseConfigModel(BaseModel):
@@ -78,14 +78,14 @@ class PyFilesModel(BaseConfigModel):
 
 class ConfigurationSettingsModel(BaseConfigModel):
     uid: str = uuid.uuid4().hex
-    vendor: Optional[str] = ''
-    vendor_url: Optional[str] = ''
-    vendor_auth: Optional[str] = ''
-    handler_split_mode: Optional[bool] = False
-    handler_code: Optional[str] = ''
-    handler_url: Optional[str] = ''
-    handler_auth: Optional[str] = ''
-    dictionaries: Optional[str] = ''
+    vendor: Optional[str]
+    vendor_url: Optional[str]
+    vendor_auth: Optional[str]
+    handler_split_mode: Optional[bool]
+    handler_code: Optional[str]
+    handler_url: Optional[str]
+    handler_auth: Optional[str]
+    dictionaries: Optional[str]
 
     class Config:
         title = 'ConfigurationSettings'
@@ -124,10 +124,6 @@ class OperationsModel(BaseConfigModel):
     elements: List[Element] = Field(default=[], alias='Elements')
     handlers: Optional[List[Handler]] = Field(default=[], alias='Handlers')
 
-    online_on_start: bool = Field(default=False, alias='onlineOnStart')
-    online_on_after_start: bool = Field(default=False, alias='onlineOnAfterStart')
-    online_on_input: bool = Field(default=False, alias='onlineOnInput')
-
     class Config:
         title = 'Operation'
 
@@ -137,21 +133,17 @@ class CVFrames(BaseConfigModel):
     type: str = Field(default='CVFrame')
     cv_online: bool = Field(default=False, alias='CVOnline')
     cv_detector: CVDetectorType = Field(default='', alias='CVDetector')
-    cv_resolution: str = Field(default='', alias='CVResolution')  # HD1080
+    cv_resolution: str = Field(alias='CVResolution')  # HD1080
     cv_mode: str = Field(default='', alias='CVMode')  # list_only
     cv_action_buttons: Optional[str] = Field(alias='CVActionButtons')
+    cv_recognition_settings: Optional[str] = Field(alias='CVRecognitionSettings')
+    recognition_template: Optional[str] = Field(alias='RecognitionTemplate')
+    cv_mask: Optional[str] = Field(alias='CVMask')
     cv_action: Optional[str] = Field(alias='CVAction')  # Title
     cv_info: Optional[str] = Field(alias='CVInfo')
-    cv_camera_device: str = Field(default='', alias='CVCameraDevice')  # "Back"/Front,
-    cv_detector_mode: str = Field(default='', alias='CVDetectorMode')  # "train"/predict,
-    cv_frame_online_on_create: Optional[str] = Field(alias='CVFrameOnlineOnCreate')
-    cv_frame_def_on_create: Optional[str] = Field(alias='CVFrameDefOnCreate')
-    cv_frame_online_on_new_object: Optional[str] = Field(alias='CVFrameOnlineOnNewObject')
-    cv_frame_def_on_new_object: Optional[str] = Field(alias='CVFrameDefOnNewObject')
-    cv_frame_def_on_touch: Optional[str] = Field(alias='CVFrameDefOnTouch')
-    cv_frame_online_on_touch: Optional[str] = Field(alias='CVFrameOnlineOnTouch')
-    cv_frame_online_action: Optional[str] = Field(alias='CVFrameOnlineAction')
-    cv_frame_def_action: Optional[str] = Field(alias='CVFrameDefAction')
+    cv_camera_device: Optional[str] = Field(alias='CVCameraDevice')  # "Back"/Front,
+    cv_detector_mode: Optional[str] = Field(alias='CVDetectorMode')  # "train"/predict,
+    handlers: Optional[List[CVHandler]] = Field(alias='Handlers')
 
     class Config:
         title = 'CVFrame'
@@ -170,12 +162,14 @@ class CVOperationModel(BaseConfigModel):
 class ProcessesModel(BaseConfigModel):
     type: str = 'Process'
     process_name: str = Field(default=su_settings.locale.get('new_process'), alias='ProcessName', title='Process name')
-    hidden: Optional[bool] = Field(title='Do not display in Menu')
+    plan_fact_header: Optional[str] = Field(alias='PlanFactHeader')
     define_on_back_pressed: Optional[bool] = Field(
         alias='DefineOnBackPressed', title='Override back button (ON_BACK_PRESSED input event)')
 
+    hidden: Optional[bool] = Field(title='Do not display in Menu')
+
     login_screen: Optional[bool] = Field(title='Run at startup')
-    plan_fact_header: Optional[str] = Field(alias='PlanFactHeader')
+
     sc: Optional[bool] = Field(alias='SC', title='Independent process')
 
     operations: List[OperationsModel] = Field(alias='Operations')
@@ -264,8 +258,6 @@ class ClientConfigurationModel(BaseConfigModel):
     menu_web_template: Optional[str] = Field(alias='MenuWebTemplate')
     media_file: Optional[List[MediaFileModel]] = Field(default=[], alias='Mediafile')
     offline_on_create: Optional[List[SQLQueryModel]] = Field(alias='OfflineOnCreate')
-    # def_service_configuration: Optional[str] = Field(alias='DefServiceConfiguration')
-    # online_service_configuration: Optional[str] = Field(alias='OnlineServiceConfiguration')
     py_handlers: Optional[str] = Field(alias='PyHandlers')
     py_handlers_path: Optional[str] = Field(default='', alias='pyHandlersPath')
     py_timer_task: Optional[List[PyTimerTaskModel]] = Field(default=[], alias='PyTimerTask')

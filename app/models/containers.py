@@ -4,12 +4,14 @@ from pydantic import Field, BaseModel
 from .container_elements import Tabs, Tab, TextView, Button, EditTextText, EditTextNumeric, EditTextPass, \
     EditTextAuto, EditTextAutocomplete, ModernEditText, Picture, CheckBox, Gauge, Chart, SpinnerLayout, TableLayout, \
     MultilineText, CardsLayout, CButtons, CButtonsHorizontal, DateField, ProgressButton, HTML, Map, File, Object
-from .elements import BaseElement, DimensionElement, Cart
+from .elements import BaseElement, DimensionElement, Cart, LayoutElement
 
 
-class LinearLayout(DimensionElement):
+class LinearLayout(LayoutElement):
     type: Literal['LinearLayout']
     variable: str = Field(default='', alias='Variable')
+    value: str = Field(default='', alias='Value')
+
     elements: List['Element'] = Field(default=[], alias='Elements')
 
     class Config:

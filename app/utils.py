@@ -105,7 +105,7 @@ def check_config_version(data: dict):
 
 
 def check_file_paths(data: dict, path: str):
-    py_files = data['ClientConfiguration']['PyFiles']
+    py_files = data['ClientConfiguration'].get('PyFiles', [])
     for item in py_files:
         if item.get('file_path') and not os.path.exists(item['file_path']):
             item['file_path'] = ''

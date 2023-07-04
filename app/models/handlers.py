@@ -2,7 +2,7 @@ from typing import Optional
 
 from pydantic import BaseModel, Field, validator, root_validator
 
-from .enums import EventCommonHandlerEnum, EventHandlerEnum, ActionHandlerEnum, HandlerType
+from .enums import EventCommonHandlerEnum, EventHandlerEnum, ActionHandlerEnum, HandlerType, EventCVHandlerEnum
 
 
 class BaseHandler(BaseModel):
@@ -39,3 +39,6 @@ class Handler(BaseHandler):
     class Config:
         title = 'Handler'
 
+
+class CVHandler(BaseHandler):
+    event: EventCVHandlerEnum = Field(title='Event')

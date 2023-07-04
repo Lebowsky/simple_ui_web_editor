@@ -29,6 +29,15 @@ class DimensionElement(BaseModel):
     width_value: Optional[str]
 
 
+class LayoutElement(BaseModel):
+    orientation: Optional[OrientationType] = Field(title='Orientation')
+    height: Optional[Union[DimensionsType, str]] = Field(title='Height')
+    width: Optional[Union[DimensionsType, str]] = Field(title='Width')
+    weight: Optional[str] = Field(default=0, title='Weight')
+    height_value: Optional[str]
+    width_value: Optional[str]
+
+
 class TextElement(BaseModel):
     text_size: Optional[str] = Field(alias="TextSize")
     text_color: Optional[str] = Field(alias='TextColor')
