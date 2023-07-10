@@ -1,4 +1,6 @@
 $(document).ready(function(){
+	sortableInit(selectors.list);
+
 	$('#prev').resizable({
 		minWidth: 250,
 		handles: "e,w",
@@ -16,6 +18,9 @@ $(document).ready(function(){
 		modal = new ElementModal(element);
 		modal.render().show();
 	})
+	$(document).on('change', "#ip-address", function(){
+		main.deviceHost = $(this).val();
+	})
 	$(document).on('click', selectors.btnDelete, function(){
 		if (confirm('Вы уверены?')) {
 			const elementId = $(this).parents(selectors.listItem).attr('data-id');
@@ -25,7 +30,7 @@ $(document).ready(function(){
 			const parentId = element.parentId;
 
 			main.configGraph.removeElement(element);
-			main.configGraph.fillListElementValues(type, node, parentId);
+			main.configGraph.fillListElements(type, node, parentId);
 		}
 	})
 	$(document).on('click', selectors.btnAdd, function(e){
@@ -54,7 +59,7 @@ $(document).ready(function(){
 
 		elementId = $(this).parents('.params').attr('data-id');
 		element = main.configGraph.getElementById(elementId);
-		main.configGraph.fillListElementValues(element.parentType, element.parentConfig['node'], element.parentId)
+		main.configGraph.fillListElements(element.parentType, element.parentConfig['node'], element.parentId, elementId)
 	})
 	$(document).on('click', '.btn-type-select', function(){
 		const checked = $(this).parents('.params').find('input[name=type]:checked');
@@ -94,14 +99,25 @@ $(document).ready(function(){
 		modal = ModalWindow.getCurrentModal();
 		modal.close();
 	});
-	$(document).on('click', selectors.listItem, function(){
+	$(document).on('click', selectors.listItem, function(e){
 		$(this).parents(selectors.list).find(selectors.listItem).removeClass("active");
 		$(this).addClass("active");
+
+		if (!$(e.target).is(".item-btn > *")) {
+			const elementId = $(this).attr("data-id");
+			const element = main.configGraph.getElementById(elementId);
+			const type = element.parentType;
+
+			if (type == "Elements") {
+				main.configGraph.fillListElements(type, ".modal.active .list-param.active .element-childs-wrap", elementId, false, false);
+				//main.configGraph.fillListElementChilds(elementId, ".modal.active .element-childs-wrap");
+			}
+		}
 	})
 	$(document).on('click', '#processes .list-item', function(e){
 		if ($(e.target).is(this) || $(e.target).is($(this).children("span"))) {
 			const elementId = $(this).attr('data-id');
-			main.configGraph.fillListElementsByParent(elementId, selectors.operationsList);
+			main.configGraph.fillListElements("Operations", selectors.operationsList, elementId);
 			showList($("#main-conf-screen .section-header"), "down");
 		}
 	})
@@ -238,6 +254,25 @@ function showList(node, direction = "toggle") {
 		}
 	}
 }
+function sortableInit(node) {
+    $(node).sortable({
+    	items: "> li",
+    	containment: "body",
+    	cursor: "grabbing",
+    	handle: ".move",
+		update: function(event, ui) {
+			console.log(ui.item.prev().attr("data-id"))
+			let element1Id = ui.item.attr("data-id");
+			
+			if (ui.originalPosition.top < ui.position.top)
+				element2Id = ui.item.prev().attr("data-id");
+			else
+				element2Id = ui.item.next().attr("data-id");
+
+			main.configGraph.moveElement(element1Id, element2Id);
+		}
+	});
+}
 async function sendSQLQuery(){
 	if (!main.deviceHost){
 		notificate('Device connection error');
@@ -255,7 +290,7 @@ async function sendSQLQuery(){
 	if (result){
 		if (result.error){
 			notificate(result.content);
-		} else if (result.data){
+		} else {
 			modal = ModalWindow.getCurrentModal();
 			modal.renderSqlQueryResult(result.data);
 		}
