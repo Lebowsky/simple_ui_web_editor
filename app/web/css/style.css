@@ -188,6 +188,7 @@ footer {
     align-items: center;
     padding: 10px;
     cursor: default;
+    position: relative;
 }
 .list-item.active,
 .list-item:hover {
@@ -357,14 +358,19 @@ label i,
 .modal .tab {
     background: #fff;
     border-radius: 300px;
+    margin: 0 10px 0 0;
+}
+.modal .tab:last-child {
+    margin-right: 0;
 }
 .modal .tabs {
-    margin: auto 50px auto auto;
-    top: 0;
-    bottom: 0;
-    height: 90px;
+    top: -160px;
+    right: 0;
+    left: 0;
+    height: auto;
     display: flex;
     justify-content: center;
+    flex-direction: row;
 }
 .tab:not(.active):hover {
     box-shadow: 0 0 10px #0000001c;
@@ -495,8 +501,57 @@ span.edited {
 .modal.edited span.edited {
     display: inline;
 }
+.element-childs {
+    border: 1px #e7e7e7 dashed;
+    padding: 0 10px;
+    margin-bottom: 10px;
+}
+.element-childs li {
+    padding: 10px;
+    border-bottom: 1px #e7e7e7 solid;
+}
+.element-childs li:last-child {
+    border: none;
+}
+.element-childs .item-value {
+    font-size: 10pt;
+    margin-left: 10px;
+    font-style: italic; 
+}
+.item-btn .move {
+    cursor: grab;
+    font-size: 12pt;
+    margin-left: 10px;
+}
+.item-btn .move i {
+    color: #bdbdbd;
+}
+.item-info {
+    display: flex;
+    justify-content: center;
+    width: 570px;
+}
+.list-item .item-info span:first-child {
+    border: none;
+}
+.list-item .item-info span {
+    border-left: 1px #a7a7a7 solid;
+    padding: 0 10px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-style: italic;
+    font-size: 10pt;
+}
 
 /*-------sql-query-------*/
+#sql-table-wrap {
+    text-align: center;
+    padding: 20px 0;
+}
+#sql-table-wrap .dataTables_length select {
+    margin: 0 0 10px 0;
+}
 table.sql-table {
     max-width: 100%;
     max-height: 300px;

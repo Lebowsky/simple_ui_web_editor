@@ -19,16 +19,34 @@ class ListElement {
 
         this.items.forEach((item, index) => {
             html += `
-            <li class="list-item" data-id=${item.id}>
+            <li class="list-item ${item.itemClasses ? item.itemClasses : ''}" data-id=${item.id}>
                 <span class="item-name">${item.name}</span>
-                ${item.value ?`<span>${item.value}</span>`: ''}
+                ${item.value ?`<div class="item-info"><span title="${item.value}">${item.value}</span></div>`: ''}
                 <div class="item-btn">
                     <span class="edit">edit</span>
                     <span class="delete">delete</span>
+                    <span class="move"><i class="fa fa-bars" aria-hidden="true"></i></span>
                 </div>
             </li>
         `
         });
+        return html;
+    }
+    renderElementChild() {
+        let html = '<ul class="element-childs">';
+        if (!this.items || this.items.length == 0)
+            return "";
+
+        this.items.forEach((item, index) => {
+            html += `
+            <li class="">
+                <span class="item-name">${item.name}</span>
+                ${item.value ?`<span class="item-value">${item.value}</span>`: ''}
+            </li>
+        `
+        });
+        html += '</ul>';
+
         return html;
     }
     addProcessesButton($node){
@@ -55,6 +73,8 @@ class ModalWindow {
         this.modal.appendTo('#modals-wrap').addClass("active")
         $('.content').addClass("blur");
         $("body").addClass("no-scroll");
+
+        sortableInit(selectors.list);
     }
     static getCurrentModal() {
         const modalDiv = $('#modals-wrap.active').find('.modal.active');
@@ -160,6 +180,7 @@ class ElementModal extends ModalWindow{
                     </label>
                     <div class="list-wrap" style="display: none;">
                         <ul class="list ${type}" id="${type}" data-id="${this.element.id}">${this.renderListElement(elementsList)}</ul>
+                        <div class="element-childs-wrap"></div>
                     </div>
                 </div>
             `
@@ -463,21 +484,28 @@ class SQLQueryModal extends ModalWindow{
     }  
 
     renderSqlQueryResult(data){
-        let html = `
-        <table class="sql-table display nowrap dataTable no-footer dtr-inline collapsed">
-            <thead>
-                ${data.header.split('|').map((el) => `<th>${el}</th>`).join('\n')}
-            </thead>
-            <tbody>
-            ${data.data.map((el) => `<tr>${el.split('|').map((el)=>`<td>${el}</td>`).join('\n')}</tr>`).join('\n')}
-            </tbody>
-        </table>
-        `
+        let html = ``;
+        
+        if (data) {
+            html = `
+            <table class="sql-table display nowrap dataTable no-footer dtr-inline collapsed">
+                <thead>
+                    ${data.header.split('|').map((el) => `<th>${el}</th>`).join('\n')}
+                </thead>
+                <tbody>
+                ${data.data.map((el) => `<tr>${el.split('|').map((el)=>`<td>${el}</td>`).join('\n')}</tr>`).join('\n')}
+                </tbody>
+            </table>
+            `
+        } else if (data == null) {
+            html = `Нет записей`
+        }
         this.modal.find('#sql-table-wrap').html(html)
         this.modal.find('.sql-table').DataTable({
             responsive: true,
             language: {
-              "url": "https://cdn.datatables.net/plug-ins/1.13.4/i18n/ru.json"
+                "lengthMenu": "_MENU_",
+                "url": "https://cdn.datatables.net/plug-ins/1.13.4/i18n/ru.json"
             }
         });
     }
