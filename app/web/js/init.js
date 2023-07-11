@@ -257,7 +257,7 @@ function showList(node, direction = "toggle") {
 function sortableInit(node) {
     $(node).sortable({
     	items: "> li",
-    	containment: "body",
+    	containment: "parent",
     	cursor: "grabbing",
     	handle: ".move",
 		update: function(event, ui) {
@@ -274,10 +274,10 @@ function sortableInit(node) {
 	});
 }
 async function sendSQLQuery(){
-	if (!main.deviceHost){
+	/*if (!main.deviceHost){
 		notificate('Device connection error');
 		return
-	}
+	}*/
 
 	const query_params = {
 		device_host: main.deviceHost || '',
@@ -285,8 +285,26 @@ async function sendSQLQuery(){
 		query: $('#sql-query').val(),
 		params: $('#query-params').val()
 	};
-	const result = await sendSqlQueryToDevice(query_params);
-
+	//const result = await sendSqlQueryToDevice(query_params);
+	var result = {
+    "error": "",
+    "content": "barcode | id_good | id_property | id_series | id_unit\r\n2000000058429 | 7b7230d4-9257-11e3-8058-0015e9b8c48d |  |  | \r\n2000000058436 | 7b7230d6-9257-11e3-8058-0015e9b8c48d |  |  | \r\n2000000000015 | cbcf492a-55bc-11d9-848a-00112f43529a |  |  | \r\n2000000000022 | cbcf492a-55bc-11d9-848a-00112f43529a |  |  | f06588a7-7924-11df-b33a-0011955cba6b\r\n2000000000039 | 391e9547-702e-11e6-accf-0050568b35ac | 5cff86b4-702e-11e6-accf-0050568b35ac |  | \r\n2000000000046 | 391e9547-702e-11e6-accf-0050568b35ac | c4cd76df-702e-11e6-accf-0050568b35ac |  | \r\n2000000000060 | cbcf4968-55bc-11d9-848a-00112f43529a |  |  | \r\n2000000000077 | cbcf4980-55bc-11d9-848a-00112f43529a |  |  | \r\n2000000000121 | bd72d913-55bc-11d9-848a-00112f43529a | 3df1947d-7886-11df-b33a-0011955cba6b |  | dff7f708-7a0b-11df-b33a-0011955cba6b\r\n2000000000138 | bd72d913-55bc-11d9-848a-00112f43529a | 3df1947d-7886-11df-b33a-0011955cba6b |  | f0e40f7b-7390-11df-b338-0011955cba6b\r\n",
+    "data": {
+        "header": "barcode | id_good | id_property | id_series | id_unit",
+        "data": [
+            "2000000058429 | 7b7230d4-9257-11e3-8058-0015e9b8c48d |  |  | ",
+            "2000000058436 | 7b7230d6-9257-11e3-8058-0015e9b8c48d |  |  | ",
+            "2000000000015 | cbcf492a-55bc-11d9-848a-00112f43529a |  |  | ",
+            "2000000000022 | cbcf492a-55bc-11d9-848a-00112f43529a |  |  | f06588a7-7924-11df-b33a-0011955cba6b",
+            "2000000000039 | 391e9547-702e-11e6-accf-0050568b35ac | 5cff86b4-702e-11e6-accf-0050568b35ac |  | ",
+            "2000000000046 | 391e9547-702e-11e6-accf-0050568b35ac | c4cd76df-702e-11e6-accf-0050568b35ac |  | ",
+            "2000000000060 | cbcf4968-55bc-11d9-848a-00112f43529a |  |  | ",
+            "2000000000077 | cbcf4980-55bc-11d9-848a-00112f43529a |  |  | ",
+            "2000000000121 | bd72d913-55bc-11d9-848a-00112f43529a | 3df1947d-7886-11df-b33a-0011955cba6b |  | dff7f708-7a0b-11df-b33a-0011955cba6b",
+            "2000000000138 | bd72d913-55bc-11d9-848a-00112f43529a | 3df1947d-7886-11df-b33a-0011955cba6b |  | f0e40f7b-7390-11df-b338-0011955cba6b"
+        ]
+    }
+}
 	if (result){
 		if (result.error){
 			notificate(result.content);

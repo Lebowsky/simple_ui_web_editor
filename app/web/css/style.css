@@ -191,7 +191,8 @@ footer {
     position: relative;
 }
 .list-item.active,
-.list-item:hover {
+.list-item:hover,
+.list-item.ui-sortable-helper {
     background: #e9e9e9;
 }
 .item-btn {
@@ -200,7 +201,8 @@ footer {
     visibility: hidden;
 }
 .list-item.active .item-btn,
-.list-item:hover .item-btn {
+.list-item:hover .item-btn,
+.list-item.ui-sortable-helper .item-btn {
     display: flex;
     visibility: visible;
 }
@@ -243,6 +245,7 @@ footer {
     text-align: center;
     padding: 20px 0;
     width: 100%;
+    overflow: auto;
 }
 .param input[type=text], .param input[type=password] {
     width: 100%;
