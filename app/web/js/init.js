@@ -13,10 +13,11 @@ $(document).ready(function(){
 	});
 	$(document).on('click', selectors.btnEdit, function(){
 		const elementId = $(this).parents(selectors.listItem).attr('data-id');
-		const element = main.configGraph.getElementById(elementId);
-
-		modal = new ElementModal(element);
-		modal.render().show();
+		editElement(elementId);
+	})
+	$(document).on('dblclick', selectors.listItem, function(){
+		const elementId = $(this).attr('data-id');
+		editElement(elementId);
 	})
 	$(document).on('change', "#ip-address", function(){
 		main.deviceHost = $(this).val();
@@ -32,6 +33,43 @@ $(document).ready(function(){
 			main.configGraph.removeElement(element);
 			main.configGraph.fillListElements(type, node, parentId);
 		}
+	})
+	$(document).on('click', selectors.btnCopy, function(e){
+		const elementId = $(this).parents(selectors.listItem).attr('data-id');
+		const element = main.configGraph.getElementById(elementId);
+		const type = element.parentType;
+		const node = element.parentConfig['node'];
+		const parentId = element.parentId;
+		$(selectors.btnPaste).remove();
+
+		main.clipboard[0] = structuredClone(element);
+		main.configGraph.fillListElements(type, node, parentId);
+	})
+	$(document).on('click', selectors.btnPaste, function(e){
+		const parentId = $(this).parents('.list').attr('data-id');
+		main.clipboard[0].parentId = parentId;
+		const newElement = main.configGraph.duplicateElement(main.clipboard[0]);
+
+		const element = main.configGraph.getElementById(newElement.id);
+		const type = element.parentType;
+		const node = element.parentConfig['node'];
+		const elementParentId = element.parentId;
+		main.configGraph.fillListElements(type, node, elementParentId);
+	})
+	$(document).on('click', selectors.btnDuplicate, function(e){
+		const elementId = $(this).parents(selectors.listItem).attr('data-id');
+		const element = main.configGraph.getElementById(elementId);
+		const type = element.parentType;
+		const node = element.parentConfig['node'];
+		const parentId = element.parentId;
+
+		const newElement = main.configGraph.duplicateElement(element);
+
+		//modal = new ElementModal(newElement);
+		main.configGraph.fillListElements(type, node, parentId);
+		//modal.render().show();
+
+		console.log(newElement);
 	})
 	$(document).on('click', selectors.btnAdd, function(e){
 		const listId = $(this).parents('.list').attr('id');
@@ -124,6 +162,10 @@ $(document).ready(function(){
 	$(document).on('click', '.main-conf-wrap .section-header', function(e){
 		hideMain();
 	})
+	$(document).on('click', '.querys > li', function(e){
+		$("#sql-query").val($(this).text());
+		$("#query-params").val($(this).attr("data-params"));
+	})
 	$(document).on('change', 'select.element-type', function(){
 		// let modal = $(this).parents(selectors.modal),
 		// 	type  = $(this).val(),
@@ -144,7 +186,7 @@ $(document).ready(function(){
 		
 		if (paramName){
 			$(this).attr('data-id', 1);
-			const value = $(this).prop('type') == 'checkbox'? $(this).prop('type'): $(this).val()
+			const value = $(this).prop('type') == 'checkbox'? $(this).prop('checked'): $(this).val()
 			main.configGraph.setConfigValues(1, {[paramName]: value});
 		}
 	})
@@ -195,6 +237,12 @@ $(document).ready(function(){
     };
 });
 
+function editElement(elementId) {
+	const element = main.configGraph.getElementById(elementId);
+
+	modal = new ElementModal(element);
+	modal.render().show();
+}
 function loadedPrev(prevNode) {
 	$(".preload").hide();
 	$(prevNode).addClass("load");
@@ -273,38 +321,32 @@ function sortableInit(node) {
 		}
 	});
 }
-async function sendSQLQuery(){
-	/*if (!main.deviceHost){
+async function sendSQLQuery(node){
+	let query = $('#sql-query').val();
+	let params = $('#query-params').val();
+	let nodeText = $(node).text();
+
+	if (!main.deviceHost){
 		notificate('Device connection error');
 		return
-	}*/
+	}
+
+	main.sqlQuerys.push({query:query, params:params});
 
 	const query_params = {
 		device_host: main.deviceHost || '',
 		db_name: $('#db-name').val(),
-		query: $('#sql-query').val(),
-		params: $('#query-params').val()
+		query: query,
+		params: params
 	};
-	//const result = await sendSqlQueryToDevice(query_params);
-	var result = {
-    "error": "",
-    "content": "barcode | id_good | id_property | id_series | id_unit\r\n2000000058429 | 7b7230d4-9257-11e3-8058-0015e9b8c48d |  |  | \r\n2000000058436 | 7b7230d6-9257-11e3-8058-0015e9b8c48d |  |  | \r\n2000000000015 | cbcf492a-55bc-11d9-848a-00112f43529a |  |  | \r\n2000000000022 | cbcf492a-55bc-11d9-848a-00112f43529a |  |  | f06588a7-7924-11df-b33a-0011955cba6b\r\n2000000000039 | 391e9547-702e-11e6-accf-0050568b35ac | 5cff86b4-702e-11e6-accf-0050568b35ac |  | \r\n2000000000046 | 391e9547-702e-11e6-accf-0050568b35ac | c4cd76df-702e-11e6-accf-0050568b35ac |  | \r\n2000000000060 | cbcf4968-55bc-11d9-848a-00112f43529a |  |  | \r\n2000000000077 | cbcf4980-55bc-11d9-848a-00112f43529a |  |  | \r\n2000000000121 | bd72d913-55bc-11d9-848a-00112f43529a | 3df1947d-7886-11df-b33a-0011955cba6b |  | dff7f708-7a0b-11df-b33a-0011955cba6b\r\n2000000000138 | bd72d913-55bc-11d9-848a-00112f43529a | 3df1947d-7886-11df-b33a-0011955cba6b |  | f0e40f7b-7390-11df-b338-0011955cba6b\r\n",
-    "data": {
-        "header": "barcode | id_good | id_property | id_series | id_unit",
-        "data": [
-            "2000000058429 | 7b7230d4-9257-11e3-8058-0015e9b8c48d |  |  | ",
-            "2000000058436 | 7b7230d6-9257-11e3-8058-0015e9b8c48d |  |  | ",
-            "2000000000015 | cbcf492a-55bc-11d9-848a-00112f43529a |  |  | ",
-            "2000000000022 | cbcf492a-55bc-11d9-848a-00112f43529a |  |  | f06588a7-7924-11df-b33a-0011955cba6b",
-            "2000000000039 | 391e9547-702e-11e6-accf-0050568b35ac | 5cff86b4-702e-11e6-accf-0050568b35ac |  | ",
-            "2000000000046 | 391e9547-702e-11e6-accf-0050568b35ac | c4cd76df-702e-11e6-accf-0050568b35ac |  | ",
-            "2000000000060 | cbcf4968-55bc-11d9-848a-00112f43529a |  |  | ",
-            "2000000000077 | cbcf4980-55bc-11d9-848a-00112f43529a |  |  | ",
-            "2000000000121 | bd72d913-55bc-11d9-848a-00112f43529a | 3df1947d-7886-11df-b33a-0011955cba6b |  | dff7f708-7a0b-11df-b33a-0011955cba6b",
-            "2000000000138 | bd72d913-55bc-11d9-848a-00112f43529a | 3df1947d-7886-11df-b33a-0011955cba6b |  | f0e40f7b-7390-11df-b338-0011955cba6b"
-        ]
-    }
-}
+	
+	$(node).html(`<img style="width: 70px;height: 13px;transform: scale(2.5);" src="/js/pre.svg">`)
+
+	const result = await sendSqlQueryToDevice(query_params);
+	
+	$(node).html(nodeText)
+	$(".querys-wrap").html(SQLQueryModal.renderSqlQueryHistory(main.sqlQuerys));
+
 	if (result){
 		if (result.error){
 			notificate(result.content);

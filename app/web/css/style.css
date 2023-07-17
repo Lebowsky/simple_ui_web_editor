@@ -189,6 +189,13 @@ footer {
     padding: 10px;
     cursor: default;
     position: relative;
+    border-bottom: 1px #e9e9e9 solid;
+}
+.list-item:last-child {
+    border-bottom: none;
+}
+.list-item span.item-name {
+    font-weight: 500;
 }
 .list-item.active,
 .list-item:hover,
@@ -207,10 +214,16 @@ footer {
     visibility: visible;
 }
 .item-btn span {
-    font-size: 12px;
+    font-size: 15px;
     text-decoration: underline;
     cursor: pointer;
-    margin-left: 5px;
+    padding: 0 7px;
+}
+.item-btn span i {
+    position: relative;
+}
+.item-btn span:not(.move):hover i {
+    transform: translateY(-1px);
 }
 .params {
     display: flex;
@@ -556,6 +569,7 @@ span.edited {
     margin: 0 0 10px 0;
 }
 table.sql-table {
+    width: 100% !important;
     max-width: 100%;
     max-height: 300px;
     display: block;
@@ -573,7 +587,7 @@ table.sql-table td, th {
 table.sql-table tr:hover td {
     background: #dbdbdb;
 }
-#query-params {
+#query-params-wrap {
     display: flex;
 }
 .modal-content #sql-query-content .param {
@@ -581,9 +595,42 @@ table.sql-table tr:hover td {
     display: flex;
 }
 .modal-content #sql-query-content .param textarea {
-    width: 100%;
+    width: 65%;
+    max-width: 65%;
+    height: 75px;
     font-weight: 600;
     padding: 10px;
+}
+.modal-content #sql-query-content .param .btn-wrap {
+    width: 35%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.modal-content #sql-query-content .param .btn-wrap button {
+    margin: 0;
+    text-transform: uppercase;
+    width: 80%;
+}
+.querys-wrap {
+    position: relative;
+    padding: 30px 0 0 0;
+}
+.querys-wrap .section-header {
+    top: 8px;
+    left: 0;
+    padding: 0 20px 0 0;
+}
+ul.querys {
+    border: 1px #dbdbdb solid;
+}
+ul.querys li:not(:last-child) {
+    border-bottom: 1px #dbdbdb solid;
+}
+ul.querys li {
+    padding: 10px 5px;
+    margin: 0 15px;
+    cursor: pointer;
 }
 /*-------sql-query-end-------*/
 /*-------dataTable--------*/

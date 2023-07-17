@@ -1,15 +1,17 @@
 class ListElement {
-    constructor(items) {
+    constructor(items, elementType) {
         this.items = items;
         this.html;
+        this.elementType = elementType;
     }
     render() {
         this.html = `
             <div class="btn-group">
                 <button class="btn-add">Add</button>
+                ${main.clipboard.length && this.elementType && main.clipboard[0].parentType.toLowerCase() == this.elementType.toLowerCase() ? `<button class="btn-paste">Paste</button>` : ``}
             </div>
-            ${this.renderRows()}
         `
+        this.html += `${this.renderRows()}`
         return this;
     }
     renderRows() {
@@ -19,16 +21,18 @@ class ListElement {
 
         this.items.forEach((item, index) => {
             html += `
-            <li class="list-item ${item.itemClasses ? item.itemClasses : ''}" data-id=${item.id}>
-                <span class="item-name">${item.name}</span>
-                ${item.value ?`<div class="item-info"><span title="${item.value}">${item.value}</span></div>`: ''}
-                <div class="item-btn">
-                    <span class="edit">edit</span>
-                    <span class="delete">delete</span>
-                    <span class="move"><i class="fa fa-bars" aria-hidden="true"></i></span>
-                </div>
-            </li>
-        `
+                <li class="list-item ${item.itemClasses ? item.itemClasses : ''}" data-id=${item.id}>
+                    <span class="item-name">${item.name}</span>
+                    ${item.value ?`<div class="item-info"><span title="${item.value}">${item.value}</span></div>`: ''}
+                    <div class="item-btn">
+                        <span class="copy" title="copy"><i class="fa fa-clipboard" aria-hidden="true"></i></span>
+                        <span class="duplicate" title="duplicate"><i class="fa fa-copy" aria-hidden="true"></i></span>
+                        <span class="edit" title="edit"><i class="fa fa-edit" aria-hidden="true"></i></span>
+                        <span class="delete" title="delete"><i class="fa fa-trash" aria-hidden="true"></i></span>
+                        <span class="move"><i class="fa fa-bars" aria-hidden="true"></i></span>
+                    </div>
+                </li>
+            `
         });
         return html;
     }
@@ -179,7 +183,7 @@ class ElementModal extends ModalWindow{
                         <i class="fa fa-angle-down" aria-hidden="true"></i>
                     </label>
                     <div class="list-wrap" style="display: none;">
-                        <ul class="list ${type}" id="${type}" data-id="${this.element.id}">${this.renderListElement(elementsList)}</ul>
+                        <ul class="list ${type}" id="${type}" data-id="${this.element.id}">${this.renderListElement(elementsList, type)}</ul>
                         <div class="element-childs-wrap"></div>
                     </div>
                 </div>
@@ -199,7 +203,7 @@ class ElementModal extends ModalWindow{
         }
         return html;
     }
-    renderListElement(elementsList) {
+    renderListElement(elementsList, type) {
         
         const listItems = [];
 
@@ -215,7 +219,7 @@ class ElementModal extends ModalWindow{
             }
             listItems.push(itemValues)
         })
-        const listElement = new ListElement(listItems);
+        const listElement = new ListElement(listItems, type);
         return listElement.render().html;
     }
     renderButtons() {
@@ -456,7 +460,7 @@ class SQLQueryModal extends ModalWindow{
         const html = `
         <div>
             <div id="sql-query-content">
-                <div id="query-params">
+                <div id="query-params-wrap">
                     <div class="param">
                         <label for="ip-address">IP Address</label>
                         <input type="text" name="ip-address" value="${this.ipAddress}" id="ip-address">
@@ -472,17 +476,30 @@ class SQLQueryModal extends ModalWindow{
                 </div>
                 <div class="param">
                     <textarea name="query" cols="80" rows="8" id="sql-query">${this.query}</textarea>
+                    <div class="btn-wrap">
+                        <button onclick="sendSQLQuery(this)">select</button>
+                    </div>
                 </div>
             </div>
-            <div>
-                <button onclick="sendSQLQuery()">select</button>
-            </div>
         </div>
+        <div class="querys-wrap">${SQLQueryModal.renderSqlQueryHistory(main.sqlQuerys)}</div>
         <div id="sql-table-wrap"> </div>
         `
         return html;    
     }  
+    static renderSqlQueryHistory(querys){
+        let html = "";
 
+        if (querys.length) {
+            html += `
+            <div class="section-header" onclick="showList(this)">Query history<i class="fa fa-angle-down" aria-hidden="true"></i></div>
+            <ul class="list-wrap querys">
+                ${querys.map((el) => `<li data-params="${el.params}">${el.query}</li>`).join('\n')}
+            </ul>
+            `
+        }
+        return html;
+    }
     renderSqlQueryResult(data){
         let html = ``;
         
