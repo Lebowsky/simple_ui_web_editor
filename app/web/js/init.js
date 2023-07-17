@@ -13,10 +13,11 @@ $(document).ready(function(){
 	});
 	$(document).on('click', selectors.btnEdit, function(){
 		const elementId = $(this).parents(selectors.listItem).attr('data-id');
-		const element = main.configGraph.getElementById(elementId);
-
-		modal = new ElementModal(element);
-		modal.render().show();
+		editElement(elementId);
+	})
+	$(document).on('dblclick', selectors.listItem, function(){
+		const elementId = $(this).attr('data-id');
+		editElement(elementId);
 	})
 	$(document).on('change', "#ip-address", function(){
 		main.deviceHost = $(this).val();
@@ -32,6 +33,43 @@ $(document).ready(function(){
 			main.configGraph.removeElement(element);
 			main.configGraph.fillListElements(type, node, parentId);
 		}
+	})
+	$(document).on('click', selectors.btnCopy, function(e){
+		const elementId = $(this).parents(selectors.listItem).attr('data-id');
+		const element = main.configGraph.getElementById(elementId);
+		const type = element.parentType;
+		const node = element.parentConfig['node'];
+		const parentId = element.parentId;
+		$(selectors.btnPaste).remove();
+
+		main.clipboard[0] = structuredClone(element);
+		main.configGraph.fillListElements(type, node, parentId);
+	})
+	$(document).on('click', selectors.btnPaste, function(e){
+		const parentId = $(this).parents('.list').attr('data-id');
+		main.clipboard[0].parentId = parentId;
+		const newElement = main.configGraph.duplicateElement(main.clipboard[0]);
+
+		const element = main.configGraph.getElementById(newElement.id);
+		const type = element.parentType;
+		const node = element.parentConfig['node'];
+		const elementParentId = element.parentId;
+		main.configGraph.fillListElements(type, node, elementParentId);
+	})
+	$(document).on('click', selectors.btnDuplicate, function(e){
+		const elementId = $(this).parents(selectors.listItem).attr('data-id');
+		const element = main.configGraph.getElementById(elementId);
+		const type = element.parentType;
+		const node = element.parentConfig['node'];
+		const parentId = element.parentId;
+
+		const newElement = main.configGraph.duplicateElement(element);
+
+		//modal = new ElementModal(newElement);
+		main.configGraph.fillListElements(type, node, parentId);
+		//modal.render().show();
+
+		console.log(newElement);
 	})
 	$(document).on('click', selectors.btnAdd, function(e){
 		const listId = $(this).parents('.list').attr('id');
@@ -124,6 +162,10 @@ $(document).ready(function(){
 	$(document).on('click', '.main-conf-wrap .section-header', function(e){
 		hideMain();
 	})
+	$(document).on('click', '.querys > li', function(e){
+		$("#sql-query").val($(this).text());
+		$("#query-params").val($(this).attr("data-params"));
+	})
 	$(document).on('change', 'select.element-type', function(){
 		// let modal = $(this).parents(selectors.modal),
 		// 	type  = $(this).val(),
@@ -144,7 +186,7 @@ $(document).ready(function(){
 		
 		if (paramName){
 			$(this).attr('data-id', 1);
-			const value = $(this).prop('type') == 'checkbox'? $(this).prop('type'): $(this).val()
+			const value = $(this).prop('type') == 'checkbox'? $(this).prop('checked'): $(this).val()
 			main.configGraph.setConfigValues(1, {[paramName]: value});
 		}
 	})
@@ -195,6 +237,12 @@ $(document).ready(function(){
     };
 });
 
+function editElement(elementId) {
+	const element = main.configGraph.getElementById(elementId);
+
+	modal = new ElementModal(element);
+	modal.render().show();
+}
 function loadedPrev(prevNode) {
 	$(".preload").hide();
 	$(prevNode).addClass("load");
@@ -257,7 +305,7 @@ function showList(node, direction = "toggle") {
 function sortableInit(node) {
     $(node).sortable({
     	items: "> li",
-    	containment: "body",
+    	containment: "parent",
     	cursor: "grabbing",
     	handle: ".move",
 		update: function(event, ui) {
@@ -273,19 +321,31 @@ function sortableInit(node) {
 		}
 	});
 }
-async function sendSQLQuery(){
+async function sendSQLQuery(node){
+	let query = $('#sql-query').val();
+	let params = $('#query-params').val();
+	let nodeText = $(node).text();
+
 	if (!main.deviceHost){
 		notificate('Device connection error');
 		return
 	}
 
+	main.sqlQuerys.push({query:query, params:params});
+
 	const query_params = {
 		device_host: main.deviceHost || '',
 		db_name: $('#db-name').val(),
-		query: $('#sql-query').val(),
-		params: $('#query-params').val()
+		query: query,
+		params: params
 	};
+	
+	$(node).html(`<img style="width: 70px;height: 13px;transform: scale(2.5);" src="/js/pre.svg">`)
+
 	const result = await sendSqlQueryToDevice(query_params);
+	
+	$(node).html(nodeText)
+	$(".querys-wrap").html(SQLQueryModal.renderSqlQueryHistory(main.sqlQuerys));
 
 	if (result){
 		if (result.error){

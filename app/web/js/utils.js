@@ -41,7 +41,7 @@ async function saveConfiguration(){
 
 	let handlers = await fillBase64Handlers();
 	if (saveConfFiles(main.conf, filePath, handlers)){
-        main.configGraph = new ClientConfiguration(main.conf.ClientConfiguration);
+        //main.configGraph = new ClientConfiguration(main.conf.ClientConfiguration);
     }
 }
 async function saveConfFiles(conf, filePath, pyHandlers){
