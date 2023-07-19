@@ -14,6 +14,9 @@ class LinearLayout(LayoutElement):
 
     elements: List['Element'] = Field(default=[], alias='Elements')
 
+    background_color: Optional[str] = Field(alias='BackgroundColor')
+    stroke_width: Optional[str] = Field(alias='StrokeWidth')
+    padding: Optional[str] = Field(alias='Padding')
     class Config:
         use_enum_values = True
         title = 'LinearLayout'
