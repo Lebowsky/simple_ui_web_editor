@@ -115,11 +115,11 @@ class OperationsModel(BaseConfigModel):
     type: str = 'Operation'
     name: str = Field(default=su_settings.locale.get('new_screen'), alias='Name')
     timer: bool = Field(default=False, alias='Timer', title='Screen handler on timer')
-    no_scroll: bool = Field(default=False, alias='noScroll', title='Disable scrolling for Root Layout')
     hide_bottom_bar_screen: bool = Field(default=False, alias='hideBottomBarScreen', title='Hide button bar')
-    hide_toolbar_screen: bool = Field(default=False, alias='hideToolBarScreen', title='Hide top bar')
-    no_confirmation: Optional[bool] = Field(alias='noConfirmation', title='Close without confirmation')
+    no_scroll: bool = Field(default=False, alias='noScroll', title='Disable scrolling for Root Layout')
     handle_key_up: bool = Field(default=False, alias='handleKeyUp', title='Attach a keyboard handler')
+    no_confirmation: Optional[bool] = Field(default=False, alias='noConfirmation', title='Close without confirmation')
+    hide_toolbar_screen: bool = Field(default=False, alias='hideToolBarScreen', title='Hide top bar')
 
     elements: List[Element] = Field(default=[], alias='Elements')
     handlers: Optional[List[Handler]] = Field(default=[], alias='Handlers')
@@ -166,15 +166,15 @@ class CVOperationModel(BaseConfigModel):
 class ProcessesModel(BaseConfigModel):
     type: str = 'Process'
     process_name: str = Field(default=su_settings.locale.get('new_process'), alias='ProcessName', title='Process name')
-    plan_fact_header: Optional[str] = Field(alias='PlanFactHeader')
-    define_on_back_pressed: Optional[bool] = Field(
+    plan_fact_header: Optional[str] = Field(defaul='', alias='PlanFactHeader')
+    define_on_back_pressed: Optional[bool] = Field(default=False,
         alias='DefineOnBackPressed', title='Override back button (ON_BACK_PRESSED input event)')
 
-    hidden: Optional[bool] = Field(title='Do not display in Menu')
+    hidden: Optional[bool] = Field(default=False, title='Do not display in Menu')
 
-    login_screen: Optional[bool] = Field(title='Run at startup')
+    login_screen: Optional[bool] = Field(default=False, title='Run at startup')
 
-    sc: Optional[bool] = Field(alias='SC', title='Independent process')
+    sc: Optional[bool] = Field(default=False, alias='SC', title='Independent process')
 
     operations: List[OperationsModel] = Field(alias='Operations')
 

@@ -3,7 +3,7 @@ from typing import List, Optional, Union, Literal
 from pydantic import BaseModel, Field
 
 from .elements import BaseElement, DimensionElement, TextElement
-from .enums import ElementsIcon
+from .enums import ElementsIcon, DimensionsType, OrientationType
 
 
 class Tabs(BaseElement, DimensionElement, TextElement):
@@ -14,8 +14,12 @@ class Tab(BaseElement, DimensionElement, TextElement):
     type: Literal['Tab']
 
 
-class TextView(BaseElement, DimensionElement, TextElement):
+class TextView(BaseElement):
     type: Literal['TextView']
+    height: Union[DimensionsType, str] = Field(title='Height')
+    width: Union[DimensionsType, str] = Field(title='Width')
+    weight: str = Field(default=0, title='Weight')
+    orientation: Optional[OrientationType] = Field(title='Orientation')
 
     drawable: Optional[ElementsIcon]
 

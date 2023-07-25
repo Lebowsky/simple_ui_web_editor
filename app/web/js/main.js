@@ -212,7 +212,8 @@ class ClientConfiguration {
 				if (configLevel[element.parentType]) {
 					index = configLevel[element.parentType].push({ ...element.elementValues }) - 1;
 				} else {
-					configLevel[element.parentType] = [{ ...element.elementValues }];
+					let filledValues = Object.fromEntries(Object.entries(element.elementValues).filter(([k, v]) => v !== ''))
+					configLevel[element.parentType] = [{ ...filledValues }];
 					index = 0;
 				}
 				if (index != undefined)
