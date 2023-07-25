@@ -1,4 +1,7 @@
 var Main = {
+	deviceHost: "",
+	sqlQuerys: [],
+	clipboard: [],
 	initUIConf(conf, filePath){
 		this.conf = conf;
 		this.configGraph = new ClientConfiguration(conf.ClientConfiguration);
@@ -9,11 +12,11 @@ var Main = {
 		this.fillConfigSettings();
 		this.renderConfiguration();
 
-		this.configGraph.fillListElements();
+		this.configGraph.fillConfigListElements();
 
 		$(".file-path").text(filePath);
     	// $('#preview-button').show();
-
+		
 		const pyHandlersPath = getConfParamValue('pyHandlersPath')
 		this.conf.ClientConfiguration['pyHandlersPath']
 		if (pyHandlersPath){
@@ -23,7 +26,7 @@ var Main = {
 		}
 		$('#py-handlers-file-path').attr('data-path', pyHandlersPath)
 
-		// this.loadPrev();
+		this.loadPrev();
 	},
 	clearMainSection() {
 		$(selectors.processList).html("No processes");
@@ -57,12 +60,12 @@ var Main = {
 	fillConfigSettings(){
 		const settings = main.conf.ClientConfiguration.ConfigurationSettings,
 			  {vendor_auth: vendorAuth = '', handler_auth: handlerAuth = ''} = settings;
-
+	
 		let vendorLogin = '',
 			vendorPassword = '',
 			handlersLogin = '',
 			handlersPassword = ''
-
+		
 		if (vendorAuth){
 			try {
 				[vendorLogin = '', vendorPassword = ''] = decodeURIComponent(atob(vendorAuth.split(' ')[1])).split(':');
@@ -72,7 +75,7 @@ var Main = {
 		};
 		$('#vendor-login').val(vendorLogin);
 		$('#vendor-password').val(vendorPassword);
-
+	
 		if (handlerAuth){
 			try{
 				[handlersLogin = '', handlersPassword = ''] = decodeURIComponent(atob(handlerAuth.split(' ')[1])).split(':');
@@ -87,7 +90,7 @@ var Main = {
 		this.configGraph.fillConfigValues('ClientConfiguration');
 	},
 	loadPrev() {
-		$("#prev .prev-content").html('<div class="preload">Load preview...</div><iframe onload="loadedPrev(this)" id="prev-if" src="http://localhost:5000/prev?' + Date.now() + '"></iframe>');
+		// $("#prev .prev-content").html('<div class="preload">Load preview...</div><iframe onload="loadedPrev(this)" id="prev-if" src="http://localhost:5000/prev?' + Date.now() + '"></iframe>');
 	},
 	events(event) {
 		return {
@@ -107,7 +110,7 @@ var Main = {
 
 				elementId = modal.element.id;
 				element = main.configGraph.getElementById(elementId);
-				main.configGraph.fillListElementValues(element.parentType, element.parentConfig['node'], element.parentId)
+				main.configGraph.fillListElements(element.parentType, element.parentConfig['node'], element.parentId)
 			}
 		}[event];
 	}
@@ -173,11 +176,25 @@ class ClientConfiguration {
 
 		return this.addElement(this.getNewId(), parentId, parentType, elementValues);
 	}
+	duplicateElement(element) {
+		const newElement = this.addElement(this.getNewId(), element.parentId, element.parentType, structuredClone(element.elementValues));
+
+		return newElement;
+	}
 	removeElement(element) {
 		const index = this.elements.indexOf(element);
 		if (index > -1) {
 			this.elements.splice(index, 1);
 		}
+	}
+	moveElement(element1Id, element2Id) {
+		const element1 = this.getElementById(element1Id);
+		const element2 = this.getElementById(element2Id);
+		const index1   = this.elements.indexOf(element1);
+		const index2   = this.elements.indexOf(element2);
+
+		let el1 = this.elements.splice(index1, 1)[0];
+		this.elements.splice(index2, 0, el1);
 	}
 	getNewId() {
 		return ++this.lastId
@@ -250,51 +267,50 @@ class ClientConfiguration {
 			}
 		})
 	}
-	fillListElements() {
+	fillConfigListElements() {
 		Object.entries(listElements).forEach((el) => {
 			const [type, values] = el;
 			if (values.node) {
-				this.fillListElementValues(type, values.node);
+				this.fillListElements(type, values.node);
 			}
 		})
 	}
-	fillListElementsByParent(parentId, node) {
-		const elements = this.elements.filter((element) => element.parentId == parentId);
-		const listItems = [];
-
-		elements.forEach((item) => {
-			let name = item.elementValues[item.parentConfig.rowKeys.filter(key => item.elementValues[key])[0]];
-			name = name || item.elementValues['type'];
-			listItems.push({
-				name: name,
-				id: item.id
-			});
-		})
-
-		const listElement = new ListElement(listItems);
-		$(node).attr('data-id', elements.length ? elements[0].parentId : 1);
-		$(node).html(listElement.render().html);
-	}
-	fillListElementValues(type, node, parentId = 1) {
+	fillListElements(type, node, parentId = 1, activeElementId = false, activeList = true) {
 		const elements = this.elements.filter((element) => element.parentType == type && element.parentId == parentId);
 		const listItems = [];
 
 		elements.forEach((item) => {
 			let name = item.elementValues[item.parentConfig.rowKeys.filter(key => item.elementValues[key])[0]];
+			let value = Object.keys(item.elementValues).find((el) => ['Value', 'method'].includes(el));
+			let itemClasses = "";
 			name = name || item.elementValues['type'];
+
+            if (value)
+                value = item.elementValues[[value]]
+
+            if (activeElementId == item.id)
+            	itemClasses = "active";
+
 			listItems.push({
 				name: name,
-				id: item.id
+				value: value,
+				id: item.id,
+				itemClasses: itemClasses
 			});
 		})
 
-		const listElement = new ListElement(listItems);
-		listElement.render();
+		const listElement = new ListElement(listItems, type);
 
-	$(tabNode).parents(".params").find(".param").removeClass("active");
-	$(tabNode).parents(".params").find(".param[data-tab="+tabID+"]").addClass("active");
-}
+		if (activeList) {
+			listElement.render();
+		} else {
+			$(node).html(listElement.renderElementChild());
+		}
+		
 
-function togglePrev () {
-	$(".prev-wrap").toggleClass("show");
+		$(node).attr('data-id', parentId);
+		$(node).html(listElement.html);
+		if (type == 'Processes')
+			listElement.addProcessesButton($(node));
+	}
 }

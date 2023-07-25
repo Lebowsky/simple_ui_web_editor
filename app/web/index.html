@@ -4,6 +4,8 @@
 <head>
 	<meta charset="utf-8">
 	<title>Simple UI</title>
+	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.min.css">
+	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.2.9/css/responsive.dataTables.min.css">
 	<link rel="stylesheet" href="css/style.css">
 	<link rel="stylesheet" type="text/css" href="css/jquery.toast.min.css" />
 	<link rel="stylesheet" type="text/css" href="css/jquery-ui.structure.min.css" />
@@ -17,7 +19,7 @@
 		rel="stylesheet">
 	<script type="text/javascript" src="/eel.js"></script>
 	<script type="text/javascript" src="js/lib/jquery-3.5.0.min.js"></script>
-	<script type="text/javascript" src="js/lib/jquery-ui.min.js"></script>
+	<script type="text/javascript" src="//code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 	<script type="text/javascript" src="js/lib/jquery.toast.min.js"></script>
 	<script type="text/javascript" src="js/init.js"></script>
 	<script type="text/javascript" src="js/conf.js"></script>
@@ -26,6 +28,8 @@
 	<script type="text/javascript" src="js/dialogs.js"></script>
 	<script type="text/javascript" src="js/utils.js"></script>
 	<script type="text/javascript" src="js/renderElements.js"></script>
+	<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+	<script src="https://cdn.datatables.net/responsive/2.4.1/js/dataTables.responsive.min.js"></script>
 	<script>
 		var main = Object.create(Main);
 		setConfigUIElements();
@@ -39,10 +43,10 @@
 				<div class="logo"><img src="logo.png" alt="Simple Logo"></div>
 			</div>
 			<div class="btn-group main">
-				<button id="open-project" onclick="pickNewFileProject(main)">New Project</button>
+				<button id="new-project" onclick="pickNewFileProject(main)">New Project</button>
 				<button id="open-project" onclick="pickFile(main)">Open Project</button>
-				<button id="open-project" onclick="fileLocationSave()">Save Project</button>
-				<button id="open-project" onclick="showQRSettings()">QR Settings</button>
+				<button id="save-project" onclick="fileLocationSave()">Save Project</button>
+				<button id="qr-settings" onclick="showQRSettings()">QR Settings</button>
 				<button id="preview-button" onclick="togglePrev()">Preview</button>
 				<button id="open-modal-sql-queries" onclick="showSqlQueries()">SQL Query</button>
 			</div>

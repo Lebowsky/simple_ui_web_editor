@@ -54,6 +54,7 @@ class CVDetectorType(str, Enum):
     objects_ocr: str = 'Objects_OCR'
     objects_barcode: str = 'Objects_Barcode'
     objects_f1: str = 'Objects_f1'
+    multiscanner: str = 'multiscanner'
 
 
 class EventCommonHandlerEnum(str, Enum):
@@ -75,6 +76,13 @@ class EventHandlerEnum(str, Enum):
     on_input: str = 'onInput'
 
 
+class EventCVHandlerEnum(str, Enum):
+    on_create: str = 'OnCreate'
+    on_object_detected: str = 'OnObjectDetected'
+    on_touch: str = 'OnTouch'
+    on_input: str = 'OnInput'
+
+
 class ActionHandlerEnum(str, Enum):
     run: str = 'run'
     run_async: str = 'runasync'
@@ -83,6 +91,8 @@ class ActionHandlerEnum(str, Enum):
 
 class HandlerType(str, Enum):
     python: str = 'python'
+    python_reload: str = 'pythonreload'
+    python_args: str = 'pythonargs'
     online: str = 'online'
     http: str = 'http'
     sql: str = 'sql'

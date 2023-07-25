@@ -66,7 +66,7 @@ a.btn, #preview-button {
 #preview-button{
     font-size: 13px;
     text-decoration: none;
-    display: none;
+    /* display: none; */
 }
 
 .btn-group button:last-child {
@@ -118,7 +118,7 @@ select {
 }
 .modal {
     position: fixed;
-    width: 750px;
+    width: 820px;
     background: #fff;
     box-shadow: 0 0 10px #00000096;
     filter: blur(5px) brightness(0.5);
@@ -188,9 +188,18 @@ footer {
     align-items: center;
     padding: 10px;
     cursor: default;
+    position: relative;
+    border-bottom: 1px #e9e9e9 solid;
+}
+.list-item:last-child {
+    border-bottom: none;
+}
+.list-item span.item-name {
+    font-weight: 500;
 }
 .list-item.active,
-.list-item:hover {
+.list-item:hover,
+.list-item.ui-sortable-helper {
     background: #e9e9e9;
 }
 .item-btn {
@@ -199,15 +208,22 @@ footer {
     visibility: hidden;
 }
 .list-item.active .item-btn,
-.list-item:hover .item-btn {
+.list-item:hover .item-btn,
+.list-item.ui-sortable-helper .item-btn {
     display: flex;
     visibility: visible;
 }
 .item-btn span {
-    font-size: 12px;
+    font-size: 15px;
     text-decoration: underline;
     cursor: pointer;
-    margin-left: 5px;
+    padding: 0 7px;
+}
+.item-btn span i {
+    position: relative;
+}
+.item-btn span:not(.move):hover i {
+    transform: translateY(-1px);
 }
 .params {
     display: flex;
@@ -242,6 +258,7 @@ footer {
     text-align: center;
     padding: 20px 0;
     width: 100%;
+    overflow: auto;
 }
 .param input[type=text], .param input[type=password] {
     width: 100%;
@@ -357,14 +374,19 @@ label i,
 .modal .tab {
     background: #fff;
     border-radius: 300px;
+    margin: 0 10px 0 0;
+}
+.modal .tab:last-child {
+    margin-right: 0;
 }
 .modal .tabs {
-    margin: auto 50px auto auto;
-    top: 0;
-    bottom: 0;
-    height: 90px;
+    top: -160px;
+    right: 0;
+    left: 0;
+    height: auto;
     display: flex;
     justify-content: center;
+    flex-direction: row;
 }
 .tab:not(.active):hover {
     box-shadow: 0 0 10px #0000001c;
@@ -495,10 +517,61 @@ span.edited {
 .modal.edited span.edited {
     display: inline;
 }
+.element-childs {
+    border: 1px #e7e7e7 dashed;
+    padding: 0 10px;
+    margin-bottom: 10px;
+}
+.element-childs li {
+    padding: 10px;
+    border-bottom: 1px #e7e7e7 solid;
+}
+.element-childs li:last-child {
+    border: none;
+}
+.element-childs .item-value {
+    font-size: 10pt;
+    margin-left: 10px;
+    font-style: italic; 
+}
+.item-btn .move {
+    cursor: grab;
+    font-size: 12pt;
+    margin-left: 10px;
+}
+.item-btn .move i {
+    color: #bdbdbd;
+}
+.item-info {
+    display: flex;
+    justify-content: center;
+    width: 570px;
+}
+.list-item .item-info span:first-child {
+    border: none;
+}
+.list-item .item-info span {
+    border-left: 1px #a7a7a7 solid;
+    padding: 0 10px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-style: italic;
+    font-size: 10pt;
+}
 
 /*-------sql-query-------*/
+#sql-table-wrap {
+    text-align: center;
+    padding: 20px 0;
+}
+#sql-table-wrap .dataTables_length select {
+    margin: 0 0 10px 0;
+}
 table.sql-table {
+    width: 100% !important;
     max-width: 100%;
+    max-height: 300px;
     display: block;
     overflow: auto;
     border-collapse: collapse;
@@ -514,14 +587,73 @@ table.sql-table td, th {
 table.sql-table tr:hover td {
     background: #dbdbdb;
 }
-#query-params {
+#query-params-wrap {
     display: flex;
 }
 .modal-content #sql-query-content .param {
     width: 100%;
     display: flex;
 }
+.modal-content #sql-query-content .param textarea {
+    width: 65%;
+    max-width: 65%;
+    height: 75px;
+    font-weight: 600;
+    padding: 10px;
+}
+.modal-content #sql-query-content .param .btn-wrap {
+    width: 35%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.modal-content #sql-query-content .param .btn-wrap button {
+    margin: 0;
+    text-transform: uppercase;
+    width: 80%;
+}
+.querys-wrap {
+    position: relative;
+    padding: 30px 0 0 0;
+}
+.querys-wrap .section-header {
+    top: 8px;
+    left: 0;
+    padding: 0 20px 0 0;
+}
+ul.querys {
+    border: 1px #dbdbdb solid;
+}
+ul.querys li:not(:last-child) {
+    border-bottom: 1px #dbdbdb solid;
+}
+ul.querys li {
+    padding: 10px 5px;
+    margin: 0 15px;
+    cursor: pointer;
+}
 /*-------sql-query-end-------*/
+/*-------dataTable--------*/
+table.dataTable.dtr-inline.collapsed>tbody>tr>td.dtr-control:before,
+table.dataTable.dtr-inline.collapsed>tbody>tr>th.dtr-control:before {
+    left: 7px;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+    border: none;
+    box-shadow: none;
+    background: linear-gradient(-45deg, #21B9E1, #E71F53, #FBAF2E);
+    font-size: 12pt;
+}
+table.dataTable>tbody>tr.child ul.dtr-details {
+    display: block;
+}
+table.dataTable>tbody>tr.child span.dtr-title {
+    margin-right: 20px;
+    min-width: 110px;
+}
+
+/*-------dataTable-end--------*/
 
 @media (max-width: 1376px) {
 .content {

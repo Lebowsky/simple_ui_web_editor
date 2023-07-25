@@ -41,7 +41,7 @@ async function saveConfiguration(){
 
 	let handlers = await fillBase64Handlers();
 	if (saveConfFiles(main.conf, filePath, handlers)){
-        main.configGraph = new ClientConfiguration(main.conf.ClientConfiguration);
+        //main.configGraph = new ClientConfiguration(main.conf.ClientConfiguration);
     }
 }
 async function saveConfFiles(conf, filePath, pyHandlers){
@@ -57,7 +57,7 @@ async function saveConfFiles(conf, filePath, pyHandlers){
         notificate('Ошибка сохранения файла: ' + result_save.msg, 'danger') 
     else
         notificate('Файл успешно сохранен', 'success')
-        // loadPrev();
+        main.loadPrev();
 
     return result_check
 }
