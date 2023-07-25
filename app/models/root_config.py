@@ -254,7 +254,7 @@ class ClientConfigurationModel(BaseConfigModel):
     foreground_service: Optional[bool] = Field(alias='ForegroundService')
     stop_foreground_service_on_exit: Optional[bool] = Field(alias='StopForegroundServiceOnExit')
     on_keyboard_main: Optional[bool] = Field(alias='OnKeyboardMain')
-    run_python: Optional[bool] = Field(alias='RunPython')
+    run_python: Optional[bool] = Field(default=True, alias='RunPython')
     launch: Optional[LaunchType] = Field(alias='Launch', title='Menu type')  # Tiles
     launch_process: Optional[str] = Field(alias='LaunchProcess')  # process
     launch_var: Optional[str] = Field(alias='LaunchVar')  # field

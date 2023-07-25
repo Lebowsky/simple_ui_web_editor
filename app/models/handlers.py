@@ -10,7 +10,7 @@ class BaseHandler(BaseModel):
     listener: Optional[str]
     action: ActionHandlerEnum = Field(title='Action')
     type_: Optional[HandlerType] = Field(alias='Type', title='Type')
-    type: HandlerType = Field(alias='type')
+    type: Optional[HandlerType] = Field(alias='type')
     method: str = Field(title='Method')
     postExecute: str = Field(default='', title='Post execute')
 
@@ -22,6 +22,11 @@ class BaseHandler(BaseModel):
         if values.get('Type'):
             values['type'] = values['Type']
             values['Type'] = None
+        #
+        # elif values.get('type'):
+        #     values['Type'] = values['type']
+        #     values['type'] = None
+
         return values
 
 
