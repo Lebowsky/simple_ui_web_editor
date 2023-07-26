@@ -7,23 +7,18 @@ from .container_elements import Tabs, Tab, TextView, Button, EditTextText, EditT
 from .elements import BaseElement, DimensionElement, Cart, LayoutElement, OrientationType, DimensionsType
 
 
-class LinearLayout(BaseElement):
+class LinearLayout(BaseModel):
     type: Literal['LinearLayout']
     variable: str = Field(default='', alias='Variable')
-    value: str = Field(default='', alias='Value')
-
-    weight: str = Field(default=0, title='Weight')
+    orientation: OrientationType = Field(default='vertical', title='Orientation')
     height: Union[DimensionsType, str] = Field(title='Height')
     width: Union[DimensionsType, str] = Field(title='Width')
-    orientation: OrientationType = Field(default='vertical', title='Orientation')
-
-    height_value: Optional[str]
-    width_value: Optional[str]
+    weight: str = Field(default=0, title='Weight')
 
     elements: List['Element'] = Field(default=[], alias='Elements')
 
-    background_color: Optional[str] = Field(alias='BackgroundColor')
-    stroke_width: Optional[str] = Field(alias='StrokeWidth')
+    background_color: Optional[str] = Field(alias='BackgroundColor', title='Background color')
+    stroke_width: Optional[str] = Field(alias='StrokeWidth', title='Stroke width')
     padding: Optional[str] = Field(alias='Padding')
     class Config:
         use_enum_values = True

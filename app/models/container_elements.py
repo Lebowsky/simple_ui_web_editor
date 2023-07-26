@@ -5,129 +5,135 @@ from pydantic import BaseModel, Field
 from .elements import BaseElement, DimensionElement, TextElement
 from .enums import ElementsIcon, DimensionsType, OrientationType
 
+class ContainerElement(BaseModel):
+    value: str = Field(default='', alias='Value')
+    variable: str = Field(default='', alias='Variable')
+    height: Union[DimensionsType, str] = Field(title='Height')
+    width: Union[DimensionsType, str] = Field(title='Width')
+    orientation: Optional[OrientationType] = Field(title='Orientation')
+    weight: str = Field(default=0, title='Weight')
 
-class Tabs(BaseElement, DimensionElement, TextElement):
+    text_bold: Optional[bool] = Field(alias='TextBold', title='Text bold')
+    text_italic: Optional[bool] = Field(alias='TextItalic', title='Text italic')
+    text_size: Optional[str] = Field(alias="TextSize", title='Text size')
+    text_color: Optional[str] = Field(alias='TextColor', title='Text color')
+
+class Tabs(ContainerElement):
     type: Literal['Tabs']
 
 
-class Tab(BaseElement, DimensionElement, TextElement):
+class Tab(ContainerElement):
     type: Literal['Tab']
 
 
-class TextView(BaseElement):
+class TextView(ContainerElement):
     type: Literal['TextView']
-    height: Union[DimensionsType, str] = Field(title='Height')
-    width: Union[DimensionsType, str] = Field(title='Width')
-    weight: str = Field(default=0, title='Weight')
-    orientation: Optional[OrientationType] = Field(title='Orientation')
-
-    drawable: Optional[ElementsIcon]
 
 
-class Button(BaseElement, DimensionElement, TextElement):
+class Button(ContainerElement):
     type: Literal['Button']
 
 
-class EditTextText(BaseElement, DimensionElement, TextElement):
+class EditTextText(ContainerElement):
     type: Literal['EditTextText']
 
 
-class EditTextNumeric(BaseElement, DimensionElement, TextElement):
+class EditTextNumeric(ContainerElement):
     type: Literal['EditTextNumeric']
 
 
-class EditTextPass(BaseElement, DimensionElement, TextElement):
+class EditTextPass(ContainerElement):
     type: Literal['EditTextPass']
 
 
-class EditTextAuto(BaseElement, DimensionElement, TextElement):
+class EditTextAuto(ContainerElement):
     type: Literal['EditTextAuto']
 
 
-class EditTextAutocomplete(BaseElement, DimensionElement, TextElement):
+class EditTextAutocomplete(ContainerElement):
     type: Literal['EditTextAutocomplete']
 
     no_refresh: Optional[bool] = Field(alias='NoRefresh')
     show_by_condition: Optional[str]
 
 
-class ModernEditText(BaseElement, DimensionElement, TextElement):
+class ModernEditText(ContainerElement):
     type: Literal['ModernEditText']
 
 
-class Picture(BaseElement, DimensionElement, TextElement):
+class Picture(ContainerElement):
     type: Literal['Picture']
 
 
-class CheckBox(BaseElement, DimensionElement, TextElement):
+class CheckBox(ContainerElement):
     type: Literal['CheckBox']
 
 
-class Gauge(BaseElement, DimensionElement, TextElement):
+class Gauge(ContainerElement):
     type: Literal['Gauge']
 
 
-class Chart(BaseElement, DimensionElement, TextElement):
+class Chart(ContainerElement):
     type: Literal['Chart']
 
 
-class SpinnerLayout(TextElement, DimensionElement, BaseElement):
+class SpinnerLayout(ContainerElement):
     type: Literal['SpinnerLayout']
 
     class Config:
         title = 'SpinnerLayout'
 
 
-class TableLayout(BaseElement, DimensionElement, TextElement):
+class TableLayout(ContainerElement):
     type: Literal['TableLayout']
 
 
-class MultilineText(BaseElement, DimensionElement, TextElement):
+class MultilineText(ContainerElement):
     type: Literal['MultilineText']
 
 
-class CardsLayout(BaseElement, DimensionElement, TextElement):
+class CardsLayout(ContainerElement):
     type: Literal['CardsLayout']
 
 
-class CButtons(BaseElement, DimensionElement, TextElement):
+class CButtons(ContainerElement):
     type: Literal['CButtons']
 
 
-class CButtonsHorizontal(BaseElement, DimensionElement, TextElement):
+class CButtonsHorizontal(ContainerElement):
     type: Literal['CButtonsHorizontal']
 
 
-class DateField(BaseElement, DimensionElement, TextElement):
+class DateField(ContainerElement):
     type: Literal['DateField']
 
 
-class ProgressButton(BaseElement, DimensionElement, TextElement):
+class ProgressButton(ContainerElement):
     type: Literal['ProgressButton']
 
 
-class HTML(BaseElement, DimensionElement, TextElement):
+class HTML(ContainerElement):
     type: Literal['html']
 
     class Config:
         title = 'html'
 
 
-class Map(BaseElement, DimensionElement, TextElement):
+class Map(ContainerElement):
     type: Literal['map']
 
     class Config:
         title = 'map'
 
 
-class File(BaseElement, DimensionElement, TextElement):
+class File(ContainerElement):
     type: Literal['file']
 
     class Config:
         title = 'file'
 
 
-class Object(BaseElement, DimensionElement):
+class Object(ContainerElement):
     type: Literal['object']
 
     class Config:
