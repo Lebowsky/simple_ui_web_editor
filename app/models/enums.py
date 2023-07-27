@@ -42,7 +42,6 @@ class DimensionsType(str, Enum):
 
 
 class OrientationType(str, Enum):
-    empty_value = ''
     vertical = 'vertical'
     horizontal = 'horizontal'
 

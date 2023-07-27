@@ -90,7 +90,7 @@ var Main = {
 		this.configGraph.fillConfigValues('ClientConfiguration');
 	},
 	loadPrev() {
-		$("#prev .prev-content").html('<div class="preload">Load preview...</div><iframe onload="loadedPrev(this)" id="prev-if" src="http://localhost:5000/prev?' + Date.now() + '"></iframe>');
+		// $("#prev .prev-content").html('<div class="preload">Load preview...</div><iframe onload="loadedPrev(this)" id="prev-if" src="http://localhost:5000/prev?' + Date.now() + '"></iframe>');
 	},
 	events(event) {
 		return {
