@@ -132,6 +132,8 @@ class ClientConfiguration {
 				elementValues[key] = value
 		});
 		this.addElement(elementId, parentId, parentType, elementValues)
+
+		return elementId;
 	}
 	addElementsFromArray(array, parentId, parentType) {
 		array.forEach((value) => {
@@ -179,6 +181,10 @@ class ClientConfiguration {
 	duplicateElement(element) {
 		const newElement = this.addElement(this.getNewId(), element.parentId, element.parentType, structuredClone(element.elementValues));
 
+		if (newElement.parentType == "Processes") {
+			newElement.elementValues.Operations = [];
+		}
+
 		return newElement;
 	}
 	removeElement(element) {
@@ -212,7 +218,8 @@ class ClientConfiguration {
 				if (configLevel[element.parentType]) {
 					index = configLevel[element.parentType].push({ ...element.elementValues }) - 1;
 				} else {
-					configLevel[element.parentType] = [{ ...element.elementValues }];
+					let filledValues = Object.fromEntries(Object.entries(element.elementValues).filter(([k, v]) => v !== ''))
+					configLevel[element.parentType] = [{ ...filledValues }];
 					index = 0;
 				}
 				if (index != undefined)
@@ -222,6 +229,47 @@ class ClientConfiguration {
 		addElements(clientConfig[firstElement.parentType], 1);
 		return clientConfig
 	}
+	getConfigElement(elementId) {
+		let firstElement = this.elements.find((el) => el.id == elementId);
+		const clientConfig = {
+			parentType: firstElement.parentType,
+			...firstElement.elementValues
+		};
+
+		let addElements = (configLevel, id) => {
+			let elements = this.elements.filter((el) => el.parentId == id);
+			elements.forEach((element) => {
+				let index;
+				if (configLevel[element.parentType]) {
+					index = configLevel[element.parentType].push({ ...element.elementValues }) - 1;
+				} else {
+					configLevel[element.parentType] = [{ ...element.elementValues }];
+					index = 0;
+				}
+				if (index != undefined)
+					addElements(configLevel[element.parentType][index], element.id);
+			})
+		}
+		addElements(clientConfig, elementId);
+		return clientConfig
+	}
+	/*addElements (elementId) {
+		let elementGraph = this.getElementById(elementId);
+		let elementConf = { ...elementGraph.elementValues };
+		let elements = this.elements.filter((el) => el.parentId == elementId);
+		elements.forEach((element) => {
+			let index;
+			if (elementConf[element.parentType]) {
+				index = elementConf[element.parentType].push({ ...element.elementValues }) - 1;
+			} else {
+				elementConf[element.parentType] = [{ ...element.elementValues }];
+				index = 0;
+			}
+			if (index != undefined)
+				this.addElements(element.id);
+		})
+		return elementConf;
+	}*/
 	getElementById(elementId) {
 		return this.elements.find((el) => el.id == elementId)
 	}

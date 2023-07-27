@@ -34,7 +34,7 @@ $(document).ready(function(){
 			main.configGraph.fillListElements(type, node, parentId);
 		}
 	})
-	$(document).on('click', selectors.btnCopy, function(e){
+	/*$(document).on('click', selectors.btnCopy, function(e){
 		const elementId = $(this).parents(selectors.listItem).attr('data-id');
 		const element = main.configGraph.getElementById(elementId);
 		const type = element.parentType;
@@ -55,7 +55,57 @@ $(document).ready(function(){
 		const node = element.parentConfig['node'];
 		const elementParentId = element.parentId;
 		main.configGraph.fillListElements(type, node, elementParentId);
+	})*/
+	$(document).on('click', selectors.btnCopy, function(e){
+		const elementId = $(this).parents(selectors.listItem).attr('data-id');
+		elementConf = main.configGraph.getConfigElement(elementId);
+		copyTextToClipboard(JSON.stringify(elementConf));
 	})
+	$(document).on('click', selectors.btnPaste, function(e){
+		const parentId = $(this).parents('.list').attr('data-id');
+		const childrensType = $(this).attr('data-childrens-type');
+
+        navigator.clipboard.readText().then(function(text) {
+		    try {
+		    	text = text.replace(/:[ ]*False/g,':false').replace(/:[ ]*True/g,':true');
+        		elementConf = JSON.parse(text);
+		    } catch (error) {
+        		notificate('Элемент не найден в буфере');
+		    }
+
+		    if (elementConf.type == "Process")
+		    	parentType = "Processes";
+		    else if (elementConf.type == "Operation")
+		    	parentType = "Operations";
+		    else
+		    	parentType = "Elements";
+
+    		if (childrensType.toLowerCase() == parentType.toLowerCase()) {
+    			elementId = main.configGraph.addElementFromDict(elementConf, parentId, parentType);
+
+				const element = main.configGraph.getElementById(elementId);
+				const type = element.parentType;
+				const node = element.parentConfig['node'];
+				main.configGraph.fillListElements(type, node, parentId);
+    		} else {
+        		notificate('Неверный тип элемента');
+    		}
+
+        }, function(err) {
+            console.error('Async: Could not copy text: ', err);
+        });
+	})
+    function copyTextToClipboard(text) {
+        if (!navigator.clipboard) {
+            return;
+        }
+        navigator.clipboard.writeText(text).then(function() {
+            console.log('Async: Copying to clipboard was successful!');
+        	notificate('Скопировано в буфер', 'success') 
+        }, function(err) {
+            console.error('Async: Could not copy text: ', err);
+        });
+    }
 	$(document).on('click', selectors.btnDuplicate, function(e){
 		const elementId = $(this).parents(selectors.listItem).attr('data-id');
 		const element = main.configGraph.getElementById(elementId);
@@ -331,7 +381,8 @@ async function sendSQLQuery(node){
 		return
 	}
 
-	main.sqlQuerys.push({query:query, params:params});
+	if (!main.sqlQuerys.find((el) => el.query == query && el.params == params))
+		main.sqlQuerys.push({query:query, params:params});
 
 	const query_params = {
 		device_host: main.deviceHost || '',

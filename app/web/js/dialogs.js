@@ -3,11 +3,15 @@ function notificate(text, type) {
     console.log(text)
 };
 
-async function pickFile() {
-	let result = await askFile('simple_ui');
+async function pickFile(file_type) {
+	let result = await askFile(file_type);
 	if (checkAskFileResult(result)){
-		conf = await loadConfiguration(result.file_path);
-		initReadedConf(conf, result.file_path);
+		if (file_type == 'simple_ui') {
+			conf = await loadConfiguration(result.file_path);
+			initReadedConf(conf, result.file_path);
+		} else if (file_type == 'python') {
+			console.log(result);
+		}
 	};
 };
 

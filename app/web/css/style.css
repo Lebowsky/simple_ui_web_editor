@@ -117,7 +117,7 @@ select {
 	display: flex;
 }
 .modal {
-    position: fixed;
+    position: fixed !important;
     width: 820px;
     background: #fff;
     box-shadow: 0 0 10px #00000096;
@@ -130,7 +130,7 @@ select {
     align-items: center;
     position: absolute;
     top: -10px;
-    right: -10px;
+    right: -17px;
     background: #fff;
     padding: 5px 5px 5px 6px;
     width: 15px;
@@ -153,6 +153,15 @@ input[type=text], input[type=password]{
     padding: 8px 10px;
     color: #333;
 }
+.param .input-wrap input,
+.param .input-wrap button {
+    margin-top: 0;
+    margin-bottom: 0;
+    margin-right: 0;
+}
+.param .input-wrap button {
+    margin-left: 10px;
+}
 label input[type=checkbox] {
     vertical-align: middle;
     margin-left: 10px;
@@ -164,6 +173,10 @@ section[id|=main-conf] {
     padding-bottom: 0;
     position: relative;
     min-height: 30px;
+}
+.input-wrap {
+    width: 100%;
+    display: flex;
 }
 #main-section {
     padding: 0 20px 0 20px;
@@ -429,7 +442,7 @@ iframe#prev-if {
 }
 div.ui-resizable-w,
 div.ui-resizable-e {
-    width: 17px;
+    width: 8px;
     background: #ebebeb;
 }
 div.ui-resizable-w {
@@ -449,11 +462,11 @@ div.ui-resizable-e:after {
     left: 0;
     right: 0;
     bottom: 0;
-    width: 10px;
-    height: 20px;
+    width: 6px;
+    height: 14px;
     z-index: 9999 !important;
     color: #000 !important;
-    font-size: 12pt;
+    font-size: 8pt;
     font-weight: 500;
     margin: auto;
 }
