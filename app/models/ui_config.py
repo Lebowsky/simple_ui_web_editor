@@ -31,38 +31,26 @@ class Tab:
                     'type',
                     'Value',
                     'Variable',
-                    'style_name'
+                    'height',
+                    'width',
+                    'weight',
+                    'orientation',
+                    'gravity_horizontal',
+                    'gravity_vertical',
                 ],
                 'ordering': 1
             },
-            'dimensions': {
-                'title': 'Dimensions',
+            'others': {
+                'title': 'Other',
                 'items': [
                     'BackgroundColor',
                     'StrokeWidth',
                     'Padding',
-                    'orientation',
-                    'height',
-                    'width',
-                    'gravity_horizontal',
-                    'gravity_vertical',
-                    'weight',
-                ],
-                'ordering': 2
-            },
-            'text': {
-                'title': 'Text',
-                'items': [
                     'TextSize',
                     'TextColor',
                     'TextBold',
                     'TextItalic',
                 ],
-                'ordering': 3
-            },
-            'other': {
-                'title': 'Other',
-                'items': [],
                 'ordering': 4
             },
             'elements': {
@@ -97,6 +85,7 @@ class FieldType(Enum):
     operations = 'operations'
     elements = 'elements'
     handlers = 'handlers'
+    file='file'
 
 
 class ElementType(BaseModel):
@@ -133,6 +122,8 @@ class BaseField(BaseModel):
 
         elif values['title'] in ['Operations', 'Elements', 'Handlers']:
             values['type'] = values['title'].lower()
+        elif values['title'] == 'PyFileKey':
+            values['type'] = FieldType.file
         elif values['type'] == 'boolean':
             values['type'] = FieldType.checkbox
             values['default_value'] = False

@@ -90,7 +90,7 @@ var Main = {
 		this.configGraph.fillConfigValues('ClientConfiguration');
 	},
 	loadPrev() {
-		$("#prev .prev-content").html('<div class="preload">Load preview...</div><iframe onload="loadedPrev(this)" id="prev-if" src="http://localhost:5000/prev?' + Date.now() + '"></iframe>');
+		// $("#prev .prev-content").html('<div class="preload">Load preview...</div><iframe onload="loadedPrev(this)" id="prev-if" src="http://localhost:5000/prev?' + Date.now() + '"></iframe>');
 	},
 	events(event) {
 		return {
@@ -212,7 +212,8 @@ class ClientConfiguration {
 				if (configLevel[element.parentType]) {
 					index = configLevel[element.parentType].push({ ...element.elementValues }) - 1;
 				} else {
-					configLevel[element.parentType] = [{ ...element.elementValues }];
+					let filledValues = Object.fromEntries(Object.entries(element.elementValues).filter(([k, v]) => v !== ''))
+					configLevel[element.parentType] = [{ ...filledValues }];
 					index = 0;
 				}
 				if (index != undefined)
