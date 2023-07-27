@@ -327,7 +327,7 @@ class ElementModal extends ModalWindow{
             if (inputNode.length) {
                 const paramName = inputNode.attr('data-param-name')
                 const value = inputNode.prop('type') == 'checkbox' ? inputNode.is(':checked') : inputNode.val();
-                if (value)
+                //if (value)
                     values[paramName] = value
             }
 
