@@ -8,7 +8,7 @@ class ListElement {
         this.html = `
             <div class="btn-group">
                 <button class="btn-add">Add</button>
-                ${main.clipboard.length && this.elementType && main.clipboard[0].parentType.toLowerCase() == this.elementType.toLowerCase() ? `<button class="btn-paste">Paste</button>` : ``}
+                ${/*main.clipboard.length && this.elementType && main.clipboard[0].parentType.toLowerCase() == this.elementType.toLowerCase() ? */`<button class="btn-paste" data-childrens-type="${this.elementType}">Paste</button>`/* : ``*/}
             </div>
         `
         this.html += `${this.renderRows()}`
@@ -129,6 +129,12 @@ class ElementModal extends ModalWindow{
             `
         this.modal = $(this.html)
         this.modal.find(selectors.modalContent).html(this.renderParams())
+
+        this.modal.resizable({
+            minWidth: 450,
+            handles: "e",
+        });
+
         return this;
     }
     renderParams() {
@@ -275,6 +281,14 @@ class ElementModal extends ModalWindow{
                 <label for="${name}">${text}</label>
                 <input type="text" name="${name}" id="${name}" data-param-name="${name}" value="${value}" readonly>
                 `,
+
+            file: `
+                <label for="${name}">${text}</label>
+                <div class="input-wrap">
+                    <input type="${type}" name="${name}" id="${name}" data-param-name="${name}" value="${value}">
+                    <button id="open-py" onclick="pickFile('simple_ui')">Open</button>
+                </div>
+                `,
         }
 
         return renderElements[type]
@@ -327,7 +341,7 @@ class ElementModal extends ModalWindow{
             if (inputNode.length) {
                 const paramName = inputNode.attr('data-param-name')
                 const value = inputNode.prop('type') == 'checkbox' ? inputNode.is(':checked') : inputNode.val();
-                if (value)
+                //if (value)
                     values[paramName] = value
             }
 
