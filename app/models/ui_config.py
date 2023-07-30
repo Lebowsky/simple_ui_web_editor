@@ -122,7 +122,7 @@ class BaseField(BaseModel):
 
         elif values['title'] in ['Operations', 'Elements', 'Handlers']:
             values['type'] = values['title'].lower()
-        elif values['title'] == 'PyFileKey':
+        elif values['title'] == 'file_path':
             values['type'] = FieldType.file
         elif values['type'] == 'boolean':
             values['type'] = FieldType.checkbox
