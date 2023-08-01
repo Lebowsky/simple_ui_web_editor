@@ -26,7 +26,7 @@ class MainMenuModel(BaseConfigModel):
     menu_top: bool = Field(default=False, alias='MenuTop')
 
     class Config:
-        title = 'MenuItem'
+        title = 'MainMenu'
 
 
 class MediaFileModel(BaseConfigModel):
