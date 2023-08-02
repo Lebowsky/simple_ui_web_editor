@@ -90,7 +90,7 @@ const showQRSettings = async (event) => {
 
 
 const showSqlQueries = async(event) => {
-	modal = new SQLQueryModal(main.deviceHost);
+	modal = new SQLQueryModal(main.settings.deviceHost);
 	modal.render();
 	modal.show();
 }
