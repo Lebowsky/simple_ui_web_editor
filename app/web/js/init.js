@@ -1,6 +1,6 @@
 $(document).ready(function(){
 	sortableInit(selectors.list);
-	main.conf.modalWidth = 820;
+	main.settings.modalWidth = 820;
 
 	$('#prev').resizable({
 		minWidth: 250,
@@ -23,7 +23,7 @@ $(document).ready(function(){
 		}
 	})
 	$(document).on('change', "#ip-address", function(){
-		main.conf.deviceHost = $(this).val();
+		main.settings.deviceHost = $(this).val();
 	})
 	$(document).on('click', selectors.btnDelete, function(){
 		if (confirm('Вы уверены?')) {
@@ -211,7 +211,7 @@ $(document).ready(function(){
 			$("#query-params").val($(this).attr("data-params"));
 		} else if ($(e.target).is("i.fa-times")) {
 			const qIndex = $(this).attr("data-index");
-			main.conf.sqlQuerys.splice(qIndex, 1);
+			main.settings.sqlQuerys.splice(qIndex, 1);
 			$(this).remove();
 			if ($('.querys > li').length == 0) {
 				$('.querys').remove();
@@ -378,16 +378,16 @@ async function sendSQLQuery(node){
 	let params = $('#query-params').val();
 	let nodeText = $(node).text();
 
-	if (!main.conf.deviceHost){
+	if (!main.settings.deviceHost){
 		notificate('Device connection error');
 		return
 	}
 
-	if (!main.conf.sqlQuerys.find((el) => el.query == query && el.params == params))
-		main.conf.sqlQuerys.push({query:query, params:params});
+	if (!main.settings.sqlQuerys.find((el) => el.query == query && el.params == params))
+		main.settings.sqlQuerys.push({query:query, params:params});
 
 	const query_params = {
-		device_host: main.conf.deviceHost || '',
+		device_host: main.settings.deviceHost || '',
 		db_name: $('#db-name').val(),
 		query: query,
 		params: params
@@ -398,7 +398,7 @@ async function sendSQLQuery(node){
 	const result = await sendSqlQueryToDevice(query_params);
 	
 	$(node).html(nodeText)
-	$(".querys-wrap").html(SQLQueryModal.renderSqlQueryHistory(main.conf.sqlQuerys));
+	$(".querys-wrap").html(SQLQueryModal.renderSqlQueryHistory(main.settings.sqlQuerys));
 
 	if (result){
 		if (result.error){
