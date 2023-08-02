@@ -8,7 +8,7 @@ class ListElement {
         this.html = `
             <div class="btn-group">
                 <button class="btn-add">Add</button>
-                ${/*main.clipboard.length && this.elementType && main.clipboard[0].parentType.toLowerCase() == this.elementType.toLowerCase() ? */`<button class="btn-paste" data-childrens-type="${this.elementType}">Paste</button>`/* : ``*/}
+                ${`<button class="btn-paste" data-childrens-type="${this.elementType}">Paste</button>`}
             </div>
         `
         this.html += `${this.renderRows()}`
@@ -43,7 +43,7 @@ class ListElement {
 
         this.items.forEach((item, index) => {
             html += `
-            <li class="">
+            <li class="list-item" data-id="${item.id}">
                 <span class="item-name">${item.name}</span>
                 ${item.value ?`<span class="item-value">${item.value}</span>`: ''}
             </li>
@@ -77,6 +77,14 @@ class ModalWindow {
         this.modal.appendTo('#modals-wrap').addClass("active")
         $('.content').addClass("blur");
         $("body").addClass("no-scroll");
+        this.modal.css('width', main.conf.modalWidth)
+        this.modal.resizable({
+            minWidth: 450,
+            handles: "e",
+            stop: function(event, ui) {
+                main.conf.modalWidth = ui.size.width;
+            }
+        });
 
         sortableInit(selectors.list);
     }
@@ -285,8 +293,8 @@ class ElementModal extends ModalWindow{
             file: `
                 <label for="${name}">${text}</label>
                 <div class="input-wrap">
-                    <input type="${type}" name="${name}" id="${name}" data-param-name="${name}" value="${value}">
-                    <button id="open-py" onclick="pickFile('simple_ui')">Open</button>
+                    <input type="text" name="${name}" id="${name}" data-param-name="${name}" value="${value}">
+                    <button id="open-py" onclick="pickFile('python')">Open</button>
                 </div>
                 `,
         }
@@ -297,6 +305,7 @@ class ElementModal extends ModalWindow{
         return {
             text: params.value ? params.value : '',
             type: params.value ? params.value : '',
+            file: params.value ? params.value : '',
             select: params.value ? params.value : '',
             checkbox: params.value == true ? 'checked' : ''
         }[params.type]
@@ -470,6 +479,7 @@ class SQLQueryModal extends ModalWindow{
             `
         this.modal = $(this.html)
         this.modal.find(selectors.modalContent).html(this.renderContent())
+
         return this;
     } 
     renderContent(){
@@ -498,7 +508,7 @@ class SQLQueryModal extends ModalWindow{
                 </div>
             </div>
         </div>
-        <div class="querys-wrap">${SQLQueryModal.renderSqlQueryHistory(main.sqlQuerys)}</div>
+        <div class="querys-wrap">${SQLQueryModal.renderSqlQueryHistory(main.conf.sqlQuerys)}</div>
         <div id="sql-table-wrap"> </div>
         `
         return html;    
@@ -510,7 +520,7 @@ class SQLQueryModal extends ModalWindow{
             html += `
             <div class="section-header" onclick="showList(this)">Query history<i class="fa fa-angle-down" aria-hidden="true"></i></div>
             <ul class="list-wrap querys">
-                ${querys.map((el) => `<li data-params="${el.params}">${el.query}</li>`).join('\n')}
+                ${querys.map((el, index) => `<li data-index="${index}" data-params="${el.params}">${el.query}<i class="fa fa-times" aria-hidden="true"></i></li>`).join('\n')}
             </ul>
             `
         }

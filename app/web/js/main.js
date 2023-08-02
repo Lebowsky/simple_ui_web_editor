@@ -1,7 +1,10 @@
 var Main = {
-	deviceHost: "",
-	sqlQuerys: [],
-	clipboard: [],
+	conf: {
+		deviceHost: "",
+		sqlQuerys: [],
+		clipboard: [],
+		modalWidth: [],
+	},
 	initUIConf(conf, filePath){
 		this.conf = conf;
 		this.configGraph = new ClientConfiguration(conf.ClientConfiguration);
@@ -206,13 +209,13 @@ class ClientConfiguration {
 		return ++this.lastId
 	}
 	getConfig() {
-		let firstElement = this.elements.find((el) => el.parentId == 0);
+		let firstElement = structuredClone(this.elements.find((el) => el.parentId == 0));
 		const clientConfig = {
 			[firstElement.parentType]: { ...firstElement.elementValues }
 		};
 
 		let addElements = (configLevel, id) => {
-			let elements = this.elements.filter((el) => el.parentId == id);
+			let elements = structuredClone(this.elements.filter((el) => el.parentId == id));
 			elements.forEach((element) => {
 				let index;
 				if (configLevel[element.parentType]) {
@@ -230,14 +233,14 @@ class ClientConfiguration {
 		return clientConfig
 	}
 	getConfigElement(elementId) {
-		let firstElement = this.elements.find((el) => el.id == elementId);
+		let firstElement = structuredClone(this.elements.find((el) => el.id == elementId));
 		const clientConfig = {
 			parentType: firstElement.parentType,
 			...firstElement.elementValues
 		};
 
 		let addElements = (configLevel, id) => {
-			let elements = this.elements.filter((el) => el.parentId == id);
+			let elements = structuredClone(this.elements.filter((el) => el.parentId == id));
 			elements.forEach((element) => {
 				let index;
 				if (configLevel[element.parentType]) {
