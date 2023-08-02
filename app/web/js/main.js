@@ -1,5 +1,5 @@
 var Main = {
-	conf: {
+	settings: {
 		deviceHost: "",
 		sqlQuerys: [],
 		clipboard: [],

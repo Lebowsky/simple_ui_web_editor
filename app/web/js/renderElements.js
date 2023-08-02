@@ -77,12 +77,12 @@ class ModalWindow {
         this.modal.appendTo('#modals-wrap').addClass("active")
         $('.content').addClass("blur");
         $("body").addClass("no-scroll");
-        this.modal.css('width', main.conf.modalWidth)
+        this.modal.css('width', main.settings.modalWidth)
         this.modal.resizable({
             minWidth: 450,
             handles: "e",
             stop: function(event, ui) {
-                main.conf.modalWidth = ui.size.width;
+                main.settings.modalWidth = ui.size.width;
             }
         });
 
@@ -508,7 +508,7 @@ class SQLQueryModal extends ModalWindow{
                 </div>
             </div>
         </div>
-        <div class="querys-wrap">${SQLQueryModal.renderSqlQueryHistory(main.conf.sqlQuerys)}</div>
+        <div class="querys-wrap">${SQLQueryModal.renderSqlQueryHistory(main.settings.sqlQuerys)}</div>
         <div id="sql-table-wrap"> </div>
         `
         return html;    
