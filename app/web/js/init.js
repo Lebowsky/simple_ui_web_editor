@@ -1,5 +1,6 @@
 $(document).ready(function(){
 	sortableInit(selectors.list);
+	main.conf.modalWidth = 820;
 
 	$('#prev').resizable({
 		minWidth: 250,
@@ -15,12 +16,14 @@ $(document).ready(function(){
 		const elementId = $(this).parents(selectors.listItem).attr('data-id');
 		editElement(elementId);
 	})
-	$(document).on('dblclick', selectors.listItem, function(){
-		const elementId = $(this).attr('data-id');
-		editElement(elementId);
+	$(document).on('dblclick', selectors.listItem, function(e){
+		if (e.target === this) {
+			const elementId = $(this).attr('data-id');
+			editElement(elementId);
+		}
 	})
 	$(document).on('change', "#ip-address", function(){
-		main.deviceHost = $(this).val();
+		main.conf.deviceHost = $(this).val();
 	})
 	$(document).on('click', selectors.btnDelete, function(){
 		if (confirm('Вы уверены?')) {
@@ -32,30 +35,12 @@ $(document).ready(function(){
 
 			main.configGraph.removeElement(element);
 			main.configGraph.fillListElements(type, node, parentId);
+
+			if (type == "Processes") {
+				main.configGraph.fillListElements("Operations", selectors.operationsList, 1);
+			}
 		}
 	})
-	/*$(document).on('click', selectors.btnCopy, function(e){
-		const elementId = $(this).parents(selectors.listItem).attr('data-id');
-		const element = main.configGraph.getElementById(elementId);
-		const type = element.parentType;
-		const node = element.parentConfig['node'];
-		const parentId = element.parentId;
-		$(selectors.btnPaste).remove();
-
-		main.clipboard[0] = structuredClone(element);
-		main.configGraph.fillListElements(type, node, parentId);
-	})
-	$(document).on('click', selectors.btnPaste, function(e){
-		const parentId = $(this).parents('.list').attr('data-id');
-		main.clipboard[0].parentId = parentId;
-		const newElement = main.configGraph.duplicateElement(main.clipboard[0]);
-
-		const element = main.configGraph.getElementById(newElement.id);
-		const type = element.parentType;
-		const node = element.parentConfig['node'];
-		const elementParentId = element.parentId;
-		main.configGraph.fillListElements(type, node, elementParentId);
-	})*/
 	$(document).on('click', selectors.btnCopy, function(e){
 		const elementId = $(this).parents(selectors.listItem).attr('data-id');
 		elementConf = main.configGraph.getConfigElement(elementId);
@@ -148,6 +133,10 @@ $(document).ready(function(){
 		elementId = $(this).parents('.params').attr('data-id');
 		element = main.configGraph.getElementById(elementId);
 		main.configGraph.fillListElements(element.parentType, element.parentConfig['node'], element.parentId, elementId)
+
+		if (element.parentType == "Processes") {
+			main.configGraph.fillListElements("Operations", selectors.operationsList, element.id);
+		}
 	})
 	$(document).on('click', '.btn-type-select', function(){
 		const checked = $(this).parents('.params').find('input[name=type]:checked');
@@ -191,14 +180,18 @@ $(document).ready(function(){
 		$(this).parents(selectors.list).find(selectors.listItem).removeClass("active");
 		$(this).addClass("active");
 
-		if (!$(e.target).is(".item-btn > *")) {
+		if ($(e.target).is(".list .item-name")) {
 			const elementId = $(this).attr("data-id");
 			const element = main.configGraph.getElementById(elementId);
 			const type = element.parentType;
 
 			if (type == "Elements") {
-				main.configGraph.fillListElements(type, ".modal.active .list-param.active .element-childs-wrap", elementId, false, false);
-				//main.configGraph.fillListElementChilds(elementId, ".modal.active .element-childs-wrap");
+				const childsNode = ModalWindow.getCurrentModal().modal.find(".element-childs");
+				if (childsNode.length) {
+					childsNode.remove();
+				} else {
+					main.configGraph.fillListElements(type, ".modal.active .list-param.active .element-childs-wrap", elementId, false, false);
+				}
 			}
 		}
 	})
@@ -213,8 +206,17 @@ $(document).ready(function(){
 		hideMain();
 	})
 	$(document).on('click', '.querys > li', function(e){
-		$("#sql-query").val($(this).text());
-		$("#query-params").val($(this).attr("data-params"));
+		if (e.target === this) {
+			$("#sql-query").val($(this).text());
+			$("#query-params").val($(this).attr("data-params"));
+		} else if ($(e.target).is("i.fa-times")) {
+			const qIndex = $(this).attr("data-index");
+			main.conf.sqlQuerys.splice(qIndex, 1);
+			$(this).remove();
+			if ($('.querys > li').length == 0) {
+				$('.querys').remove();
+			}
+		}
 	})
 	$(document).on('change', 'select.element-type', function(){
 		// let modal = $(this).parents(selectors.modal),
@@ -376,16 +378,16 @@ async function sendSQLQuery(node){
 	let params = $('#query-params').val();
 	let nodeText = $(node).text();
 
-	if (!main.deviceHost){
+	if (!main.conf.deviceHost){
 		notificate('Device connection error');
 		return
 	}
 
-	if (!main.sqlQuerys.find((el) => el.query == query && el.params == params))
-		main.sqlQuerys.push({query:query, params:params});
+	if (!main.conf.sqlQuerys.find((el) => el.query == query && el.params == params))
+		main.conf.sqlQuerys.push({query:query, params:params});
 
 	const query_params = {
-		device_host: main.deviceHost || '',
+		device_host: main.conf.deviceHost || '',
 		db_name: $('#db-name').val(),
 		query: query,
 		params: params
@@ -396,7 +398,7 @@ async function sendSQLQuery(node){
 	const result = await sendSqlQueryToDevice(query_params);
 	
 	$(node).html(nodeText)
-	$(".querys-wrap").html(SQLQueryModal.renderSqlQueryHistory(main.sqlQuerys));
+	$(".querys-wrap").html(SQLQueryModal.renderSqlQueryHistory(main.conf.sqlQuerys));
 
 	if (result){
 		if (result.error){
