@@ -516,7 +516,7 @@ class SQLQueryModal extends ModalWindow{
     static renderSqlQueryHistory(querys){
         let html = "";
 
-        if (querys.length) {
+        if (querys && querys.length) {
             html += `
             <div class="section-header" onclick="showList(this)">Query history<i class="fa fa-angle-down" aria-hidden="true"></i></div>
             <ul class="list-wrap querys">
