@@ -11,7 +11,7 @@ from .elements import Barcode, HorizontalGallery, Voice, Photo, PhotoGallery, \
 from .enums import CVDetectorType, LaunchType
 from .containers import LinearLayout, Tiles
 from .handlers import CommonHandler, Handler, CVHandler
-
+from .recognition_templates import RecognitionTemplate
 
 class BaseConfigModel(BaseModel):
     class Config:
@@ -230,6 +230,7 @@ class QRCodeConfig(BaseModel):
     online_user_listener: str = Field(default='', alias='onlineUserListener')
 
 
+
 class ClientConfigurationModel(BaseConfigModel):
     name: str = Field(
         default=su_settings.locale.get('new_configuration'),
@@ -269,6 +270,7 @@ class ClientConfigurationModel(BaseConfigModel):
     style_templates: Optional[List[StyleTemplate]] = Field(default=[], alias='StyleTemplates')
     arch2: bool = True
     common_handlers: Optional[List[CommonHandler]] = Field(default=[], alias='CommonHandlers')
+    recognition_templates: Optional[List[RecognitionTemplate]] = Field(alias='RecognitionTemplates')
 
     class Config:
         title = 'ClientConfiguration'
