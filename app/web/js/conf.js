@@ -161,7 +161,7 @@ const listElements = {
         },
         MainMenu: {
                 node: selectors.mainMenuList,
-                type: 'MenuItem',
+                type: 'MainMenu',
                 parentType: 'MainMenu',
                 path: '',
                 rowKeys: ['MenuTitle']

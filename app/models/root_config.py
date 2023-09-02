@@ -20,10 +20,10 @@ class BaseConfigModel(BaseModel):
 
 
 class MainMenuModel(BaseConfigModel):
-    menu_id: str = Field(default='', alias='MenuId')
-    menu_item: str = Field(default='', alias='MenuItem')
-    menu_title: str = Field(default='', alias='MenuTitle')
-    menu_top: bool = Field(default=False, alias='MenuTop')
+    menu_id: str = Field(default='', alias='MenuId', title='ID')
+    menu_item: str = Field(default='', alias='MenuItem', title='Key')
+    menu_title: str = Field(default='', alias='MenuTitle', title='Name')
+    menu_top: bool = Field(default=False, alias='MenuTop', title='Show in toolbar')
 
     class Config:
         title = 'MainMenu'
