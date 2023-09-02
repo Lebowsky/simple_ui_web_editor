@@ -138,13 +138,14 @@ class BaseField(BaseModel):
 
 
 class BaseElement(BaseModel):
-    type: Optional[List[ElementType]] = []
+    type_: Optional[List[ElementType]] = []
     tabs: Dict = {}
 
     @root_validator
     def fill_values(cls, values: dict):
         if values.get('type'):
             values.pop('type')
+
 
         for key, value in values.items():
             if isinstance(value, BaseField):

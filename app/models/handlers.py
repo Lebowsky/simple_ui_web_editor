@@ -9,8 +9,7 @@ class BaseHandler(BaseModel):
     event: str
     listener: Optional[str]
     action: ActionHandlerEnum = Field(title='Action')
-    type_: Optional[HandlerType] = Field(alias='Type', title='Type')
-    type: Optional[HandlerType] = Field(alias='type')
+    type: HandlerType = Field(alias='type', title='Type')
     method: str = Field(title='Method')
     postExecute: str = Field(default='', title='Post execute')
 
@@ -19,14 +18,6 @@ class BaseHandler(BaseModel):
 
     @root_validator(pre=True)
     def fill_type_pre(cls, values):
-        if values.get('Type'):
-            values['type'] = values['Type']
-            values['Type'] = None
-        #
-        # elif values.get('type'):
-        #     values['Type'] = values['type']
-        #     values['type'] = None
-
         return values
 
 

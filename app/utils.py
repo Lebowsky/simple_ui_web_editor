@@ -181,8 +181,6 @@ def get_config_ui_elements(model=RootConfigModel) -> dict:
         title = el['title']
 
         for key, value in el['properties'].items():
-            if key == 'type':
-                continue
             fields[key] = ui_config.BaseField(text=value.get('title') or key, **value)
             if key == 'Elements':
                 containers[title] = _get_elements_items(value)
@@ -193,7 +191,7 @@ def get_config_ui_elements(model=RootConfigModel) -> dict:
         for item in value:
             element_type = ui_config.ElementType(parent=key, type='select', options=value, text='type')
 
-            result[item]['type'].append(element_type)
+            result[item]['type_'].append(element_type)
 
     return ui_config.convert_to_dict(result)
 
