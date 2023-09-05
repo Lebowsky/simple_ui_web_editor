@@ -290,6 +290,7 @@ class ClientConfiguration {
 		const types = Object.entries(main.elementParams)
 			.filter((el) => el[1]['type_'].find((el) => el['parent'] && el['parent'] == elementType))
 			.map((el) => el[0])
+			//test
 
 		return types;
 	}
