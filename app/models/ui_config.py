@@ -143,10 +143,6 @@ class BaseElement(BaseModel):
 
     @root_validator
     def fill_values(cls, values: dict):
-        if values.get('type'):
-            values.pop('type')
-
-
         for key, value in values.items():
             if isinstance(value, BaseField):
                 tab = Tab(key)
