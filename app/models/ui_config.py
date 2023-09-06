@@ -106,6 +106,8 @@ class BaseField(BaseModel):
     tab_name: str = ''
     text: str
     required: bool = False
+    description: str = ''
+    hidden: bool = False
 
     @root_validator(pre=True)
     def fill_values(cls, values):

@@ -37,7 +37,7 @@ class Server(uvicorn.Server):
             thread.join()
 
 
-server = Server(uvicorn.Config(app=app, host="0.0.0.0", port=5000, reload=True))
+server = Server(uvicorn.Config(app=app, host="0.0.0.0", port=5001, reload=True))
 
 
 @app.get('/get_conf')

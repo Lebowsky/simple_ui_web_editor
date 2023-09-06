@@ -181,7 +181,11 @@ def get_config_ui_elements(model=RootConfigModel) -> dict:
         title = el['title']
 
         for key, value in el['properties'].items():
-            fields[key] = ui_config.BaseField(text=value.get('title') or key, **value)
+            props = value.copy()
+            props['required'] = key in (el.get('required') or [])
+            props['hidden'] = key == 'type'
+
+            fields[key] = ui_config.BaseField(text=value.get('title') or key, **props)
             if key == 'Elements':
                 containers[title] = _get_elements_items(value)
 
