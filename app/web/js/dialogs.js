@@ -84,7 +84,7 @@ const showQRSettings = async (event) => {
 
 	modal = new ImageModal();
 	modal.render();
-	modal.modal.append("<img src='"+img_src+"'>");
+	modal.modal.append(`<img id="qr-code" src="${img_src}">`);
 	modal.show();
 }
 
