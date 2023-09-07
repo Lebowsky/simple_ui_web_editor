@@ -15,6 +15,8 @@ import qrcode
 from .models import ui_config, project_config
 from .models.handlers import Handler
 from .models.root_config import RootConfigModel, QRCodeConfig
+from .config import app_server_port
+
 
 python_modules = {}
 
@@ -153,7 +155,7 @@ def convert_config_version(file_path):
 
 def get_qr_code_config():
     host = socket.gethostbyname(socket.gethostname())
-    port = 5000
+    port = app_server_port
     url = f'http://{host}:{port}/get_conf'
     online_url = f'http://{host}:2076'
 
