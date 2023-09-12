@@ -203,6 +203,9 @@ class ElementModal extends ModalWindow{
                 </div>
             `
         } else {
+            if (fields.hidden)
+                return ''
+            
             const renderParams = {
                 ...fields,
                 name: name,
@@ -245,18 +248,18 @@ class ElementModal extends ModalWindow{
     }
     renderModalElement(params) {
         const value = this.getParamsValue(params);
-        const { type, name, text } = params;
+        const { type, name, text, description } = params;
 
         const renderElements = {
             text: `
                 <label for="${name}">${text}</label>
-                <input type="${type}" name="${name}" id="${name}" data-param-name="${name}" value="${value}">
+                <input type="${type}" name="${name}" id="${name}" data-param-name="${name}" value="${value}" title="${description}">
                 `,
 
             checkbox: `
                 <div>
                     <label for="${name}">${text}</label>
-                    <input type="${type}" name="${name}" id="${name}" data-param-name="${name}" ${value}>
+                    <input type="${type}" name="${name}" id="${name}" data-param-name="${name}" ${value} title="${description}">
                 </div>
                 `,
 

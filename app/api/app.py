@@ -11,7 +11,7 @@ from fastapi.templating import Jinja2Templates
 from fastapi_socketio import SocketManager
 
 from .preview_app import AsyncSimple
-from ..config import resource_path
+from ..config import resource_path, app_server_port, app_server_host
 from ..utils import get_config_from_file, get_python_modules
 
 sw: AsyncSimple
@@ -21,7 +21,7 @@ app.mount("/static", StaticFiles(directory=resource_path('app/web/templates/prev
 templates = Jinja2Templates(directory=resource_path('app/web/templates'))
 
 sio = SocketManager(app)
-
+server = ...
 
 class Server(uvicorn.Server):
     @contextlib.contextmanager
@@ -36,8 +36,20 @@ class Server(uvicorn.Server):
             self.should_exit = True
             thread.join()
 
+def run_uvicorn():
+    global server
+    server = Server(uvicorn.Config(app=app, host=app_server_host, port=app_server_port, reload=True))
 
-server = Server(uvicorn.Config(app=app, host="0.0.0.0", port=5000, reload=True))
+def restart_uvicorn(port: int):
+    global server
+    if server:
+        server.shutdown()
+
+    config = uvicorn.Config(app=app, host=app_server_host, port=port, reload=True)
+    server = Server(config)
+
+
+run_uvicorn()
 
 
 @app.get('/get_conf')

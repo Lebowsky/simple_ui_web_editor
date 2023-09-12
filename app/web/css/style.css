@@ -69,6 +69,10 @@ a.btn, #preview-button {
     /* display: none; */
 }
 
+#qr-code{
+    width: 100%;
+}
+
 .btn-group button:last-child {
 	margin-right: 0;
 }

@@ -46,10 +46,10 @@ class SQLQueryModel(BaseConfigModel):
 
 
 class PyTimerTaskModel(BaseConfigModel):
-    py_timer_task_key: str = Field(default='', alias='PyTimerTaskKey')
-    py_timer_task_def: str = Field(default='', alias='PyTimerTaskDef')
-    py_timer_task_period: str = Field(default='0', alias='PyTimerTaskPeriod')
-    py_timer_task_build_in: bool = Field(default=False, alias='PyTimerTaskBuilIn')
+    py_timer_task_key: str = Field(default='', alias='PyTimerTaskKey', title='Key')
+    py_timer_task_def: str = Field(default='', alias='PyTimerTaskDef', title='Handler name')
+    py_timer_task_period: str = Field(default='0', alias='PyTimerTaskPeriod', title='Period', description='Период запуска таймера в миллисекундах')
+    py_timer_task_build_in: bool = Field(default=False, alias='PyTimerTaskBuilIn', title='Buil-in handler')
 
     @validator('py_timer_task_period')
     def check_int_value(cls, v):

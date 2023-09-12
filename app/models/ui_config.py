@@ -106,6 +106,8 @@ class BaseField(BaseModel):
     tab_name: str = ''
     text: str
     required: bool = False
+    description: str = ''
+    hidden: bool = False
 
     @root_validator(pre=True)
     def fill_values(cls, values):
@@ -143,10 +145,6 @@ class BaseElement(BaseModel):
 
     @root_validator
     def fill_values(cls, values: dict):
-        if values.get('type'):
-            values.pop('type')
-
-
         for key, value in values.items():
             if isinstance(value, BaseField):
                 tab = Tab(key)
