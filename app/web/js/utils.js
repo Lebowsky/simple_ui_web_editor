@@ -38,23 +38,24 @@ async function saveConfiguration(){
 
     main.conf = main.configGraph.getConfig();
     const filePath = $('.file-path').text();
+    const workingDir = $('#working-dir-path').text();
 
 	let handlers = await fillBase64Handlers();
-	if (saveConfFiles(main.conf, filePath, handlers)){
+	if (saveConfFiles(main.conf, filePath, workingDir, handlers)){
         //main.configGraph = new ClientConfiguration(main.conf.ClientConfiguration);
     }
 }
-async function saveConfFiles(conf, filePath, pyHandlers){
-    let result_save = await saveConf(conf, filePath)
+async function saveConfFiles(conf, filePath, workingDir, pyHandlers){
+    let result_save = await saveConf(conf, filePath, workingDir)
     let result_check = checkSaveFileResult(result_save)
 
     if (result_check){
-        result_save = await savePyHandlers(pyHandlers)
+        result_save = await savePyHandlers(pyHandlers, workingDir)
         result_check = checkSaveFileResult(result_save)
     }
 
     if (! result_check)
-        notificate('Ошибка сохранения файла: ' + result_save.msg, 'danger') 
+        notificate('Ошибка сохранения файла: ' + result_save.msg, 'danger')
     else
         notificate('Файл успешно сохранен', 'success')
         main.loadPrev();
