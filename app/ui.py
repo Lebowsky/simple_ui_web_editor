@@ -1,3 +1,5 @@
+import os
+
 import eel
 
 from . import utils
@@ -16,8 +18,10 @@ eel.init(config.FRONTEND_ASSET_FOLDER)
 
 
 @eel.expose
-def save_configuration(data, file_path):
+def save_configuration(data: dict, file_path: str, work_dir: str) -> dict:
     try:
+        if work_dir != '<Not selected>' and os.path.exists(work_dir):
+            file_path = os.path.join(work_dir, os.path.split(file_path)[1])
         utils.save_config_to_file(data, file_path)
         return {'result': 'success'}
     except Exception as e:
@@ -73,11 +77,16 @@ def get_base64_from_file(file_path):
 
 
 @eel.expose
-def save_handlers_files(handlers: dict) -> dict:
+def save_handlers_files(handlers: dict, work_dir: str) -> dict:
     result = {'result': 'success'}
     if handlers:
         for file_name, value in handlers.items():
-            with open(config.resource_path(f'{file_name}.py'), 'w', encoding='utf-8') as f:
+            if work_dir != '<Not selected>' and os.path.exists(work_dir):
+                file_path = os.path.join(work_dir, f'{file_name}.py')
+            else:
+                file_path = config.resource_path(f'{file_name}.py')
+
+            with open(file_path, 'w', encoding='utf-8') as f:
                 content = utils.get_content_from_base64(value)
                 try:
                     f.write(content)
