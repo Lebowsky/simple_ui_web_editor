@@ -70,7 +70,7 @@ class StyleTemplate(DimensionElement, TextElement):
 class PyFilesModel(BaseConfigModel):
     file_path: str = ''
     py_file_key: str = Field(alias='PyFileKey', title='PyFileKey')
-    py_file_data: str = Field(alias='PyFileData', title='PyFileData')
+    py_file_data: Optional[str] = Field(alias='PyFileData', title='PyFileData')
 
     class Config:
         title = 'PyFile'
