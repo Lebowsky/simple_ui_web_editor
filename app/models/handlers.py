@@ -7,7 +7,7 @@ from .enums import EventCommonHandlerEnum, EventHandlerEnum, ActionHandlerEnum, 
 
 class BaseHandler(BaseModel):
     event: str
-    listener: Optional[str]
+    listener: str = ''
     action: ActionHandlerEnum = Field(title='Action')
     type: HandlerType = Field(alias='type', title='Type')
     method: str = Field(title='Method')
@@ -22,7 +22,7 @@ class BaseHandler(BaseModel):
 
 
 class CommonHandler(BaseHandler):
-    alias: str
+    alias: Optional[str]
     event: EventCommonHandlerEnum = Field(title='Event')
 
     class Config:

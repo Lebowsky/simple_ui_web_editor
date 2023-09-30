@@ -115,18 +115,16 @@ class OperationsModel(BaseConfigModel):
     type: str = 'Operation'
     name: str = Field(default=su_settings.locale.get('new_screen'), alias='Name')
     timer: bool = Field(default=False, alias='Timer', title='Screen handler on timer')
+    hide_toolbar_screen: bool = Field(default=False, alias='hideToolBarScreen', title='Hide top bar')
     hide_bottom_bar_screen: bool = Field(default=False, alias='hideBottomBarScreen', title='Hide button bar')
     no_scroll: bool = Field(default=False, alias='noScroll', title='Disable scrolling for Root Layout')
     handle_key_up: bool = Field(default=False, alias='handleKeyUp', title='Attach a keyboard handler')
     no_confirmation: Optional[bool] = Field(default=False, alias='noConfirmation', title='Close without confirmation')
-    hide_toolbar_screen: bool = Field(default=False, alias='hideToolBarScreen', title='Hide top bar')
+
 
     elements: List[Element] = Field(default=[], alias='Elements')
     handlers: Optional[List[Handler]] = Field(default=[], alias='Handlers')
 
-    online_on_start: bool = Field(default=False, alias='onlineOnStart')
-    online_on_after_start: bool = Field(default=False, alias='onlineOnAfterStart')
-    online_on_input: bool = Field(default=False, alias='onlineOnInput')
 
     class Config:
         title = 'Operation'
