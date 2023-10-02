@@ -210,6 +210,9 @@ section[id|=main-conf] {
     min-height: 470px;
     border-radius: 4px;
 }
+section#main-conf-screen {
+    min-height: 30px;
+}
 .input-wrap {
     width: 100%;
     display: flex;
