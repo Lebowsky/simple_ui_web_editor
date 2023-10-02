@@ -23,7 +23,7 @@ class BaseHandler(BaseModel):
 
 class CommonHandler(BaseHandler):
     alias: Optional[str]
-    event: EventCommonHandlerEnum = Field(title='Event')
+    event: Optional[EventCommonHandlerEnum] = Field(title='Event')
 
     class Config:
         title = 'CommonHandler'
