@@ -297,16 +297,27 @@ $(document).ready(function(){
     window.onbeforeunload = function (e) {
         return e
     };
-	$(document).on('click', '.toggle-mnu', function(){
-		$(this).toggleClass("on");
-		$('.btn-group.main').toggleClass("active");
+	$(document).on('click', '.toggle-mnu', function(e){
+		toggleMainMenu();
+	    e.stopPropagation();
 	})
 	$(document).on('click', '.btn-group.main button', function(){
-		$('.toggle-mnu').toggleClass("on");
-		$('.btn-group.main').toggleClass("active");
+		toggleMainMenu();
 	})
+	$(document).on('click', function(e){
+		if ($(".btn-group.main").hasClass('active') && !$(e.target).hasClass('toggle-mnu')) {
+			toggleMainMenu();
+		}
+	})
+	$(document).on('click', '.btn-group.main').click(function(e) {
+	    e.stopPropagation();
+	});
 });
 
+function toggleMainMenu () {
+	$('.toggle-mnu').toggleClass("on");
+	$('.btn-group.main').toggleClass("active");
+}
 function copyTextToClipboard(text) {
     if (!navigator.clipboard) {
         return;
