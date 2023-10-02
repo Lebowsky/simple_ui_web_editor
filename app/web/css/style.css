@@ -47,10 +47,32 @@ section .right {
     flex-wrap: wrap;
 }
 .btn-group.main {
-    justify-content: center;
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    background: #3333336b;
+    flex-direction: column;
+    padding: 40px 20px 20px;
+    width: 15%;
+    min-width: 250px;
+    transform: translateX(-100%);
+    transition: all .3s;
+    z-index: 1000;
+}
+.btn-group.main.active {
+    transform: translateX(0);
+}
+.btn-group.main button {
+    margin: 0;
+    text-align: left;
+    background: transparent;
+}
+.btn-group.main button:hover {
+    background: linear-gradient(-45deg, #21B9E1, #E71F53, #FBAF2E);
 }
 button,
-a.btn, #preview-button {
+a.btn {
     background: transparent;
     border: 2px #333 solid;
     padding: 10px 20px;
@@ -177,7 +199,7 @@ label input[type=checkbox] {
 }
 section[id|=main-conf] {
     border: 1px #333 solid;
-    margin-top: 60px;
+    margin-top: 30px;
     padding-top: 0;
     padding-bottom: 0;
     position: relative;
@@ -297,14 +319,17 @@ footer {
     margin-right: 10px;
     font-weight: 600;
 }
+.param label .count {
+    font-weight: inherit;
+}
 .modal.qr {
     text-align: center;
     filter: none;
 }
-span.file-path {
+span.file-path,
+span.dir-path {
     text-align: center;
     display: block;
-    margin-top: 20px;
     font-size: 13px;
 }
 .modal.active {
@@ -322,9 +347,25 @@ span.path {
     border-bottom: 1px #e7e7e7 solid;
     position: relative;
 }
+.modal-head .top {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    justify-content: space-between;
+}
 .modal-content {
     padding: 0 5px 20px 20px;
     position: relative;
+}
+.start .modal-content {
+    display: flex;
+    justify-content: space-around;
+    padding: 30px;
+}
+.start .modal-title {
+    text-align: center;
+    font-size: 18px;
+    font-weight: 500;
 }
 .content.blur {
     filter: blur(5px);
@@ -404,18 +445,23 @@ label i,
     background: #fff;
     border-radius: 300px;
     margin: 0 10px 0 0;
+    padding: 5px 10px;
+    min-width: auto;
+    border: 1px #e7e7e7 solid;
+}
+.modal .tab#save-project {
+    margin-left: 20px;
 }
 .modal .tab:last-child {
     margin-right: 0;
 }
 .modal .tabs {
-    top: -160px;
-    right: 0;
-    left: 0;
     height: auto;
     display: flex;
     justify-content: center;
     flex-direction: row;
+    position: static;
+    margin-left: 20px;
 }
 .tab:not(.active):hover {
     box-shadow: 0 0 10px #0000001c;
@@ -524,6 +570,9 @@ div.ui-resizable-e:after {
 }
 .modal-content .param {
     display: none;
+}
+.auth .modal-content .param {
+    display: flex;
 }
 .param.list-param.active {
     border-bottom: 1px #e7e7e7 solid;
@@ -697,6 +746,88 @@ table.dataTable>tbody>tr.child span.dtr-title {
 }
 
 /*-------dataTable-end--------*/
+.toggle-mnu {
+    width: 28px;
+    height: 30px;
+    position: fixed;
+    left: 10px;
+    top: 10px;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+}
+
+.toggle-mnu span:after,
+.toggle-mnu span:before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: -9px;
+}
+
+.toggle-mnu span:after {
+    top: 9px;
+}
+
+.toggle-mnu span {
+    position: relative;
+    display: block;
+}
+
+.toggle-mnu span,
+.toggle-mnu span:after,
+.toggle-mnu span:before {
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(-45deg, #21B9E1, #E71F53, #FBAF2E);
+    -webkit-transition: all 0.3s;
+            transition: all 0.3s;
+    -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+    -webkit-border-radius: 2px;
+            border-radius: 2px;
+}
+
+/* on activation */
+.toggle-mnu.on span {
+    background: transparent;
+}
+
+.toggle-mnu.on span:before {
+    background: #fff;
+    -webkit-transform: rotate(45deg) translate(5px, 5px);
+        -ms-transform: rotate(45deg) translate(5px, 5px);
+            transform: rotate(45deg) translate(5px, 5px);
+}
+
+.toggle-mnu.on span:after {
+    background: #fff;
+    -webkit-transform: rotate(-45deg) translate(7px, -8px);
+        -ms-transform: rotate(-45deg) translate(7px, -8px);
+            transform: rotate(-45deg) translate(7px, -8px);
+}
+
+.toggle-mnu.on + #menu {
+    opacity: 1;
+    visibility: visible;
+}
+
+.pick-file .list li {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    margin-bottom: 20px;
+}
+.pick-file .list li button {
+    margin-right: 0;
+}
+.pick-file .list li label {
+    font-weight: 500;
+}
+.pick-file .list li label,
+.pick-file .list li span {
+    margin-bottom: 10px;
+}
 
 @media (max-width: 1376px) {
 .content {

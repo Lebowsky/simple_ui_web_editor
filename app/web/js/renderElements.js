@@ -88,6 +88,17 @@ class ModalWindow {
 
         sortableInit(selectors.list);
     }
+    close(){
+        if (this.modal.siblings(selectors.modal).length) {
+            const prevModal = this.modal.prev();
+            prevModal.addClass("active");
+        } else {
+            this.modal.parents("#modals-wrap").removeClass("active");
+            $("body").removeClass("no-scroll");
+            $('.content').removeClass("blur");
+        }
+        this.modal.remove();    
+    }
     static getCurrentModal() {
         const modalDiv = $('#modals-wrap.active').find('.modal.active');
         if (modalDiv.length == 0)
@@ -104,12 +115,60 @@ class ModalWindow {
         } else if (modalDiv.hasClass('sql-query')){
             modalWindow = new SQLQueryModal();
             modalWindow.modal = modalDiv;
+        } else if (modalDiv.hasClass('auth')){
+            modalWindow = new AuthModal();
+            modalWindow.modal = modalDiv;
+        } else if (modalDiv.hasClass('pick-file')){
+            modalWindow = new PickFileModal();
+            modalWindow.modal = modalDiv;
+        } else if (modalDiv.hasClass('start')){
+            modalWindow = new StartModal();
+            modalWindow.modal = modalDiv;
         } else {
             const element = main.configGraph.getElementById(elementId);
             modalWindow = new ElementModal(element);
         }
         modalWindow.modal = modalDiv;
         return modalWindow;
+    }
+    static getModals(modalSelector) {
+        const modalsDiv = $('#modals-wrap.active').find(`.modal${modalSelector}`);
+        if (modalsDiv.length == 0)
+            return
+
+        let modalWindow = '';
+        let modalsWindow = [];
+
+        for (var i = modalsDiv.length - 1; i >= 0; i--) {
+            let modalDiv = $(modalsDiv[i]);
+            let elementId = modalDiv.find('.params').attr('data-id');
+
+            if (modalDiv.hasClass('type-select-modal')) {
+                let types = main.configGraph.getElementChildrensTypes(elementId)
+                modalWindow = new SelectTypeModal(types);
+            } else if (modalDiv.hasClass('qr')) { 
+                modalWindow = new ImageModal();
+            } else if (modalDiv.hasClass('sql-query')){
+                modalWindow = new SQLQueryModal();
+                modalWindow.modal = modalDiv;
+            } else if (modalDiv.hasClass('auth')){
+                modalWindow = new AuthModal();
+                modalWindow.modal = modalDiv;
+            } else if (modalDiv.hasClass('pick-file')){
+                modalWindow = new PickFileModal();
+                modalWindow.modal = modalDiv;
+            } else if (modalDiv.hasClass('start')){
+                modalWindow = new StartModal();
+                modalWindow.modal = modalDiv;
+            } else {
+                let element = main.configGraph.getElementById(elementId);
+                modalWindow = new ElementModal(element);
+            }
+            modalWindow.modal = modalDiv;
+            modalsWindow.push(modalWindow);
+        }
+
+        return modalsWindow;
     }
 }
 class ElementModal extends ModalWindow{
@@ -129,7 +188,10 @@ class ElementModal extends ModalWindow{
                     <i class='fa fa-times' aria-hidden='true'></i>
                 </div>
                 <div class='modal-head'>
-                    <h2 class='modal-title'>${this.title}<span class='edited'>*</span></h2>
+                    <div class='top'>
+                        <h2 class='modal-title'>${this.title}<span class='edited'>*</span></h2>
+                        ${this.renderTabs()}
+                    </div>
                     <span class='path'>${this.path}</span>
                 </div>
                 <div class='modal-content'></div>
@@ -148,7 +210,6 @@ class ElementModal extends ModalWindow{
     renderParams() {
         const html = `
             <div class="params" data-id="${this.element.id}">
-            ${this.renderTabs()}
             ${this.renderItems()}
             ${this.renderButtons()}
             </div>
@@ -168,6 +229,7 @@ class ElementModal extends ModalWindow{
                 let [name, value] = Object.entries(el)[0]
                 html += `<div onclick="selectModalTab(this)" class="tab" data-tab="${name}">${value.title}</div>`
             })
+            html += `<div class='tab' id='save-project' onclick='fileLocationSave()'>Save Project</div>`
             html += '</div>'
         }
         return html;
@@ -193,7 +255,7 @@ class ElementModal extends ModalWindow{
     
             html += `
                 <div class="param active list-param" data-tab="${fields["tab_name"]}">
-                    <label onclick="showList(this)">${name} ${elementsList.length ? `(${elementsList.length})`: ''}
+                    <label onclick="showList(this)">${name} ${elementsList.length ? `(<span class='count'>${elementsList.length}</span>)`: ''}
                         <i class="fa fa-angle-down" aria-hidden="true"></i>
                     </label>
                     <div class="list-wrap" style="display: none;">
@@ -407,18 +469,6 @@ class SelectTypeModal extends ModalWindow {
         this.modal = $(this.html)
         return this;
     }
-    close() {
-        if (this.modal.siblings(selectors.modal).length) {
-            const prevModal = this.modal.prev();
-            prevModal.addClass("active");
-        } else {
-            this.modal.parents("#modals-wrap").removeClass("active");
-            $("body").removeClass("no-scroll");
-            $('.content').removeClass("blur");
-        }
-
-        this.modal.remove();
-    }
     setSelectedValue(value){
         this.selectedValue = value;
     }
@@ -444,18 +494,6 @@ class ImageModal extends ModalWindow{
         this.modal = $(this.html)
         
         return this;
-    }
-    
-    close() {
-        if (this.modal.siblings(selectors.modal).length) {
-            const prevModal = this.modal.prev();
-            prevModal.addClass("active");
-        } else {
-            this.modal.parents("#modals-wrap").removeClass("active");
-            $("body").removeClass("no-scroll");
-            $('.content').removeClass("blur");
-        }
-        this.modal.remove();
     }
 }
 class SQLQueryModal extends ModalWindow{
@@ -523,7 +561,7 @@ class SQLQueryModal extends ModalWindow{
             html += `
             <div class="section-header" onclick="showList(this)">Query history<i class="fa fa-angle-down" aria-hidden="true"></i></div>
             <ul class="list-wrap querys">
-                ${querys.map((el, index) => `<li data-index="${index}" data-params="${el.params}">${el.query}<i class="fa fa-times" aria-hidden="true"></i></li>`).join('\n')}
+                ${querys.map((el, index) => `<li data-params="${el.params}">${el.query}<i class="fa fa-times" aria-hidden="true"></i></li>`).join('\n')}
             </ul>
             `
         }
@@ -555,15 +593,119 @@ class SQLQueryModal extends ModalWindow{
             }
         });
     }
-    close(){
-        if (this.modal.siblings(selectors.modal).length) {
-            const prevModal = this.modal.prev();
-            prevModal.addClass("active");
-        } else {
-            this.modal.parents("#modals-wrap").removeClass("active");
-            $("body").removeClass("no-scroll");
-            $('.content').removeClass("blur");
-        }
-        this.modal.remove();    
+}
+class AuthModal extends ModalWindow{
+    constructor() {
+        super();
+        this.modal = $('');
+        this.html = '';
+    }
+    render(){
+        this.html = `
+            <div class='modal auth'>
+                <div class='close-modal'>
+                    <i class='fa fa-times' aria-hidden='true'></i>
+                </div>
+                <div class='modal-head'>
+                    <h2 class='modal-title'>Authorization</h2>
+                </div>
+                <div class='modal-content'></div>
+            </div>
+            `
+        this.modal = $(this.html)
+        this.modal.find(selectors.modalContent).html(this.renderContent())
+
+        return this;
+    } 
+    renderContent(){
+        const html = `
+        <div class='auth-params'>
+            <div class="param">
+                <label for="login">Login</label>
+                <input type="text" name="login" value="" id="login">
+            </div>
+            <div class="param">
+                <label for="password">Password</label>
+                <input type="password" name="password" value="" id="password">
+            </div>
+        </div>
+        <div class="btn-wrap">
+            <button onclick="auth(this)">Login</button>
+        </div>
+        `
+        return html;    
+    }
+}
+class PickFileModal extends ModalWindow{
+    constructor(filePath, dirPath) {
+        super();
+        this.modal = $('');
+        this.html = '';
+        this.filePath = filePath;
+        this.dirPath = dirPath;
+    }
+    render(){
+        this.html = `
+            <div class='modal pick-file'>
+                <div class='close-modal'>
+                    <i class='fa fa-times' aria-hidden='true'></i>
+                </div>
+                <div class='modal-head'>
+                    <h2 class='modal-title'>Pick File</h2>
+                </div>
+                <div class='modal-content'></div>
+            </div>
+            `
+        this.modal = $(this.html)
+        this.modal.find(selectors.modalContent).html(this.renderContent())
+
+        return this;
+    } 
+    renderContent(){
+        const html = `
+        <div class="list-wrap show">
+            <ul class="list">
+                <li>
+                    <label>Project config file</label>
+                    <span id="project-config-path" data-param-name="projectConfig">${this.filePath ? this.filePath : '&lt;Not selected&gt;'}</span>
+                    <button id="open-project-config" onclick="pickFile('simple_ui')">Open file</button>
+                </li>
+                <li>
+                    <label>Working dir</label>
+                    <span id="working-dir-path" data-param-name="workingDir">${this.dirPath ? this.dirPath : '&lt;Not selected&gt;'}</span>
+                    <button id="open-working-dir" onclick="pickWorkingDir()">Open dir</button>
+                </li>
+            </ul>
+        </div>
+        `
+        return html;    
+    }
+}
+class StartModal extends ModalWindow{
+    constructor() {
+        super();
+        this.modal = $('');
+        this.html = '';
+    }
+    render(){
+        this.html = `
+            <div class='modal start'>
+                <div class='modal-head'>
+                    <h2 class='modal-title'>Start</h2>
+                </div>
+                <div class='modal-content'></div>
+            </div>
+            `
+        this.modal = $(this.html)
+        this.modal.find(selectors.modalContent).html(this.renderContent())
+
+        return this;
+    } 
+    renderContent(){
+        const html = `
+            <button id="new-project" onclick="pickNewFileProject(main)">New Project</button>
+            <button id="open-project" onclick="showPickFile()">Open Project</button>
+        `
+        return html;    
     }
 }

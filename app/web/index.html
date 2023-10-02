@@ -37,36 +37,35 @@
 </head>
 
 <body>
+	<a href="#menu" class="toggle-mnu"><span></span></a>
+	<div class="btn-group main">
+		<button id="new-project" onclick="pickNewFileProject(main)">New Project</button>
+		<button id="open-project" onclick="showPickFile()">Open Project</button>
+		<button id="save-project" onclick="fileLocationSave()">Save Project</button>
+		<button id="qr-settings" onclick="showQRSettings()">QR Settings</button>
+		<button id="preview-button" onclick="togglePrev()">Preview</button>
+		<button id="open-modal-sql-queries" onclick="showSqlQueries()">SQL Query</button>
+		<button id="open-modal-auth" onclick="showAuth()">Login</button>
+	</div>
 	<div class="content-wrapper">
 		<div class="content">
 			<div class="header">
 				<div class="logo"><img src="logo.png" alt="Simple Logo"></div>
 			</div>
-			<div class="btn-group main">
-				<button id="new-project" onclick="pickNewFileProject(main)">New Project</button>
-				<button id="open-project" onclick="pickFile('simple_ui')">Open Project</button>
-				<button id="save-project" onclick="fileLocationSave()">Save Project</button>
-				<button id="qr-settings" onclick="showQRSettings()">QR Settings</button>
-				<button id="preview-button" onclick="togglePrev()">Preview</button>
-				<button id="open-modal-sql-queries" onclick="showSqlQueries()">SQL Query</button>
-			</div>
 			<span class="file-path"></span>
+			<span class="dir-path"></span>
 			<div class="main-conf-wrap">
 				<div class="tabs">
 					<div onclick="selectTab(this)" class="tab active" data-tab-id="main-conf-common">Common</div>
+					<div onclick="selectTab(this)" class="tab" data-tab-id="main-conf-process">Processes</div>
 					<div onclick="selectTab(this)" class="tab" data-tab-id="main-conf-main-menu">Main menu</div>
 					<div onclick="selectTab(this)" class="tab" data-tab-id="main-conf-main-styles">Styles</div>
 					<div onclick="selectTab(this)" class="tab" data-tab-id="main-conf-start-screen">Start screen</div>
 					<div onclick="selectTab(this)" class="tab" data-tab-id="main-conf-properties">Properties</div>
 					<div onclick="selectTab(this)" class="tab" data-tab-id="main-conf-schedulers">Shedulers</div>
 					<div onclick="selectTab(this)" class="tab" data-tab-id="main-conf-python-files">Python files</div>
-					<div onclick="selectTab(this)" class="tab" data-tab-id="main-conf-media-files">Media files
-					</div>
-					<div onclick="selectTab(this)" class="tab" data-tab-id="main-conf-common-handlers">Common handlers
-					</div>
-					<div onclick="selectTab(this)" class="tab" data-tab-id="main-conf-project-settings">
-						Project
-					</div>
+					<div onclick="selectTab(this)" class="tab" data-tab-id="main-conf-media-files">Media files</div>
+					<div onclick="selectTab(this)" class="tab" data-tab-id="main-conf-common-handlers">Common handlers</div>
 				</div>
 				<section id="main-conf-common" class="active">
 					<div class="section-header">Common<i class="fa fa-angle-up" aria-hidden="true"></i></div>
@@ -122,6 +121,12 @@
 								</div>
 							</li>
 						</ul>
+					</div>
+				</section>
+				<section id="main-conf-process">
+					<div class="section-header">Processes<i class="fa fa-angle-up" aria-hidden="true"></i></div>
+					<div class="list-wrap show">
+						<ul class="list" id="processes">No process</ul>
 					</div>
 				</section>
 				<section id="main-conf-main-menu">
@@ -267,7 +272,7 @@
 						<ul class="list" id="common-handlers">No Items</ul>
 					</div>
 				</section>
-				<section id="main-conf-project-settings">
+				<!--<section id="main-conf-project-settings">
 					<div class="section-header">Project settings<i class="fa fa-angle-up" aria-hidden="true"></i></div>
 					<div class="list-wrap show">
 						<ul class="list">
@@ -287,16 +292,8 @@
 							</li>
 						</ul>
 					</div>
-				</section>
+				</section>-->
 			</div>
-			<section id="main-conf-process">
-				<div class="section-header" onclick="showList(this)">Processes
-					<i class="fa fa-angle-up" aria-hidden="true"></i>
-				</div>
-				<div class="list-wrap show">
-					<ul class="list" id="processes">No process</ul>
-				</div>
-			</section>
 			<section id="main-conf-screen">
 				<div class="section-header" onclick="showList(this)">Screens<i class="fa fa-angle-down"
 						aria-hidden="true"></i></div>

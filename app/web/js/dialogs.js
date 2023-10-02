@@ -26,6 +26,10 @@ async function pickNewFileProject() {
 }
 
 const fileLocationSave = async (event) => {
+	modals = ModalWindow.getModals();
+	$.each(modals, (index, modal) => {
+		main.configGraph.setConfigValues(modal.element.id, modal.getValues());
+	})
 	saveConfiguration();
 }; 
 
@@ -47,14 +51,13 @@ async function pickHandlersFile(){
 };
 
 async function pickWorkingDir(){
-	if (! main.conf)
-		return
-
 	const resultAsk = await askDir();
 
 	if (resultAsk && resultAsk.path){
 		$('#working-dir-path').text(resultAsk.path);
-		const projectConfigPath = $('#project-config-path').text() || `${resultAsk.path}\sui_config.json`
+		$('.dir-path').text(resultAsk.path);
+		main.settings.dirPath = resultAsk.path;
+		const projectConfigPath = $('#project-config-path').text() || `${resultAsk.path}\sui_config.json`;
 
 		const configData = {
 			workDir: resultAsk.path,
@@ -91,6 +94,18 @@ const showQRSettings = async (event) => {
 
 const showSqlQueries = async(event) => {
 	modal = new SQLQueryModal(main.settings.deviceHost);
+	modal.render();
+	modal.show();
+}
+
+const showAuth = async(event) => {
+	modal = new AuthModal();
+	modal.render();
+	modal.show();
+}
+
+const showPickFile = async(event) => {
+	modal = new PickFileModal(main.settings.filePath, main.settings.dirPath);
 	modal.render();
 	modal.show();
 }
