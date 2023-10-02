@@ -1,9 +1,11 @@
 var Main = {
 	settings: {
-		deviceHost: "",
+		deviceHost: '',
 		sqlQuerys: [],
 		clipboard: [],
 		modalWidth: [],
+		filePath: '',
+		dirPath: '',
 	},
 	initUIConf(conf, filePath){
 		this.conf = conf;
@@ -15,9 +17,23 @@ var Main = {
 		this.fillConfigSettings();
 		this.renderConfiguration();
 
+		modal = ModalWindow.getModals('.start');
+
+		if (modal) {
+			modal[0].close();
+		}
+
 		this.configGraph.fillConfigListElements();
+		this.settings.filePath = filePath;
+
+		if (!this.settings.dirPath) {
+			this.settings.dirPath = filePath.substring(0, filePath.lastIndexOf("/"));
+		}
 
 		$(".file-path").text(filePath);
+		$("#project-config-path").text(filePath);
+		$('#working-dir-path').text(this.settings.dirPath);
+		$('.dir-path').text(this.settings.dirPath);
     	// $('#preview-button').show();
 		
 		const pyHandlersPath = getConfParamValue('pyHandlersPath')
@@ -134,6 +150,11 @@ class ClientConfiguration {
 			else
 				elementValues[key] = value
 		});
+
+		/*if (elementValues.parentType != undefined) {
+			delete elementValues.parentType;
+		}*/
+
 		this.addElement(elementId, parentId, parentType, elementValues)
 
 		return elementId;
@@ -218,14 +239,11 @@ class ClientConfiguration {
 			let elements = structuredClone(this.elements.filter((el) => el.parentId == id));
 			elements.forEach((element) => {
 				let index;
-				let filledValues = Object.fromEntries(Object.entries(element.elementValues).filter(([k, v]) => v !== ''));
-
 				if (configLevel[element.parentType]) {
-					// index = configLevel[element.parentType].push({ ...element.elementValues }) - 1;
-					index = configLevel[element.parentType].push({ ...filledValues }) - 1;
+					index = configLevel[element.parentType].push({ ...element.elementValues }) - 1;
 				} else {
-					// let filledValues = Object.fromEntries(Object.entries(element.elementValues).filter(([k, v]) => v !== ''))
-					configLevel[element.parentType] = [{ ...filledValues }];
+					let filledValues = Object.fromEntries(Object.entries(element.elementValues).filter(([k, v]) => v !== ''))
+					configLevel[element.parentType] = [structuredClone(filledValues)];
 					index = 0;
 				}
 				if (index != undefined)
@@ -293,6 +311,7 @@ class ClientConfiguration {
 		const types = Object.entries(main.elementParams)
 			.filter((el) => el[1]['type_'].find((el) => el['parent'] && el['parent'] == elementType))
 			.map((el) => el[0])
+			//test
 
 		return types;
 	}
@@ -332,6 +351,7 @@ class ClientConfiguration {
 	fillListElements(type, node, parentId = 1, activeElementId = false, activeList = true) {
 		const elements = this.elements.filter((element) => element.parentType == type && element.parentId == parentId);
 		const listItems = [];
+		const countNode = $(node).parents('.param').find('.count');
 
 		elements.forEach((item) => {
 			let name = item.elementValues[item.parentConfig.rowKeys.filter(key => item.elementValues[key])[0]];
@@ -357,6 +377,12 @@ class ClientConfiguration {
 
 		if (activeList) {
 			listElement.render();
+			
+			if (countNode.length > 0) {
+				countNode.text(listItems.length);
+			}
+
+			$(node).siblings('.element-childs-wrap').html('');
 		} else {
 			$(node).html(listElement.renderElementChild());
 		}
@@ -364,7 +390,7 @@ class ClientConfiguration {
 
 		$(node).attr('data-id', parentId);
 		$(node).html(listElement.html);
-		if (type == 'Processes')
-			listElement.addProcessesButton($(node));
+		/*if (type == 'Processes')
+			listElement.addProcessesButton($(node));*/
 	}
 }

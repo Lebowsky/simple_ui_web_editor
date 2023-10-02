@@ -2,6 +2,10 @@ $(document).ready(function(){
 	sortableInit(selectors.list);
 	main.settings.modalWidth = 820;
 
+	const startModal = new StartModal();
+	startModal.render();
+	startModal.show();
+
 	$('#prev').resizable({
 		minWidth: 250,
 		handles: "e,w",
@@ -80,31 +84,24 @@ $(document).ready(function(){
             console.error('Async: Could not copy text: ', err);
         });
 	})
-    function copyTextToClipboard(text) {
-        if (!navigator.clipboard) {
-            return;
-        }
-        navigator.clipboard.writeText(text).then(function() {
-            console.log('Async: Copying to clipboard was successful!');
-        	notificate('Скопировано в буфер', 'success') 
-        }, function(err) {
-            console.error('Async: Could not copy text: ', err);
-        });
-    }
 	$(document).on('click', selectors.btnDuplicate, function(e){
+		const parentId = $(this).parents('.list').attr('data-id');
 		const elementId = $(this).parents(selectors.listItem).attr('data-id');
-		const element = main.configGraph.getElementById(elementId);
+		const elementConf = main.configGraph.getConfigElement(elementId);
+
+		if (elementConf.type == "Process")
+	    	parentType = "Processes";
+	    else if (elementConf.type == "Operation")
+	    	parentType = "Operations";
+	    else
+	    	parentType = "Elements";
+
+    	const newElementId = main.configGraph.addElementFromDict(elementConf, parentId, parentType);
+		const element = main.configGraph.getElementById(newElementId);
 		const type = element.parentType;
 		const node = element.parentConfig['node'];
-		const parentId = element.parentId;
 
-		const newElement = main.configGraph.duplicateElement(element);
-
-		//modal = new ElementModal(newElement);
 		main.configGraph.fillListElements(type, node, parentId);
-		//modal.render().show();
-
-		console.log(newElement);
 	})
 	$(document).on('click', selectors.btnAdd, function(e){
 		const listId = $(this).parents('.list').attr('id');
@@ -175,6 +172,15 @@ $(document).ready(function(){
 	$(document).on('click', selectors.btnCloseModal, function(){
 		modal = ModalWindow.getCurrentModal();
 		modal.close();
+
+		if (modal.element) {
+			element = main.configGraph.getElementById(modal.element.id);
+			main.configGraph.fillListElements(element.parentType, element.parentConfig['node'], element.parentId, modal.element.id)
+
+			if (element.parentType == "Processes") {
+				main.configGraph.fillListElements("Operations", selectors.operationsList, element.id);
+			}
+		}
 	});
 	$(document).on('click', selectors.listItem, function(e){
 		$(this).parents(selectors.list).find(selectors.listItem).removeClass("active");
@@ -210,9 +216,13 @@ $(document).ready(function(){
 			$("#sql-query").val($(this).text());
 			$("#query-params").val($(this).attr("data-params"));
 		} else if ($(e.target).is("i.fa-times")) {
-			const qIndex = $(this).attr("data-index");
-			main.settings.sqlQuerys.splice(qIndex, 1);
+			let querys = main.settings.sqlQuerys;
+			const queryText = $(this).text();
+			const queryParams = $(this).attr("data-params");
+
+			querys.splice(querys.findIndex((v) => v.query == queryText && v.params == queryParams), 1);
 			$(this).remove();
+
 			if ($('.querys > li').length == 0) {
 				$('.querys').remove();
 			}
@@ -287,8 +297,27 @@ $(document).ready(function(){
     window.onbeforeunload = function (e) {
         return e
     };
+	$(document).on('click', '.toggle-mnu', function(){
+		$(this).toggleClass("on");
+		$('.btn-group.main').toggleClass("active");
+	})
+	$(document).on('click', '.btn-group.main button', function(){
+		$('.toggle-mnu').toggleClass("on");
+		$('.btn-group.main').toggleClass("active");
+	})
 });
 
+function copyTextToClipboard(text) {
+    if (!navigator.clipboard) {
+        return;
+    }
+    navigator.clipboard.writeText(text).then(function() {
+        console.log('Async: Copying to clipboard was successful!');
+    	notificate('Скопировано в буфер', 'success') 
+    }, function(err) {
+        console.error('Async: Could not copy text: ', err);
+    });
+}
 function editElement(elementId) {
 	const element = main.configGraph.getElementById(elementId);
 
@@ -317,9 +346,10 @@ function selectModalTab(tabNode) {
 	$(tabNode).addClass("active");
 
 	tabID = $(tabNode).attr("data-tab");
+	modal = ModalWindow.getCurrentModal().modal;
 
-	$(tabNode).parents(".params").find(".param").removeClass("active");
-	const $currentTab = $(tabNode).parents(".params").find(".param[data-tab=" + tabID + "]")
+	modal.find(".params").find(".param").removeClass("active");
+	const $currentTab = modal.find(".params").find(".param[data-tab=" + tabID + "]")
 	$currentTab.addClass("active");
 	
 	if (['elements', 'handlers'].includes(tabID)){
@@ -383,9 +413,6 @@ async function sendSQLQuery(node){
 		return
 	}
 
-	if (!main.settings.sqlQuerys.find((el) => el.query == query && el.params == params))
-		main.settings.sqlQuerys.push({query:query, params:params});
-
 	const query_params = {
 		device_host: main.settings.deviceHost || '',
 		db_name: $('#db-name').val(),
@@ -398,14 +425,37 @@ async function sendSQLQuery(node){
 	const result = await sendSqlQueryToDevice(query_params);
 	
 	$(node).html(nodeText)
-	$(".querys-wrap").html(SQLQueryModal.renderSqlQueryHistory(main.settings.sqlQuerys));
 
 	if (result){
 		if (result.error){
 			notificate(result.content);
 		} else {
+			if (!main.settings.sqlQuerys.find((el) => el.query == query && el.params == params))
+				main.settings.sqlQuerys.push({query:query, params:params});
+
+			$(".querys-wrap").html(SQLQueryModal.renderSqlQueryHistory(main.settings.sqlQuerys));
+
 			modal = ModalWindow.getCurrentModal();
 			modal.renderSqlQueryResult(result.data);
+		}
+	}
+}
+async function auth(node){
+	let login = $('#login').val();
+	let pass = $('#password').val();
+
+	const data = {
+		login: login,
+		pass: pass,
+	};
+
+	const result = await authFunc(data);
+
+	if (result){
+		if (result.error){
+			notificate(result.content);
+		} else {
+			/**/
 		}
 	}
 }
