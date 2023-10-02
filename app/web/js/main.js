@@ -218,10 +218,13 @@ class ClientConfiguration {
 			let elements = structuredClone(this.elements.filter((el) => el.parentId == id));
 			elements.forEach((element) => {
 				let index;
+				let filledValues = Object.fromEntries(Object.entries(element.elementValues).filter(([k, v]) => v !== ''));
+
 				if (configLevel[element.parentType]) {
-					index = configLevel[element.parentType].push({ ...element.elementValues }) - 1;
+					// index = configLevel[element.parentType].push({ ...element.elementValues }) - 1;
+					index = configLevel[element.parentType].push({ ...filledValues }) - 1;
 				} else {
-					let filledValues = Object.fromEntries(Object.entries(element.elementValues).filter(([k, v]) => v !== ''))
+					// let filledValues = Object.fromEntries(Object.entries(element.elementValues).filter(([k, v]) => v !== ''))
 					configLevel[element.parentType] = [{ ...filledValues }];
 					index = 0;
 				}

@@ -89,3 +89,6 @@ class MenuItem(BaseElement):
 
 class Fab(BaseElement):
     type: Literal['fab']
+
+    class Config:
+        title = 'fab'
