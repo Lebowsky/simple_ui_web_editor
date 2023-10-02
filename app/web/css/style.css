@@ -210,8 +210,15 @@ section[id|=main-conf] {
     min-height: 470px;
     border-radius: 4px;
 }
+.hide section[id|=main-conf] {
+    min-height: 30px;
+}
 section#main-conf-screen {
     min-height: 30px;
+    display: none;
+}
+section#main-conf-screen.active {
+    display: block;
 }
 .input-wrap {
     width: 100%;
