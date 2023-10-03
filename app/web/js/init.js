@@ -309,7 +309,7 @@ $(document).ready(function(){
 			toggleMainMenu();
 		}
 	})
-	$(document).on('click', '.btn-group.main').click(function(e) {
+	$(document).on('click', '.btn-group.main', function(e) {
 	    e.stopPropagation();
 	});
 });
@@ -350,6 +350,12 @@ function selectTab(tabNode) {
 
 	$(".main-conf-wrap section").removeClass("active");
 	$(".main-conf-wrap #" + tabID).addClass("active");
+	console.log($(this).data());
+	if ($(tabNode).data('tab-id') == 'main-conf-process') {
+		$("#main-conf-screen").addClass('active');
+	} else {
+		$("#main-conf-screen").removeClass('active');
+	}
 }
 function selectModalTab(tabNode) {
 	// $(".tabs .tab").removeClass("active");
