@@ -56,9 +56,9 @@ run_uvicorn()
 async def get_config(request: Request):
     from ..ui import get_current_file_path, set_device_host, get_configuration
 
-    file_path = await get_current_file_path()
-    config = get_config_from_file(file_path)
-    # config = await get_configuration()
+    # file_path = await get_current_file_path()
+    # config = get_config_from_file(file_path)
+    config = await get_configuration()
     await set_device_host(request.client.host)
     return config
 

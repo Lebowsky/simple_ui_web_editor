@@ -12,9 +12,9 @@ function setDeviceHost(deviceHost){
 
 eel.expose(getConfiguration);
 function getConfiguration(){
-	return buildConfiguration();
+	config = main.configGraph.getConfig();
+	return config
 }
-
 const getQRByteArrayAsBase64 = async () => {
     result = await eel.get_qr_settings()();
     return result
