@@ -116,6 +116,8 @@ async def get_current_file_path():
 async def set_device_host(device_host):
     return eel.setDeviceHost(device_host)
 
+async def get_configuration():
+    return eel.getConfiguration()
 
 def start(open_mode):
     try:

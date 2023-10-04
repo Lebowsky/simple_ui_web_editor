@@ -10,6 +10,11 @@ function setDeviceHost(deviceHost){
 	updateDeviceHost();
 }
 
+eel.expose(getConfiguration);
+function getConfiguration(){
+	return buildConfiguration();
+}
+
 const getQRByteArrayAsBase64 = async () => {
     result = await eel.get_qr_settings()();
     return result

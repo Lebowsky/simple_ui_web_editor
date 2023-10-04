@@ -45,6 +45,9 @@ async function saveConfiguration(){
         //main.configGraph = new ClientConfiguration(main.conf.ClientConfiguration);
     }
 }
+async function buildConfiguration(){
+    return main.configGraph.getConfig()
+}
 async function saveConfFiles(conf, filePath, workingDir, pyHandlers){
     let result_save = await saveConf(conf, filePath, workingDir)
     let result_check = checkSaveFileResult(result_save)
