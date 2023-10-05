@@ -20,7 +20,7 @@ eel.init(config.FRONTEND_ASSET_FOLDER)
 @eel.expose
 def save_configuration(data: dict, file_path: str, work_dir: str) -> dict:
     try:
-        if work_dir != '<Not selected>' and os.path.exists(work_dir):
+        if work_dir and os.path.exists(work_dir):
             file_path = os.path.join(work_dir, os.path.split(file_path)[1])
         utils.save_config_to_file(data, file_path)
         return {'result': 'success'}
@@ -82,7 +82,7 @@ def save_handlers_files(handlers: dict, work_dir: str) -> dict:
     result = {'result': 'success'}
     if handlers:
         for file_name, value in handlers.items():
-            if work_dir != '<Not selected>' and os.path.exists(work_dir):
+            if work_dir and os.path.exists(work_dir):
                 file_path = os.path.join(work_dir, f'{file_name}.py')
             else:
                 file_path = config.resource_path(f'{file_name}.py')

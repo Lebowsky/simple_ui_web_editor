@@ -38,7 +38,9 @@ async function saveConfiguration(){
 
     main.conf = main.configGraph.getConfig();
     const filePath = $('.file-path').text();
-    const workingDir = $('#working-dir-path').text();
+    const workingDirValue = $('#working-dir-path').text();
+
+    const workingDir = workingDirValue == '<Not selected>' ? '' : workingDirValue
 
 	let handlers = await fillBase64Handlers();
 	if (saveConfFiles(main.conf, filePath, workingDir, handlers)){
