@@ -51,7 +51,7 @@ def ask_dir():
 
 @eel.expose
 def get_project_config(config_data):
-    return utils.get_project_config(config_data)
+    pass
 
 
 @eel.expose
@@ -117,7 +117,10 @@ async def set_device_host(device_host):
     return eel.setDeviceHost(device_host)
 
 async def get_configuration():
-    return eel.getConfiguration()()
+    configuration = eel.getConfiguration()()
+    if configuration:
+        utils.save_base64_data(configuration)
+    return configuration
 
 def start(open_mode):
     try:

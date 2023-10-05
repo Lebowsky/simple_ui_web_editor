@@ -125,6 +125,15 @@ def check_file_paths(data: dict, path: str):
         data['ClientConfiguration']['pyHandlersPath'] = file_path
 
 
+def save_base64_data(ui_configuration):
+    py_files = ui_configuration['ClientConfiguration'].get('PyFiles', [])
+    for item in py_files:
+        if item.get('file_path'):
+            item['PyFileData'] = make_base64_from_file(item['file_path'])
+
+    file_path = ui_configuration['ClientConfiguration'].get('pyHandlersPath')
+    if file_path:
+        ui_configuration['ClientConfiguration']['PyHandlers'] = make_base64_from_file(file_path)
 
 def convert_config_version(file_path):
     with open(file_path, encoding='utf-8') as json_file:
