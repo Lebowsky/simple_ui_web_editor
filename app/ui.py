@@ -119,8 +119,9 @@ async def set_device_host(device_host):
 async def get_configuration():
     configuration = eel.getConfiguration()()
     if configuration:
-        utils.save_base64_data(configuration)
-    return configuration
+        valid_config = utils.validate_configuration_model(configuration)
+        utils.save_base64_data(valid_config)
+        return valid_config
 
 def start(open_mode):
     try:

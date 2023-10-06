@@ -14,7 +14,7 @@ class UIOpenMode:
 # Argument-influenced configuration
 ui_open_mode = UIOpenMode.CHROME
 app_server_host = '0.0.0.0'
-app_server_port = 6000
+app_server_port = 5000
 
 def resource_path(relative_path):
     """ Get absolute path to resource, works for dev and for PyInstaller """

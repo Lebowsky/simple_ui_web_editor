@@ -126,23 +126,24 @@ def check_file_paths(data: dict, path: str):
 
 
 def save_base64_data(ui_configuration):
+    py_files = ui_configuration['ClientConfiguration'].get('PyFiles', [])
+    for item in py_files:
+        if item.get('file_path'):
+            item['PyFileData'] = make_base64_from_file(item['file_path'])
+
+    file_path = ui_configuration['ClientConfiguration'].get('pyHandlersPath')
+    if file_path:
+        ui_configuration['ClientConfiguration']['PyHandlers'] = make_base64_from_file(file_path)
+
+
+
+def validate_configuration_model(ui_configuration: dict) -> dict:
     try:
-        RootConfigModel(**ui_configuration)
-
-        py_files = ui_configuration['ClientConfiguration'].get('PyFiles', [])
-        for item in py_files:
-            if item.get('file_path'):
-                item['PyFileData'] = make_base64_from_file(item['file_path'])
-
-        file_path = ui_configuration['ClientConfiguration'].get('pyHandlersPath')
-        if file_path:
-            ui_configuration['ClientConfiguration']['PyHandlers'] = make_base64_from_file(file_path)
-
+        return RootConfigModel(**ui_configuration).dict(by_alias=True, exclude_none=True)
     except ValidationError as e:
         raise e
     except Exception as e:
         raise e
-
 
 def convert_config_version(file_path):
     with open(file_path, encoding='utf-8') as json_file:
