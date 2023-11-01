@@ -11,6 +11,7 @@ class ListElement {
                 ${`<button class="btn-paste" data-childrens-type="${this.elementType}">Paste</button>`}
             </div>
         `
+
         this.html += `${this.renderRows()}`
         return this;
     }
@@ -54,14 +55,17 @@ class ListElement {
         return html;
     }
     addProcessesButton($node){
-        $node.find('.btn-group').append($('<button class="btn-add-from-file">Add from file</button>'))
-        return this
+        //$node.find('.btn-group').append($('<button class="btn-add-from-file">Add from file</button>'))
+        $node.find('.btn-group').append($('<button class="btn-add cv">Add CVOperation</button>'));
+        $node.find('.btn-group .btn-add').addClass('process');
+        return this;
     }
 }
 class ModalWindow {
     constructor(){
         this.html = '';
         this.modal = $('');
+        this.modalWidth = 820;
     }
     addClass(className) {
         this.modal.addClass(className);
@@ -77,11 +81,18 @@ class ModalWindow {
         this.modal.appendTo('#modals-wrap').addClass("active")
         $('.content').addClass("blur");
         $("body").addClass("no-scroll");
-        this.modal.css('width', main.settings.modalWidth)
+        const modalType = this.modal.data("modal-type");
+        const modalWidth = localStorage.getItem("modal-"+modalType+"-width") ? localStorage.getItem("modal-"+modalType+"-width") : this.modalWidth;
+        this.modal.css('width', modalWidth);
         this.modal.resizable({
-            minWidth: 450,
+            minWidth: 700,
             handles: "e",
             stop: function(event, ui) {
+                if (modalType != undefined) {
+                    const lsItem = "modal-"+modalType+"-width";
+                    localStorage.setItem(lsItem, ui.size.width);
+                }
+
                 main.settings.modalWidth = ui.size.width;
             }
         });
@@ -123,6 +134,9 @@ class ModalWindow {
             modalWindow.modal = modalDiv;
         } else if (modalDiv.hasClass('start')){
             modalWindow = new StartModal();
+            modalWindow.modal = modalDiv;
+        } else if (modalDiv.hasClass('send-req')){
+            modalWindow = new SendReqModal();
             modalWindow.modal = modalDiv;
         } else {
             const element = main.configGraph.getElementById(elementId);
@@ -183,7 +197,7 @@ class ElementModal extends ModalWindow{
     }
     render(){
         this.html = `
-            <div class='modal'>
+            <div class='modal' data-modal-type='element'>
                 <div class='close-modal'>
                     <i class='fa fa-times' aria-hidden='true'></i>
                 </div>
@@ -445,7 +459,7 @@ class SelectTypeModal extends ModalWindow {
     }
     render() {
         this.html = `
-            <div class='modal type-select-modal'>
+            <div class='modal type-select-modal' data-modal-type='element'>
                 <div class='close-modal'>
                     <i class='fa fa-times' aria-hidden='true'></i>
                 </div>
@@ -481,7 +495,7 @@ class ImageModal extends ModalWindow{
     }
     render(){
         this.html = `
-            <div class='modal qr'>
+            <div class='modal qr' data-modal-type='qr'>
                 <div class='close-modal'>
                     <i class='fa fa-times' aria-hidden='true'></i>
                 </div>
@@ -508,7 +522,7 @@ class SQLQueryModal extends ModalWindow{
     }
     render(){
         this.html = `
-            <div class='modal sql-query'>
+            <div class='modal sql-query' data-modal-type='sql-query'>
                 <div class='close-modal'>
                     <i class='fa fa-times' aria-hidden='true'></i>
                 </div>
@@ -602,7 +616,7 @@ class AuthModal extends ModalWindow{
     }
     render(){
         this.html = `
-            <div class='modal auth'>
+            <div class='modal auth' data-modal-type='auth'>
                 <div class='close-modal'>
                     <i class='fa fa-times' aria-hidden='true'></i>
                 </div>
@@ -646,7 +660,7 @@ class PickFileModal extends ModalWindow{
     }
     render(){
         this.html = `
-            <div class='modal pick-file'>
+            <div class='modal pick-file' data-modal-type='start'>
                 <div class='close-modal'>
                     <i class='fa fa-times' aria-hidden='true'></i>
                 </div>
@@ -681,6 +695,82 @@ class PickFileModal extends ModalWindow{
         return html;    
     }
 }
+class SendReqModal extends ModalWindow{
+    constructor(ipAddress) {
+        super();
+        this.modal = $('');
+        this.html = '';
+        this.ipAddress = ipAddress;
+    }
+    render(){
+        this.html = `
+            <div class='modal send-req' data-modal-type='send-req'>
+                <div class='close-modal'>
+                    <i class='fa fa-times' aria-hidden='true'></i>
+                </div>
+                <div class='modal-head'>
+                    <h2 class='modal-title'>Send Request<span class='edited'>*</span></h2>
+                </div>
+                <div class='modal-content'> </div>
+            </div>
+            `
+        this.modal = $(this.html)
+        this.modal.find(selectors.modalContent).html(this.renderContent())
+
+        const data = {"parentType":"Operations","type":"Operation","Name":"SeriesSelectScreen","Timer":false,"hideToolBarScreen":false,"hideBottomBarScreen":true,"noScroll":false,"handleKeyUp":false,"noConfirmation":true,"Elements":[{"type":"LinearLayout","Variable":"","orientation":"vertical","height":"wrap_content","width":"match_parent","weight":"0","Elements":[{"Value":"@doc_data","Variable":"","height":"wrap_content","width":"match_parent","weight":"0","TextBold":false,"TextItalic":false,"TextSize":"16","type":"TextView"},{"type":"LinearLayout","Variable":"","orientation":"vertical","height":"wrap_content","width":"match_parent","weight":"0","Elements":[{"type":"LinearLayout","Variable":"","orientation":"horizontal","height":"match_parent","width":"match_parent","weight":"0","Elements":[{"type":"LinearLayout","Variable":"","orientation":"horizontal","height":"wrap_content","width":"match_parent","weight":"1","Elements":[{"Value":"Артикул:","Variable":"","height":"wrap_content","width":"wrap_content","weight":"0","TextBold":true,"TextColor":"#000000","type":"TextView"},{"Value":"@good_art","Variable":"","height":"wrap_content","width":"wrap_content","weight":"0","TextBold":false,"TextItalic":false,"TextColor":"#000000","type":"TextView"}]}]},{"type":"LinearLayout","Variable":"","orientation":"horizontal","height":"wrap_content","width":"wrap_content","weight":"0","Elements":[{"Value":"Характеристика:","Variable":"","height":"wrap_content","width":"wrap_content","weight":"0","TextBold":true,"TextColor":"#000000","type":"TextView"},{"Value":"@properties_name","Variable":"","height":"wrap_content","width":"wrap_content","weight":"0","TextBold":false,"TextItalic":false,"TextColor":"#000000","type":"TextView"}]},{"type":"LinearLayout","Variable":"","orientation":"horizontal","height":"wrap_content","width":"wrap_content","weight":"0","Elements":[{"Value":"Цена:","Variable":"","height":"wrap_content","width":"wrap_content","weight":"0","TextBold":true,"TextColor":"#cc0000","type":"TextView"},{"Value":"@price","Variable":"","height":"wrap_content","width":"wrap_content","weight":"0","TextBold":false,"TextItalic":false,"TextColor":"#cc0000","type":"TextView"}]},{"type":"LinearLayout","Variable":"","orientation":"horizontal","height":"wrap_content","width":"wrap_content","weight":"0","Elements":[{"Value":"Упаковка:","Variable":"","height":"wrap_content","width":"wrap_content","weight":"0","TextBold":true,"TextColor":"#000000","type":"TextView"},{"Value":"@good_unit","Variable":"","height":"wrap_content","width":"wrap_content","weight":"0","TextBold":false,"TextItalic":false,"TextColor":"#000000","type":"TextView"}]}]},{"Value":"@good_name","Variable":"","height":"wrap_content","width":"match_parent","weight":"0","TextBold":true,"TextItalic":false,"TextSize":"24","TextColor":"#7A005C","type":"TextView"},{"type":"LinearLayout","Variable":"","orientation":"horizontal","height":"wrap_content","width":"match_parent","weight":"0","Elements":[{"type":"LinearLayout","Variable":"","orientation":"vertical","height":"wrap_content","width":"match_parent","weight":"1","Elements":[{"Value":"План","Variable":"","height":"wrap_content","width":"match_parent","weight":"0","type":"TextView"},{"Value":"@qtty_plan","Variable":"qtty_plan","height":"wrap_content","width":"match_parent","weight":"0","TextBold":false,"TextItalic":false,"TextSize":"24","type":"TextView"}]},{"type":"LinearLayout","Variable":"","orientation":"vertical","height":"wrap_content","width":"match_parent","weight":"1","Elements":[{"Value":"Факт","Variable":"","height":"wrap_content","width":"match_parent","weight":"0","TextBold":false,"TextItalic":false,"type":"TextView"},{"Value":"@qtty","Variable":"qtty","height":"wrap_content","width":"match_parent","weight":"0","TextBold":false,"TextItalic":false,"TextSize":"24","type":"TextView"}]}]},{"Value":"@series_cards","Variable":"series_cards","height":"wrap_content","width":"match_parent","weight":"0","TextBold":false,"TextItalic":false,"type":"CardsLayout"}]},{"type":"barcode","Value":"","Variable":"barcode"}],"Handlers":[{"event":"onStart","listener":"","action":"run","type":"python","method":"series_list_on_start","postExecute":""},{"event":"onInput","listener":"","action":"run","type":"python","method":"series_list_on_input","postExecute":""}]};
+        
+        main.settings.reqBodyEditor = this.renderEditor(this.modal.find("#req-body")[0], data);
+
+        return this;
+    }
+    renderContent(){
+        const html = `
+        <div>
+            <div id="send-req-content">
+                <div id="req-params-wrap">
+                    <div class="param active">
+                        <label for="ip-address">IP Address</label>
+                        <input type="text" name="ip-address" value="${this.ipAddress}" id="ip-address">
+                    </div>
+                    <div class="param active">
+                        <label for="req-mode">Mode</label>
+                        <select name="req-mode" id="req-mode">
+                            <option value="SyncCommand" selcted>Sync Command</option>
+                            <option value="BackgroundCommand">Background Command</option>
+                        </select>
+                    </div>
+                    <div class="param active">
+                        <label for="req-params">Param Value</label>
+                        <input type="text" name="req-params" value="" id="req-params">
+                    </div>
+                </div>
+                <div class="param active">
+                    <label onclick="showList(this)" for="req-body">Body <i class="fa fa-angle-up" aria-hidden="true"></i></label>
+                    <div id="req-body" class="list-wrap"></div>
+                    <div class="btn-wrap">
+                        <button onclick="sendRequest(this)">send</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="req-result-wrap"></div>
+        `
+        return html;
+    }
+    renderRequestResult(data){
+        this.modal.find("#req-result-wrap").html("");
+        this.renderEditor(this.modal.find("#req-result-wrap")[0], data);
+    }
+    renderEditor(node, data = ''){
+        const editor = new JSONEditor(node, {
+            mode: 'code'
+        });
+
+        editor.set(data);
+
+        return editor;
+    }
+}
 class StartModal extends ModalWindow{
     constructor() {
         super();
@@ -689,7 +779,7 @@ class StartModal extends ModalWindow{
     }
     render(){
         this.html = `
-            <div class='modal start'>
+            <div class='modal start' data-modal-type='start'>
                 <div class='modal-head'>
                     <h2 class='modal-title'>Start</h2>
                 </div>

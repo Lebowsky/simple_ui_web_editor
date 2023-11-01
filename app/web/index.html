@@ -6,6 +6,7 @@
 	<title>Simple UI (1.0.0.8)</title>
 	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.min.css">
 	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.2.9/css/responsive.dataTables.min.css">
+	<link href="https://cdn.jsdelivr.net/npm/jsoneditor@9.10.3/dist/jsoneditor.min.css" rel="stylesheet">
 	<link rel="stylesheet" href="css/style.css">
 	<link rel="stylesheet" type="text/css" href="css/jquery.toast.min.css" />
 	<link rel="stylesheet" type="text/css" href="css/jquery-ui.structure.min.css" />
@@ -35,6 +36,8 @@
 		var main = Object.create(Main);
 		setConfigUIElements();
 	</script>
+	
+	<script src="https://cdn.jsdelivr.net/npm/jsoneditor@9.10.3/dist/jsoneditor.min.js"></script>
 </head>
 
 <body>
@@ -46,6 +49,7 @@
 		<button id="qr-settings" onclick="showQRSettings()">QR Settings</button>
 		<button id="preview-button" onclick="togglePrev()">Preview</button>
 		<button id="open-modal-sql-queries" onclick="showSqlQueries()">SQL Query</button>
+		<button id="open-modal-send-req" onclick="showSendRequest()">Send Request</button>
 		<button id="open-modal-auth" onclick="showAuth()">Login</button>
 	</div>
 	<div class="content-wrapper">
@@ -300,6 +304,13 @@
 						aria-hidden="true"></i></div>
 				<div class="list-wrap">
 					<ul class="list" id="operations">Select process</ul>
+				</div>
+			</section>
+			<section id="main-conf-cvframes">
+				<div class="section-header" onclick="showList(this)">CVFrames<i class="fa fa-angle-down"
+						aria-hidden="true"></i></div>
+				<div class="list-wrap">
+					<ul class="list" id="cvframes">Select CVOperation</ul>
 				</div>
 			</section>
 		</div>

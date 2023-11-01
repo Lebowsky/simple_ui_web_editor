@@ -36,8 +36,15 @@ async function saveConfiguration(){
     if (typeof main.conf == 'undefined')
         return;
 
+    let filePath = localStorage.getItem('file-path');
+
+    if (!filePath) {
+        filePath = await pickNewFileProject(main);
+        if (!filePath)
+            return;
+    }
+
     main.conf = main.configGraph.getConfig();
-    const filePath = $('.file-path').text();
     const workingDirValue = $('#working-dir-path').text();
 
     const workingDir = workingDirValue == '<Not selected>' ? '' : workingDirValue

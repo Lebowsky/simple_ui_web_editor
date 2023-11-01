@@ -1,6 +1,7 @@
 const selectors = {
         processList: "#processes",
         operationsList: "#operations",
+        CVFramesList: "#cvframes",
         commonHandlers: '#common-handlers',
         handlersList: "#handlers",
         pyFilesList: "#py-files",
@@ -27,9 +28,28 @@ const selectors = {
 var keys = {
 	"27" : 'closeModal', // Esc
 	"ctrl+13" : 'saveElementModal', // Ctrl+Enter
+        "ctrl+83" : 'fileLocationSave', // Ctrl+S
 }
 
 const newElements = {
+        CVOperations: {
+                type: "CVOperation",
+                CVOperationName: "New CVOperation",
+                hidden: false,
+                CVFrames: []
+        },
+        CVFrames: {
+                type: "CVFrame",
+                Name: "New CVFrame",
+                CVAction: "",
+                CVActionButtons: "",
+                CVCameraDevice: "",
+                CVDetector: "",
+                CVInfo: "",
+                CVMode: "",
+                CVOnline: false,
+                CVResolution: "",
+        },
         Processes: {
                 type: "Process",
                 ProcessName: "New Process",
@@ -138,6 +158,13 @@ const constants = {
 }
 
 const listElements = {
+        CVOperations: {
+                node: selectors.processList,
+                type: 'CVOperation',
+                parentType: 'Processes',
+                path: '',
+                rowKeys: ['CVOperationName']
+        },
         Processes: {
                 node: selectors.processList,
                 type: 'Process',
@@ -195,7 +222,7 @@ const listElements = {
                 rowKeys: ['PyTimerTaskDef']
         },
         CVFrames: {
-                node: selectors.operationsList,
+                node: selectors.CVFramesList,
                 type: 'CVFrame',
                 parentType: 'CVFrames',
                 path: '',
