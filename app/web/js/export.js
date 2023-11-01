@@ -67,9 +67,5 @@ async function sendSqlQueryToDevice(query_params){
 }
 
 async function sendRequestToDevice(req_params){
-	//return await eel.send_request(req_params)()
-	const result = {
-		data: JSON.stringify(req_params)
-	}
-	return result;
+	return await eel.send_request(req_params)()
 }

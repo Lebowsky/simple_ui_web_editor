@@ -55,7 +55,6 @@ class ListElement {
         return html;
     }
     addProcessesButton($node){
-        //$node.find('.btn-group').append($('<button class="btn-add-from-file">Add from file</button>'))
         $node.find('.btn-group').append($('<button class="btn-add cv">Add CVOperation</button>'));
         $node.find('.btn-group .btn-add').addClass('process');
         return this;
