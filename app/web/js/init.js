@@ -2,10 +2,6 @@ $(document).ready(function(){
 	sortableInit(selectors.list);
 	main.settings.modalWidth = 820;
 
-	/*const startModal = new StartModal();
-	startModal.render();
-	startModal.show();*/
-
 	filePath = localStorage.getItem('file-path');
 
 	if (!filePath) {
