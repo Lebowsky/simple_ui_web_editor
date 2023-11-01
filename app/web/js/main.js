@@ -6,8 +6,9 @@ var Main = {
 		modalWidth: [],
 		filePath: '',
 		dirPath: '',
+		reqBodyEditor: {},
 	},
-	initUIConf(conf, filePath){
+	initUIConf(conf, filePath = 'New project'){
 		this.conf = conf;
 		this.configGraph = new ClientConfiguration(conf.ClientConfiguration);
 
@@ -130,6 +131,9 @@ var Main = {
 				elementId = modal.element.id;
 				element = main.configGraph.getElementById(elementId);
 				main.configGraph.fillListElements(element.parentType, element.parentConfig['node'], element.parentId)
+			},
+			fileLocationSave: () => {
+				fileLocationSave();
 			}
 		}[event];
 	}
@@ -184,7 +188,7 @@ class ClientConfiguration {
 		const newElement = {
 			id: Number(id),
 			parentId: Number(parentId),
-			parentType: parentType,
+			parentType: parentType == 'CVOperations' ? 'Processes' : parentType,
 			title: title,
 			parentConfig: parentConfig,
 			elementConfig: elementConfig,
@@ -350,10 +354,14 @@ class ClientConfiguration {
 			}
 		})
 	}
-	fillListElements(type, node, parentId = 1, activeElementId = false, activeList = true) {
-		const elements = this.elements.filter((element) => element.parentType == type && element.parentId == parentId);
+	fillListElements(type, node, parentId = 1, activeElementId = false, activeList = true) {		
+		let elements = this.elements.filter((element) => element.parentType == type && element.parentId == parentId);
 		const listItems = [];
 		const countNode = $(node).parents('.param').find('.count');
+
+		if (type == "Processes" || type == "CVOperations") {
+			elements = this.elements.filter((element) => (element.parentType == 'Processes' || element.parentType == 'CVOperations') && element.parentId == parentId);
+		}
 
 		elements.forEach((item) => {
 			let name = item.elementValues[item.parentConfig.rowKeys.filter(key => item.elementValues[key])[0]];
@@ -366,6 +374,9 @@ class ClientConfiguration {
 
             if (activeElementId == item.id)
             	itemClasses = "active";
+
+            if (item.elementValues.type == "CVOperation")
+            	itemClasses = "cv";
 
 			listItems.push({
 				name: name,
@@ -392,7 +403,7 @@ class ClientConfiguration {
 
 		$(node).attr('data-id', parentId);
 		$(node).html(listElement.html);
-		/*if (type == 'Processes')
-			listElement.addProcessesButton($(node));*/
+		if (type == 'Processes')
+			listElement.addProcessesButton($(node));
 	}
 }
