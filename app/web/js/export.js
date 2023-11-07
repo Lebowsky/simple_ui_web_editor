@@ -6,7 +6,7 @@ function getCurrentFilePath(){
 
 eel.expose(setDeviceHost);
 function setDeviceHost(deviceHost){
-	main.deviceHost = deviceHost;
+	main.settings.deviceHost = deviceHost;
 	updateDeviceHost();
 }
 

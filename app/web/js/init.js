@@ -502,7 +502,14 @@ async function sendSQLQuery(node){
 async function sendRequest(node){
 	let mode = $('#req-mode').val();
 	let params = $('#req-params').val();
-	let body = JSON.stringify(main.settings.reqBodyEditor.get());
+	let body = ''
+	try {
+		body = JSON.stringify(main.settings.reqBodyEditor.get())
+	}
+	catch {
+		console.debug(main.settings.reqBodyEditor)
+	}
+	
 	let nodeText = $(node).text();
 
 	if (!main.settings.deviceHost){
@@ -518,7 +525,10 @@ async function sendRequest(node){
 	}
 
 	const req_params = {
-		URI: URI,
+		// URI: URI,
+		host: main.settings.deviceHost,
+		mode: mode,
+		method: params,
 		body: body
 	};
 	
