@@ -543,7 +543,8 @@ async function sendRequest(node){
 			notificate(result.content);
 		} else {
 			modal = ModalWindow.getCurrentModal();
-			modal.renderRequestResult(JSON.parse(result.data));
+			// modal.renderRequestResult(JSON.parse(result.data));
+			modal.renderRequestResult(result.data);
 		}
 	}
 }
