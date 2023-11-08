@@ -2,9 +2,23 @@ $(document).ready(function(){
 	sortableInit(selectors.list);
 	main.settings.modalWidth = 820;
 
-	const startModal = new StartModal();
-	startModal.render();
-	startModal.show();
+	filePath = localStorage.getItem('file-path');
+
+	if (!filePath) {
+		newFile();
+	} else {
+		readFile(filePath);
+	}
+
+	async function newFile () {
+		conf = await getNewConfiguration()
+		initReadedConf(conf)
+	}
+
+	async function readFile (filePath) {
+		conf = await loadConfiguration(filePath);
+		initReadedConf(conf, filePath);
+	}
 
 	$('#prev').resizable({
 		minWidth: 250,
@@ -66,6 +80,8 @@ $(document).ready(function(){
 		    	parentType = "Processes";
 		    else if (elementConf.type == "Operation")
 		    	parentType = "Operations";
+		    else if (elementConf.type == "CVFrame")
+		    	parentType = "CVFrames";
 		    else
 		    	parentType = "Elements";
 
@@ -93,6 +109,8 @@ $(document).ready(function(){
 	    	parentType = "Processes";
 	    else if (elementConf.type == "Operation")
 	    	parentType = "Operations";
+	    else if (elementConf.type == "CVFrame")
+	    	parentType = "CVFrames";
 	    else
 	    	parentType = "Elements";
 
@@ -106,8 +124,16 @@ $(document).ready(function(){
 	$(document).on('click', selectors.btnAdd, function(e){
 		const listId = $(this).parents('.list').attr('id');
 		const parentId = $(this).parents('.list').attr('data-id');
-		const listConfig = Object.values(listElements).find(
-			(el) => el.node=="#" + listId || el.node=='.modal.active #' + listId);
+
+		if ($(this).hasClass('cv')) {
+			listConfig = listElements['CVOperations'];
+			listConfig['parentType'] = 'CVOperations';
+		} else if ($(this).hasClass('process')) {
+			listConfig = listElements['Processes'];
+		} else {
+			listConfig = Object.values(listElements).find(
+				(el) => el.node=="#" + listId || el.node=='.modal.active #' + listId);
+		}
 
 		if (!listConfig){
 			return
@@ -204,8 +230,22 @@ $(document).ready(function(){
 	$(document).on('click', '#processes .list-item', function(e){
 		if ($(e.target).is(this) || $(e.target).is($(this).children("span"))) {
 			const elementId = $(this).attr('data-id');
-			main.configGraph.fillListElements("Operations", selectors.operationsList, elementId);
-			showList($("#main-conf-screen .section-header"), "down");
+
+			if ($(this).hasClass('cv')) {
+				main.configGraph.fillListElements("CVFrames", selectors.CVFramesList, elementId);
+				$("#main-conf-cvframes").addClass('active');
+				if ($("#main-conf-screen").hasClass('active')) {
+					$("#main-conf-screen").removeClass('active');
+				}
+				showList($("#main-conf-cvframes .section-header"), "down");
+			} else {
+				main.configGraph.fillListElements("Operations", selectors.operationsList, elementId);
+				$("#main-conf-screen").addClass('active');
+				if ($("#main-conf-cvframes").hasClass('active')) {
+					$("#main-conf-cvframes").removeClass('active');
+				}
+				showList($("#main-conf-screen .section-header"), "down");
+			}
 		}
 	})
 	$(document).on('click', '.main-conf-wrap .section-header', function(e){
@@ -252,7 +292,7 @@ $(document).ready(function(){
 			main.configGraph.setConfigValues(1, {[paramName]: value});
 		}
 	})
-	$(window).keyup(function(e) {
+	$(window).keydown(function(e) {
 		key = e.keyCode;
 
 		if (e.ctrlKey)
@@ -265,7 +305,9 @@ $(document).ready(function(){
 		// console.log(e.keyCode);
 
 		if (keys[key]) {
+			e.preventDefault();
 			main.events(keys[key])();
+			return false;
 		};
 	});
 	$(document).on('change', '#vendor-login, #vendor-password', function(){
@@ -351,11 +393,11 @@ function selectTab(tabNode) {
 	$(".main-conf-wrap section").removeClass("active");
 	$(".main-conf-wrap #" + tabID).addClass("active");
 	console.log($(this).data());
-	if ($(tabNode).data('tab-id') == 'main-conf-process') {
-		$("#main-conf-screen").addClass('active');
-	} else {
+	//if ($(tabNode).data('tab-id') != 'main-conf-process') {
 		$("#main-conf-screen").removeClass('active');
-	}
+		$("#main-conf-cvframes").removeClass('active');
+	/*} else {
+	}*/
 }
 function selectModalTab(tabNode) {
 	// $(".tabs .tab").removeClass("active");
@@ -454,6 +496,55 @@ async function sendSQLQuery(node){
 
 			modal = ModalWindow.getCurrentModal();
 			modal.renderSqlQueryResult(result.data);
+		}
+	}
+}
+async function sendRequest(node){
+	let mode = $('#req-mode').val();
+	let params = $('#req-params').val();
+	let body = ''
+	try {
+		body = JSON.stringify(main.settings.reqBodyEditor.get())
+	}
+	catch {
+		console.debug(main.settings.reqBodyEditor)
+	}
+	
+	let nodeText = $(node).text();
+
+	if (!main.settings.deviceHost){
+		notificate('Device connection error');
+		return
+	}
+
+	if (mode == 'SyncCommand') {
+		var URI = `${main.settings.deviceHost}?mode=${mode}&listener=${params}`;
+	}
+	if (mode == 'BackgroundCommand') {
+		var URI = `${main.settings.deviceHost}?mode=${mode}&command=${params}`;
+	}
+
+	const req_params = {
+		// URI: URI,
+		host: main.settings.deviceHost,
+		mode: mode,
+		method: params,
+		body: body
+	};
+	
+	$(node).html(`<img style="width: 70px;height: 13px;transform: scale(2.5);" src="/js/pre.svg">`)
+
+	const result = await sendRequestToDevice(req_params);
+	
+	$(node).html(nodeText)
+
+	if (result){
+		if (result.error){
+			notificate(result.content);
+		} else {
+			modal = ModalWindow.getCurrentModal();
+			// modal.renderRequestResult(JSON.parse(result.data));
+			modal.renderRequestResult(result.data);
 		}
 	}
 }

@@ -36,8 +36,15 @@ async function saveConfiguration(){
     if (typeof main.conf == 'undefined')
         return;
 
+    let filePath = localStorage.getItem('file-path');
+
+    if (!filePath) {
+        filePath = await pickNewFileProject(main);
+        if (!filePath)
+            return;
+    }
+
     main.conf = main.configGraph.getConfig();
-    const filePath = $('.file-path').text();
     const workingDirValue = $('#working-dir-path').text();
 
     const workingDir = workingDirValue == '<Not selected>' ? '' : workingDirValue
@@ -142,7 +149,13 @@ function debug(msg){
 
 function updateDeviceHost(){
     const query_modal = $('.modal.sql-query.active')
-    if (main.deviceHost && query_modal.length){
-        query_modal.find('#ip-address').val(main.deviceHost)
+    const req_modal = $('modal.send-req active')
+    if (main.settings.deviceHost && (query_modal.length || req_modal.length)){
+        query_modal.find('#ip-address').val(main.settings.deviceHost)
+        req_modal.find('#ip-address').val(main.settings.deviceHost)
     }
+
+    
+
+    
 }

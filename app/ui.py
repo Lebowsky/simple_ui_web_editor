@@ -109,6 +109,11 @@ def send_sql_query(query_params):
 def restart_uvicorn(port):
     pass
 
+@eel.expose
+def send_request(params):
+    manager = utils.RequestsManager(**params)
+    return manager.send_query()
+
 async def get_current_file_path():
     return eel.getCurrentFilePath()()
 

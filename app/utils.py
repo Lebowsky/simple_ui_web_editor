@@ -11,12 +11,10 @@ from eel import chrome
 from pydantic import ValidationError
 import qrcode
 
-
 from .models import ui_config, project_config
 from .models.handlers import Handler
 from .models.root_config import RootConfigModel, QRCodeConfig
 from .config import app_server_port
-
 
 python_modules = {}
 
@@ -136,7 +134,6 @@ def save_base64_data(ui_configuration):
         ui_configuration['ClientConfiguration']['PyHandlers'] = make_base64_from_file(file_path)
 
 
-
 def validate_configuration_model(ui_configuration: dict) -> dict:
     try:
         return RootConfigModel(**ui_configuration).dict(by_alias=True, exclude_none=True)
@@ -144,6 +141,7 @@ def validate_configuration_model(ui_configuration: dict) -> dict:
         raise e
     except Exception as e:
         raise e
+
 
 def convert_config_version(file_path):
     with open(file_path, encoding='utf-8') as json_file:
@@ -469,6 +467,47 @@ class SQLQueryManager:
                 self.query,
                 self.params,
                 self.db_name
+            )
+        else:
+            raise requests.exceptions.RequestException()
+
+
+class RequestsManager:
+    def __init__(self, host, mode, method, **kwargs):
+        self.device_host = host
+        self.mode = mode
+        self.port = '8095'
+        self.method = method
+        self.method_type = 'listener' if self.mode == 'SyncCommand' else 'command'
+        self.body = kwargs.get('body')
+
+    def send_query(self, **kwargs):
+        result = {'error': '', 'content': '', 'data': None}
+        try:
+            response = requests.post(
+                self.get_url(),
+                headers={'Content-Type': 'Application/json; charset=utf-8'}
+            )
+            result['content'] = response.text
+            if response.status_code == 200:
+                result['data'] = response.json()
+            else:
+                result['error'] = str(response.status_code)
+
+        except requests.exceptions.RequestException as e:
+            result['error'] = 'Device connection error'
+            result['content'] = str(e.args[0])
+
+        return result
+
+    def get_url(self):
+        if self.device_host:
+            return 'http://{}:{}/?mode={}&{}={}'.format(
+                self.device_host,
+                self.port,
+                self.mode,
+                self.method_type,
+                self.method,
             )
         else:
             raise requests.exceptions.RequestException()

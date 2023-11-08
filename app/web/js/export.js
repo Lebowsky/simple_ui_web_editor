@@ -6,7 +6,7 @@ function getCurrentFilePath(){
 
 eel.expose(setDeviceHost);
 function setDeviceHost(deviceHost){
-	main.deviceHost = deviceHost;
+	main.settings.deviceHost = deviceHost;
 	updateDeviceHost();
 }
 
@@ -64,4 +64,8 @@ async function getBase64FromFilePath(filePath){
 
 async function sendSqlQueryToDevice(query_params){
 	return await eel.send_sql_query(query_params)()
+}
+
+async function sendRequestToDevice(req_params){
+	return await eel.send_request(req_params)()
 }

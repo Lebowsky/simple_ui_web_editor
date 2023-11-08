@@ -9,6 +9,7 @@ async function pickFile(file_type) {
 		if (file_type == 'simple_ui') {
 			conf = await loadConfiguration(result.file_path);
 			initReadedConf(conf, result.file_path);
+			localStorage.setItem('file-path', result.file_path);
 		} else if (file_type == 'python') {
 			console.log(result);
 			$("#file_path").val(result.file_path);
@@ -22,10 +23,12 @@ async function pickNewFileProject() {
 	if (checkAskFileResult(result)){
 		conf = await getNewConfiguration()
 		initReadedConf(conf, result.file_path)
+		localStorage.setItem('file-path', result.file_path);
+		return result.file_path;
 	}
 }
 
-const fileLocationSave = async (event) => {
+const fileLocationSave = async (event) => {	
 	modals = ModalWindow.getModals();
 	$.each(modals, (index, modal) => {
 		main.configGraph.setConfigValues(modal.element.id, modal.getValues());
@@ -91,9 +94,14 @@ const showQRSettings = async (event) => {
 	modal.show();
 }
 
-
 const showSqlQueries = async(event) => {
 	modal = new SQLQueryModal(main.settings.deviceHost);
+	modal.render();
+	modal.show();
+}
+
+const showSendRequest = async(event) => {
+	modal = new SendReqModal(main.settings.deviceHost);
 	modal.render();
 	modal.show();
 }
