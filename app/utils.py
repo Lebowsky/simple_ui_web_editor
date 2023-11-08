@@ -1,5 +1,6 @@
 import io
 import os
+import pathlib
 import socket
 import base64
 import glob
@@ -105,14 +106,22 @@ def check_config_version(data: dict):
 
 
 def check_file_paths(data: dict, path: str):
+    path_to_config = pathlib.Path(path) / 'project_config.json'
+    project_conf = {}
+    if path_to_config.exists():
+        with open(path_to_config) as f:
+            project_conf = json.load(f)
+
     py_files = data['ClientConfiguration'].get('PyFiles', [])
     for item in py_files:
         if item.get('file_path') and not os.path.exists(item['file_path']):
             item['file_path'] = ''
 
-        file_path = os.path.join(path, '{}.py'.format(item['PyFileKey']))
-        if os.path.exists(file_path):
-            item['file_path'] = file_path
+        local_path = project_conf.get(item['PyFileKey'], '')
+
+        file_path = pathlib.Path(path, local_path, '{}.py'.format(item['PyFileKey']))
+        if file_path.exists():
+            item['file_path'] = str(file_path)
 
     file_path = data['ClientConfiguration'].get('pyHandlersPath')
     if file_path and not os.path.exists(file_path):
