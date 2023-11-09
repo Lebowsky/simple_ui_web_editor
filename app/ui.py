@@ -20,9 +20,13 @@ eel.init(config.FRONTEND_ASSET_FOLDER)
 @eel.expose
 def save_configuration(data: dict, file_path: str, work_dir: str) -> dict:
     try:
+        dir_path, file_name = os.path.split(file_path)
         if work_dir and os.path.exists(work_dir):
-            file_path = os.path.join(work_dir, os.path.split(file_path)[1])
+            file_path = os.path.join(work_dir, file_name)
+            dir_path = work_dir
+
         utils.save_config_to_file(data, file_path)
+        utils.save_project_config_to_file(data, dir_path)
         return {'result': 'success'}
     except Exception as e:
         return {'result': 'error', 'msg': str(e)}

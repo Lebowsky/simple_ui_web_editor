@@ -146,6 +146,14 @@ def get_data_from_project_config(path):
     return project_conf
 
 
+def save_project_config_to_file(data, path_to_project):
+    file_name = 'project_config.json'
+    path_to_project_config = pathlib.Path(path_to_project, file_name)
+    config_data = create_project_config_data(data['ClientConfiguration'], path_to_project)
+    with open(path_to_project_config, 'w', encoding='utf-8') as f:
+        json.dump(config_data, f, ensure_ascii=False, indent=2)
+
+
 def create_project_config_data(files_data: dict, project_path: str):
     def get_relpath(full_path, prefix):
         full_path = str(pathlib.Path(full_path))
