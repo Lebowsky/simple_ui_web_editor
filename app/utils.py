@@ -132,6 +132,28 @@ def check_file_paths(data: dict, path: str):
         data['ClientConfiguration']['pyHandlersPath'] = file_path
 
 
+def get_project_config(files_data: dict, project_path: str):
+    def get_relpath(full_path, prefix):
+        full_path = str(pathlib.Path(full_path))
+        prefix = str(pathlib.Path(prefix))
+        return f'./{os.path.relpath(full_path, os.path.commonprefix([full_path, prefix]))}'
+
+    result = {}
+    handlers_path = files_data.get('pyHandlersPath')
+    py_files = files_data.get('PyFiles')
+
+    if handlers_path:
+        result['handlers'] = get_relpath(handlers_path, project_path)
+
+    if py_files:
+        modules = {
+            item['PyFileKey']: get_relpath(item['file_path'], project_path)
+            for item in py_files if item.get('file_path')
+        }
+        result['modules'] = modules
+    return result
+
+
 def save_base64_data(ui_configuration):
     py_files = ui_configuration['ClientConfiguration'].get('PyFiles', [])
     for item in py_files:
