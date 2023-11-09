@@ -106,18 +106,19 @@ def check_config_version(data: dict):
 
 
 def check_file_paths(data: dict, path: str):
-    path_to_config = pathlib.Path(path) / 'project_config.json'
-    project_conf = {}
-    if path_to_config.exists():
-        with open(path_to_config) as f:
-            project_conf = json.load(f)
+    # path_to_config = pathlib.Path(path) / 'project_config.json'
+    # project_conf = {}
+    # if path_to_config.exists():
+    #     with open(path_to_config) as f:
+    #         project_conf = json.load(f)
 
     py_files = data['ClientConfiguration'].get('PyFiles', [])
     for item in py_files:
         if item.get('file_path') and not os.path.exists(item['file_path']):
             item['file_path'] = ''
 
-        local_path = project_conf.get(item['PyFileKey'], '')
+        # local_path = project_conf.get(item['PyFileKey'], '')
+        local_path = ''
 
         file_path = pathlib.Path(path, local_path, '{}.py'.format(item['PyFileKey']))
         if file_path.exists():
@@ -132,7 +133,20 @@ def check_file_paths(data: dict, path: str):
         data['ClientConfiguration']['pyHandlersPath'] = file_path
 
 
-def get_project_config(files_data: dict, project_path: str):
+def get_data_from_project_config(path):
+    path_to_config = pathlib.Path(path) / 'project_config.json'
+    project_conf = {}
+    if path_to_config.exists():
+        with open(path_to_config) as f:
+            try:
+                project_conf = json.load(f)
+            except json.JSONDecodeError:
+                project_conf = {}
+
+    return project_conf
+
+
+def create_project_config_data(files_data: dict, project_path: str):
     def get_relpath(full_path, prefix):
         full_path = str(pathlib.Path(full_path))
         prefix = str(pathlib.Path(prefix))
@@ -155,14 +169,15 @@ def get_project_config(files_data: dict, project_path: str):
 
 
 def save_base64_data(ui_configuration):
+    get_data_from_project_config()
+    file_path = ui_configuration['ClientConfiguration'].get('pyHandlersPath')
+    if file_path:
+        ui_configuration['ClientConfiguration']['PyHandlers'] = make_base64_from_file(file_path)
+
     py_files = ui_configuration['ClientConfiguration'].get('PyFiles', [])
     for item in py_files:
         if item.get('file_path'):
             item['PyFileData'] = make_base64_from_file(item['file_path'])
-
-    file_path = ui_configuration['ClientConfiguration'].get('pyHandlersPath')
-    if file_path:
-        ui_configuration['ClientConfiguration']['PyHandlers'] = make_base64_from_file(file_path)
 
 
 def validate_configuration_model(ui_configuration: dict) -> dict:

@@ -85,7 +85,10 @@ def save_handlers_files(handlers: dict, work_dir: str) -> dict:
             if work_dir and os.path.exists(work_dir):
                 file_path = os.path.join(work_dir, f'{file_name}.py')
             else:
-                file_path = config.resource_path(f'{file_name}.py')
+                path_to_files = './_ui_files'
+                if not os.path.exists(path_to_files):
+                    os.mkdir(path_to_files)
+                file_path = config.resource_path(f'{path_to_files}/{file_name}.py')
 
             with open(file_path, 'w', encoding='utf-8') as f:
                 content = utils.get_content_from_base64(value)
@@ -105,14 +108,17 @@ def send_sql_query(query_params):
     manager = utils.SQLQueryManager(**query_params)
     return manager.send_query(**query_params)
 
+
 @eel.expose
 def restart_uvicorn(port):
     pass
+
 
 @eel.expose
 def send_request(params):
     manager = utils.RequestsManager(**params)
     return manager.send_query()
+
 
 async def get_current_file_path():
     return eel.getCurrentFilePath()()
@@ -121,12 +127,14 @@ async def get_current_file_path():
 async def set_device_host(device_host):
     return eel.setDeviceHost(device_host)
 
+
 async def get_configuration():
     configuration = eel.getConfiguration()()
     if configuration:
         valid_config = utils.validate_configuration_model(configuration)
         utils.save_base64_data(valid_config)
         return valid_config
+
 
 def start(open_mode):
     try:

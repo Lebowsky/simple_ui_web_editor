@@ -26,7 +26,7 @@ class TestUtils(unittest.TestCase):
                  'PyFileKey': 'ui_global'},
             ],
         }
-        actual = utils.get_project_config(data, 'C:/Projects\\python\\simple\\keep\\')
+        actual = utils.create_project_config_data(data, 'C:/Projects\\python\\simple\\keep\\')
         self.assertEqual(expect['handlers'], actual['handlers'])
         self.assertEqual(expect['modules']['database_init_queryes'], actual['modules']['database_init_queryes'])
         self.assertEqual(expect['modules']['db_services'], actual['modules']['db_services'])
@@ -47,7 +47,7 @@ class TestUtils(unittest.TestCase):
             ]
         }
 
-        actual = utils.get_project_config(data, 'C:/Projects\\python\\simple\\keep\\')
+        actual = utils.create_project_config_data(data, 'C:/Projects\\python\\simple\\keep\\')
 
         self.assertIsNone(actual.get('handlers'))
         self.assertEqual(expect['modules']['database_init_queryes'], actual['modules']['database_init_queryes'])
@@ -64,7 +64,7 @@ class TestUtils(unittest.TestCase):
             ]
         }
 
-        actual = utils.get_project_config(data, 'C:/Projects\\python\\simple\\keep\\')
+        actual = utils.create_project_config_data(data, 'C:/Projects\\python\\simple\\keep\\')
 
         self.assertTrue(actual.get('handlers'))
         self.assertTrue(actual.get('handlers'), expect['handlers'])
