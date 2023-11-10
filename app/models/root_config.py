@@ -68,9 +68,9 @@ class StyleTemplate(DimensionElement, TextElement):
 
 
 class PyFilesModel(BaseConfigModel):
-    file_path: str = ''
-    py_file_key: str = Field(alias='PyFileKey', title='PyFileKey')
-    py_file_data: Optional[str] = Field(alias='PyFileData', title='PyFileData')
+    file_path: str = Field(default='', alias='file_path', title='File Path')
+    py_file_key: str = Field(alias='PyFileKey', title='Module name')
+    py_file_data: Optional[str] = Field(alias='PyFileData', title='Base64Data')
 
     class Config:
         title = 'PyFile'

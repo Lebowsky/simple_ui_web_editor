@@ -106,11 +106,7 @@ def check_config_version(data: dict):
 
 
 def check_file_paths(data: dict, path: str):
-    # path_to_config = pathlib.Path(path) / 'project_config.json'
-    # project_conf = {}
-    # if path_to_config.exists():
-    #     with open(path_to_config) as f:
-    #         project_conf = json.load(f)
+    project_config_data = get_data_from_project_config(path)
 
     py_files = data['ClientConfiguration'].get('PyFiles', [])
     for item in py_files:
@@ -124,7 +120,7 @@ def check_file_paths(data: dict, path: str):
         if file_path.exists():
             item['file_path'] = str(file_path)
 
-    file_path = data['ClientConfiguration'].get('pyHandlersPath')
+    file_path = project_config_data.get('handlers') or data['ClientConfiguration'].get('pyHandlersPath')
     if file_path and not os.path.exists(file_path):
         data['ClientConfiguration']['pyHandlersPath'] = ''
 
@@ -177,7 +173,6 @@ def create_project_config_data(files_data: dict, project_path: str):
 
 
 def save_base64_data(ui_configuration):
-    get_data_from_project_config()
     file_path = ui_configuration['ClientConfiguration'].get('pyHandlersPath')
     if file_path:
         ui_configuration['ClientConfiguration']['PyHandlers'] = make_base64_from_file(file_path)
@@ -256,7 +251,7 @@ def get_config_ui_elements(model=RootConfigModel) -> dict:
         for key, value in el['properties'].items():
             props = value.copy()
             props['required'] = key in (el.get('required') or [])
-            props['hidden'] = key == 'type'
+            props['hidden'] = key in ['type', 'PyFileData']
 
             fields[key] = ui_config.BaseField(text=value.get('title') or key, **props)
             if key == 'Elements':
