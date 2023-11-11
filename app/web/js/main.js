@@ -28,7 +28,8 @@ var Main = {
 		this.settings.filePath = filePath;
 
 		if (!this.settings.dirPath) {
-			this.settings.dirPath = filePath.substring(0, filePath.lastIndexOf("/"));
+			let lastIndex = filePath.lastIndexOf('\\') 
+			this.settings.dirPath = filePath.substring(0, lastIndex);
 		}
 
 		$(".file-path").text(filePath);

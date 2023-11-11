@@ -17,6 +17,7 @@ class UIOpenMode:
 eel.init(config.FRONTEND_ASSET_FOLDER)
 ui_config_manager = None
 
+
 @eel.expose
 def save_configuration(data: dict, file_path: str, work_dir: str) -> dict:
     try:
@@ -34,7 +35,7 @@ def save_configuration(data: dict, file_path: str, work_dir: str) -> dict:
 
 @eel.expose
 def load_configuration(file_path):
-    return utils.get_config_from_file(file_path)
+    return utils.get_config_from_file(file_path, convert_version=True)
 
 
 @eel.expose
@@ -51,6 +52,7 @@ def ask_file(file_type):
         result = {'file_path': file_path}
         return result
 
+
 @eel.expose
 def ask_ui_config_file():
     """ Ask the user to select a simple_ui file """
@@ -59,6 +61,7 @@ def ask_ui_config_file():
     if file_path:
         result = utils.get_config_from_file(file_path)
         return result
+
 
 @eel.expose
 def ask_dir():

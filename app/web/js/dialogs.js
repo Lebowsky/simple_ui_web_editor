@@ -1,18 +1,18 @@
 function notificate(text, type) {
     $.toast(text, {sticky: false, type: type});
-    console.log(text)
+    console.debug(text)
 };
 
 async function pickFile(file_type) {
 	let result = await askFile(file_type);
 	if (checkAskFileResult(result)){
 		if (file_type == 'simple_ui') {
-			if (result.ui_config_data)
-				conf = result.ui_config_data
-			else
-				conf = await loadConfiguration(result.file_path);
-			initReadedConf(conf, result.file_path);
+			if (!result.ui_config_data)
+				result = await loadConfiguration(result.file_path);
+
+			initReadedConf(result.ui_config_data, result.file_path);
 			localStorage.setItem('file-path', result.file_path);
+
 		} else if (file_type == 'python') {
 			$("#file_path").val(result.file_path);
 			$("#PyFileKey").val(result.file_name);

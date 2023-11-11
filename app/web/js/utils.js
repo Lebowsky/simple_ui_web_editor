@@ -9,7 +9,7 @@ function checkAskFileResult(answer){
             result = true
         }else{
             notificate('Ошибка чтения файла: ' + answer.error)
-            console.log(JSON.parse(answer.message))
+            console.error(answer.message)
         };
 	}else if (answer.file_path){
         result = true;
@@ -152,9 +152,5 @@ function updateDeviceHost(){
     if (main.settings.deviceHost && (query_modal.length || req_modal.length)){
         query_modal.find('#ip-address').val(main.settings.deviceHost)
         req_modal.find('#ip-address').val(main.settings.deviceHost)
-    }
-
-    
-
-    
+    }    
 }

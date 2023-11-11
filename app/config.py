@@ -1,9 +1,12 @@
 import os
 import json
 import sys
+import logging
 
 from easysettings import EasySettings
 
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 
 class UIOpenMode:
     NONE = 0
@@ -16,8 +19,9 @@ ui_open_mode = UIOpenMode.CHROME
 app_server_host = '0.0.0.0'
 app_server_port = 5000
 
+
 def get_resource_path(relative_path):
-    """ Get absolute path to resource, works for dev and for PyInstaller """
+    """ Get absolut path to resource, works for dev and for PyInstaller """
     try:
         # PyInstaller creates a temp folder and stores path in _MEIPASS
         base_path = sys._MEIPASS
@@ -49,6 +53,8 @@ class SimpleUISettings:
 
         with open(_locale_filename, 'r', encoding='utf-8') as file:
             self.locale = Locale(json.load(file))
+
+        logger.debug(f'settings created at {_locale_filename}')
 
 
 su_settings = SimpleUISettings()

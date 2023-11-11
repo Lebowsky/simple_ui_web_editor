@@ -1,6 +1,7 @@
 import io
 import os
 import pathlib
+import logging
 import socket
 import base64
 import glob
@@ -19,6 +20,9 @@ from .config import app_server_port
 
 python_modules = {}
 ui_config_manager = None
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+
 
 def can_use_chrome():
     """ Identify if Chrome is available for Eel to use """
@@ -44,21 +48,21 @@ def save_config_to_file(config_data, file_path):
                   separators=(',', ': '))
 
 
-def get_config_from_file(file_path):
+def get_config_from_file(file_path, convert_version=False):
     global ui_config_manager
     try:
-        if ui_config_manager is None:
+        if convert_version is False:
             ui_config_manager = UiConfigManager(file_path=file_path)
             ui_config_manager.init_config()
 
         result = {
-            'file_path': file_path,
-            'ui_config_data' : ui_config_manager.get_config_data()
+            'file_path': ui_config_manager.file_path,
+            'ui_config_data': ui_config_manager.get_config_data(convert_version=convert_version)
         }
     except InitUiConfigError as e:
         result = e.json()
-
     return result
+
 
 def get_new_config():
     return RootConfigModel().dict(by_alias=True, exclude_none=True)
@@ -118,8 +122,8 @@ def check_file_paths(data: dict, path: str):
             item['file_path'] = str(file_path)
 
     file_path = (
-        pathlib.Path(path, project_config_data.get('handlers', ''))
-        or pathlib.Path(data['ClientConfiguration'].get('pyHandlersPath'))
+            pathlib.Path(path, project_config_data.get('handlers', ''))
+            or pathlib.Path(data['ClientConfiguration'].get('pyHandlersPath'))
     )
 
     if file_path and not file_path.exists():
@@ -313,10 +317,11 @@ class UiConfigManager:
         if self._read_config() and self._check_config():
             self.config_data = RootConfigModel(**self.config_data).dict(by_alias=True, exclude_none=True)
         if self.error:
-            raise InitUiConfigError(json.dumps(self.error))
+            logger.error(f'Init config error as cause: {self.error}')
+            raise InitUiConfigError(json.dumps(dict(**{'file_path': self.file_path}, **self.error)))
 
-    def get_config_data(self):
-        if self._is_unsupported_version_config():
+    def get_config_data(self, convert_version=False):
+        if convert_version and self._is_unsupported_version_config():
             self._convert_config_version()
         return RootConfigModel(**self.config_data).dict(by_alias=True, exclude_none=True)
 
@@ -391,6 +396,7 @@ class UiConfigManager:
                         handlers.append(
                             Handler(method=operation[item], **check_keys[item]))
                 operation['Handlers'] = handlers
+
 
 class ProjectConfigManager:
     def __init__(self, config_data):
@@ -651,12 +657,15 @@ class RequestsManager:
         else:
             raise requests.exceptions.RequestException()
 
+
 class InitUiConfigError(Exception):
     def json(self):
         return json.loads(str(self))
 
+
 class VersionError(Exception):
     pass
+
 
 class CheckUiConfigError(Exception):
     pass

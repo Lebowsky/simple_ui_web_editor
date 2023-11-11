@@ -1,6 +1,6 @@
 {
     "ClientConfiguration": {
-        "ConfigurationName": "Новая конфигурация",
+        "ConfigurationName": "Version Error",
         "ConfigurationDescription": "Разработка новой конфигурации SimpleUI",
         "ConfigurationVersion": "0.0.1",
         "Processes": [
