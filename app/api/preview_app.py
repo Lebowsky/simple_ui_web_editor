@@ -7,7 +7,7 @@ from types import LambdaType
 from uiweb import Simple, bs4, uuid, threading, SOCKET_NAMESPACE, html
 
 from ..ui import get_current_file_path
-from ..config import resource_path
+from ..config import get_resource_path
 
 
 class AsyncSimple(Simple):
@@ -15,11 +15,11 @@ class AsyncSimple(Simple):
         super().__init__(socket, '')
         self.templates = templates
         self.html = None
-        self.load_settings(resource_path('web_settings.json'))
+        self.load_settings(get_resource_path('web_settings.json'))
 
         if python_modules:
             for name in python_modules:
-                path_to_handlers = resource_path(f'{name}.py')
+                path_to_handlers = get_resource_path(f'{name}.py')
                 if os.path.exists(path_to_handlers):
                     print(f'{name} update')
                     module = __import__(name)

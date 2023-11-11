@@ -15,7 +15,7 @@ class UIOpenMode:
 
 # Setup eels root folder
 eel.init(config.FRONTEND_ASSET_FOLDER)
-
+ui_config_manager = None
 
 @eel.expose
 def save_configuration(data: dict, file_path: str, work_dir: str) -> dict:
@@ -103,7 +103,7 @@ def save_handlers_files(handlers: dict, work_dir: str) -> dict:
                 path_to_files = './_ui_files'
                 if not os.path.exists(path_to_files):
                     os.mkdir(path_to_files)
-                file_path = config.resource_path(f'{path_to_files}/{file_name}.py')
+                file_path = config.get_resource_path(f'{path_to_files}/{file_name}.py')
 
             with open(file_path, 'w', encoding='utf-8') as f:
                 content = utils.get_content_from_base64(value)

@@ -16,7 +16,7 @@ ui_open_mode = UIOpenMode.CHROME
 app_server_host = '0.0.0.0'
 app_server_port = 5000
 
-def resource_path(relative_path):
+def get_resource_path(relative_path):
     """ Get absolute path to resource, works for dev and for PyInstaller """
     try:
         # PyInstaller creates a temp folder and stores path in _MEIPASS
@@ -27,7 +27,7 @@ def resource_path(relative_path):
     return os.path.join(base_path, relative_path)
 
 
-FRONTEND_ASSET_FOLDER = resource_path('app/web')
+FRONTEND_ASSET_FOLDER = get_resource_path('app/web')
 
 
 class Locale:
@@ -40,11 +40,11 @@ class Locale:
 
 class SimpleUISettings:
     def __init__(self):
-        settings = EasySettings(resource_path("app/uiconfigfile.conf"))
+        settings = EasySettings(get_resource_path("app/uiconfigfile.conf"))
 
         _locale_filename = (
-                resource_path(f'app/{settings.get("locale_filename")}')
-                or resource_path("app/en_locale.json")
+                get_resource_path(f'app/{settings.get("locale_filename")}')
+                or get_resource_path("app/en_locale.json")
         )
 
         with open(_locale_filename, 'r', encoding='utf-8') as file:

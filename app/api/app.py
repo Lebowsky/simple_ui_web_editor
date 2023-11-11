@@ -11,14 +11,14 @@ from fastapi.templating import Jinja2Templates
 from fastapi_socketio import SocketManager
 
 from .preview_app import AsyncSimple
-from ..config import resource_path, app_server_port, app_server_host
+from ..config import get_resource_path, app_server_port, app_server_host
 from ..utils import get_config_from_file, get_python_modules
 
 sw: AsyncSimple
 
 app = FastAPI()
-app.mount("/static", StaticFiles(directory=resource_path('app/web/templates/preview/static')), name="static")
-templates = Jinja2Templates(directory=resource_path('app/web/templates'))
+app.mount("/static", StaticFiles(directory=get_resource_path('app/web/templates/preview/static')), name="static")
+templates = Jinja2Templates(directory=get_resource_path('app/web/templates'))
 
 sio = SocketManager(app)
 server = ...
@@ -72,7 +72,7 @@ async def prev_index(request: Request):
         return response
     except Exception as e:
         import traceback
-        with open(resource_path('app/web/templates/error_500_response.html'), encoding='utf-8') as f:
+        with open(get_resource_path('app/web/templates/error_500_response.html'), encoding='utf-8') as f:
             response = HTMLResponse(content=f.read().replace('Message Here', str(e)))
             print(traceback.format_exc())
             return response
