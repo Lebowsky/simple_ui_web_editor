@@ -303,8 +303,69 @@ def update_python_modules(new_modules: dict):
 def get_python_modules():
     return python_modules
 
+class UiConfigManager:
+    def __init__(self, file_path):
+        self.file_path = str(pathlib.Path(file_path))
+        self.config_data = {}
+        self.error = {}
 
-class ProjectConfig:
+    def init_config(self):
+        if self._read_config():
+            self._check_config()
+        if self.error:
+            raise InitUiConfigError(json.dumps(self.error))
+
+    def _read_config(self):
+        result = False
+        try:
+            with open(self.file_path, encoding='utf-8') as f:
+                self.config_data = json.load(f)
+                result = True
+        except json.JSONDecodeError as e:
+            self.error = {'error': 'JSONDecodeError', 'message': str(e)}
+        except FileNotFoundError as e:
+            self.error = {'error': 'FileNotFoundError', 'message': self.file_path}
+        except Exception as e:
+            self.error = {'error': 'UnknownError', 'message': str(e)}
+
+        return result
+
+    def _check_config(self):
+        result = False
+        try:
+            RootConfigModel(**self.config_data)
+            result = self._check_config_version()
+        except ValidationError as e:
+            self.error = {'error': 'ValidationError', 'message': e.json()}
+        except ValueError as e:
+            self.error = {'error': 'ValueError', 'message': str(e)}
+        except VersionError as e:
+            self.error = {'error': 'VersionError', 'message': str(e)}
+        except Exception as e:
+            self.error = {'error': 'UnknownError', 'message': str(e)}
+
+        return result
+
+    def _check_config_version(self):
+        for item in ['DefServiceConfiguration', 'OnlineServiceConfiguration']:
+            if item in self.config_data.keys() and self.config_data[item]:
+                raise VersionError('Unsupported configuration version')
+
+        check_keys = ['DefOnCreate', 'DefOnInput', 'DefOnlineOnCreate', 'DefOnlineOnInput']
+
+        for process in self.config_data['ClientConfiguration']['Processes']:
+            if not process.get('Operations'):
+                continue
+            for operation in process['Operations']:
+                for item in check_keys:
+                    if item in operation.keys() and operation[item]:
+                        raise VersionError('Unsupported configuration version')
+
+        return True
+
+
+
+class ProjectConfigManager:
     def __init__(self, config_data):
         self.config_data = project_config.ConfigData(**config_data)
         self.default_handlers = 'handlers'
@@ -563,6 +624,11 @@ class RequestsManager:
         else:
             raise requests.exceptions.RequestException()
 
+class InitUiConfigError(Exception):
+    pass
 
 class VersionError(Exception):
+    pass
+
+class CheckUiConfigError(Exception):
     pass

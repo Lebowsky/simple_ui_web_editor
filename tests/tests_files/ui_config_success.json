@@ -1,0 +1,184 @@
+{
+    "ClientConfiguration": {
+        "ConfigurationName": "Новая конфигурация",
+        "ConfigurationDescription": "",
+        "ConfigurationVersion": "0.0.1",
+        "Processes": [
+            {
+                "type": "Process",
+                "ProcessName": "Новый процесс",
+                "DefineOnBackPressed": true,
+                "hidden": false,
+                "login_screen": false,
+                "SC": false,
+                "Operations": [
+                    {
+                        "type": "Operation",
+                        "Name": "Новый экран",
+                        "Timer": false,
+                        "hideToolBarScreen": false,
+                        "hideBottomBarScreen": false,
+                        "noScroll": false,
+                        "handleKeyUp": false,
+                        "noConfirmation": false,
+                        "Elements": [
+                            {
+                                "type": "LinearLayout",
+                                "Variable": "",
+                                "orientation": "vertical",
+                                "height": "match_parent",
+                                "width": "match_parent",
+                                "weight": "0",
+                                "Elements": [
+                                    {
+                                        "Value": "start_timer",
+                                        "Variable": "start_timer",
+                                        "height": "wrap_content",
+                                        "width": "wrap_content",
+                                        "weight": "0",
+                                        "TextBold": false,
+                                        "TextItalic": false,
+                                        "type": "Button"
+                                    },
+                                    {
+                                        "Value": "stop_timer",
+                                        "Variable": "stop_timer",
+                                        "height": "wrap_content",
+                                        "width": "wrap_content",
+                                        "weight": "0",
+                                        "TextBold": false,
+                                        "TextItalic": false,
+                                        "type": "Button"
+                                    },
+                                    {
+                                        "Value": "refresh",
+                                        "Variable": "refresh",
+                                        "height": "wrap_content",
+                                        "width": "wrap_content",
+                                        "weight": "0",
+                                        "TextBold": false,
+                                        "TextItalic": false,
+                                        "type": "Button"
+                                    },
+                                    {
+                                        "Value": "Открыть второй процесс",
+                                        "Variable": "open_process",
+                                        "height": "wrap_content",
+                                        "width": "wrap_content",
+                                        "weight": 0,
+                                        "TextBold": false,
+                                        "TextItalic": false,
+                                        "type": "Button"
+                                    },
+                                    {
+                                        "Value": "@table",
+                                        "Variable": "",
+                                        "height": "wrap_content",
+                                        "width": "wrap_content",
+                                        "weight": "0",
+                                        "TextBold": false,
+                                        "TextItalic": false,
+                                        "type": "TableLayout"
+                                    }
+                                ]
+                            }
+                        ],
+                        "Handlers": [
+                            {
+                                "event": "onInput",
+                                "listener": "",
+                                "action": "run",
+                                "type": "python",
+                                "method": "on_input",
+                                "postExecute": ""
+                            },
+                            {
+                                "event": "onStart",
+                                "listener": "",
+                                "action": "run",
+                                "type": "python",
+                                "method": "on_start",
+                                "postExecute": ""
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "type": "Process",
+                "ProcessName": "Process2",
+                "DefineOnBackPressed": true,
+                "hidden": true,
+                "login_screen": false,
+                "SC": false,
+                "Operations": [
+                    {
+                        "type": "Operation",
+                        "Name": "Screen2",
+                        "Timer": false,
+                        "hideToolBarScreen": false,
+                        "hideBottomBarScreen": false,
+                        "noScroll": false,
+                        "handleKeyUp": false,
+                        "noConfirmation": false,
+                        "Elements": [
+                            {
+                                "type": "LinearLayout",
+                                "Variable": "",
+                                "orientation": "vertical",
+                                "height": "match_parent",
+                                "width": "match_parent",
+                                "weight": 0,
+                                "Elements": [
+                                    {
+                                        "Value": "go_back",
+                                        "Variable": "go_back",
+                                        "height": "wrap_content",
+                                        "width": "match_parent",
+                                        "weight": 0,
+                                        "TextBold": false,
+                                        "TextItalic": false,
+                                        "type": "Button"
+                                    }
+                                ]
+                            }
+                        ],
+                        "Handlers": [
+                            {
+                                "event": "onInput",
+                                "listener": "go_back",
+                                "action": "run",
+                                "type": "python",
+                                "method": "go_back",
+                                "postExecute": ""
+                            }
+                        ]
+                    }
+                ]
+            }
+        ],
+        "ConfigurationSettings": {
+            "uid": "c0acf920957d45eb878f9b19cb9c4a07"
+        },
+        "ConfigurationTags": "",
+        "RunPython": true,
+        "MainMenu": [],
+        "Mediafile": [],
+        "PyHandlers": "ZnJvbSBweXNpbXBsZWJhc2UgaW1wb3J0IFNpbXBsZUJhc2UKZnJvbSBydS50cmF2ZWxmb29kLnNpbXBsZV91aSBpbXBvcnQgU2ltcGxlVXRpbGl0ZXMgYXMgc3VDbGFzcwpmcm9tIGRhdGV0aW1lIGltcG9ydCBkYXRldGltZQppbXBvcnQganNvbgoKZGIgPSBTaW1wbGVCYXNlKCJ0ZXN0X2RiIixwYXRoPXN1Q2xhc3MuZ2V0X3NpbXBsZWJhc2VfZGlyKCksdGltZW91dD0yMDApCgpkZWYgYXBwX29uX3N0YXJ0KGhhc2hfbWFwLCBfLCBfXyk6CiAgICBzdGFydF90aW1lcihoYXNoX21hcCkKICAgICMgaGFzaF9tYXAucHV0KCdTdGFydFRpbWVyc0JTJywgJycpCiAgICAjIHRpbWVyX2hhbmRsZXJzID0gW3siYWN0aW9uIjogInJ1biIsICJ0eXBlIjogInB5dGhvbiIsICJtZXRob2QiOiAicnVuX3RpbWVyIiwgInBvc3RFeGVjdXRlIjogIiJ9XQogICAgIwogICAgIyBoYXNoX21hcC5wdXQoIlN0YXJ0VGltZXJCUyIsIGpzb24uZHVtcHMoeyJoYW5kbGVyIjogdGltZXJfaGFuZGxlcnMsICJwZXJpb2QiOiA1MDAwfSkpCgogICAgZGJbJ3RpbWVyX2RhdGEnXS5jbGVhcigpCiAgICByZXR1cm4gaGFzaF9tYXAKCmRlZiBvbl9zdGFydChoYXNoX21hcCwgXywgX18pOgogICAgc3RvcF90aW1lcihoYXNoX21hcCkKICAgIHJldHVybiBoYXNoX21hcAoKZGVmIG9uX2lucHV0KGhhc2hfbWFwLCBfLCBfXyk6CiAgICBsaXN0ZW5lciA9IGhhc2hfbWFwLmdldCgnbGlzdGVuZXInKQogICAgaWYgbGlzdGVuZXIgPT0gJ3JlZnJlc2gnOgogICAgICAgIGFsbF9kYXRhID0gZGJbJ3RpbWVyX2RhdGEnXS5hbGwoKQogICAgICAgIGhhc2hfbWFwLnB1dCgndGFibGUnLCBqc29uLmR1bXBzKGFsbF9kYXRhKSkKCiAgICBlbGlmIGxpc3RlbmVyID09ICdzdG9wX3RpbWVyJzoKICAgICAgICBoYXNoX21hcC5wdXQoJ1N0b3BUaW1lcnNCUycsICcnKQogICAgICAgIGhhc2hfbWFwLnB1dCgndG9hc3QnLCAnU3RvcFRpbWVyQlMnKQoKICAgIGVsaWYgbGlzdGVuZXIgPT0gJ3N0YXJ0X3RpbWVyJzoKICAgICAgICBzdGFydF90aW1lcihoYXNoX21hcCkKCiAgICAgICAgIyBkYlsndGltZXJfZGF0YSddLmluc2VydCh7InRpbWVzdGFtcCI6IGRhdGV0aW1lLm5vdygpLnN0cmZ0aW1lKCclbS0lZC0lWSAlSDolTTolUycpLCAidGV4dCI6ICdzdG9wX3RpbWVyJ30pCgogICAgZWxpZiBsaXN0ZW5lciA9PSAnT05fQkFDS19QUkVTU0VEJzoKICAgICAgICBzdGFydF90aW1lcihoYXNoX21hcCkKCiAgICBlbGlmIGxpc3RlbmVyID09ICdvcGVuX3Byb2Nlc3MnOgogICAgICAgIGhhc2hfbWFwLnB1dCgnU2hvd1Byb2Nlc3NSZXN1bHQnLCAnUHJvY2VzczJ8U2NyZWVuMicpCgogICAgaGFzaF9tYXAucHV0KCdub1JlZnJlc2gnKQoKICAgIHJldHVybiBoYXNoX21hcAoKZGVmIGdvX2JhY2soaGFzaF9tYXAsIF8sIF9fKToKICAgIGhhc2hfbWFwLnB1dCgnRmluaXNoUHJvY2Vzc1Jlc3VsdCcsICcnKQoKICAgIHJldHVybiBoYXNoX21hcAoKZGVmIHJ1bl90aW1lcihoYXNoX21hcCwgXywgX18pOgogICAgaGFzaF9tYXAucHV0KCdiZWVwJywgJycpCiAgICBkYlsndGltZXJfZGF0YSddLmluc2VydCh7InRpbWVzdGFtcCI6IGRhdGV0aW1lLm5vdygpLnN0cmZ0aW1lKCclbS0lZC0lWSAlSDolTTolUycpLCAidGV4dCI6ICd0aW1lcid9KQoKCmRlZiBzdG9wX3RpbWVyKGhhc2hfbWFwKToKICAgIGhhc2hfbWFwLnB1dCgnU3RvcFRpbWVyc0JTJywgJycpCiAgICBoYXNoX21hcC5wdXQoJ3RvYXN0JywgJ1N0b3BUaW1lckJTJykKCmRlZiBzdGFydF90aW1lcihoYXNoX21hcCk6CiAgICBoYXNoX21hcC5wdXQoJ1N0YXJ0VGltZXJzQlMnLCAnJykKICAgIHRpbWVyX2hhbmRsZXJzID0gW3siYWN0aW9uIjogInJ1biIsICJ0eXBlIjogInB5dGhvbiIsICJtZXRob2QiOiAicnVuX3RpbWVyIiwgInBvc3RFeGVjdXRlIjogIiJ9XQogICAgaGFzaF9tYXAucHV0KCJTdGFydFRpbWVyQlMiLCBqc29uLmR1bXBzKHsiaGFuZGxlciI6IHRpbWVyX2hhbmRsZXJzLCAicGVyaW9kIjogNTAwMH0pKQogICAgaGFzaF9tYXAucHV0KCd0b2FzdCcsICdTdGFydFRpbWVyc0JTJyk=",
+        "pyHandlersPath": "D:/projects/simple UI/samples/test_timer_bs\\main.py",
+        "PyTimerTask": [],
+        "PyFiles": [],
+        "StyleTemplates": [],
+        "arch2": true,
+        "CommonHandlers": [
+            {
+                "event": "onLaunch",
+                "listener": "",
+                "action": "run",
+                "type": "python",
+                "method": "app_on_start",
+                "postExecute": ""
+            }
+        ]
+    }
+}
