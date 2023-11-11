@@ -39,15 +39,6 @@ def get_port():
     return port
 
 
-def save_config_to_file(config_data, file_path):
-    if not file_path:
-        raise FileNotFoundError('Не указан файл конфигурации')
-    config = RootConfigModel(**config_data)
-    with open(file_path, 'w', encoding="utf-8") as f:
-        json.dump(config.dict(by_alias=True, exclude_none=True), f, ensure_ascii=False, indent=4,
-                  separators=(',', ': '))
-
-
 def get_config_from_file(file_path, convert_version=False):
     global ui_config_manager
     try:
@@ -68,43 +59,13 @@ def get_new_config():
     return RootConfigModel().dict(by_alias=True, exclude_none=True)
 
 
-def check_config_file(file_path):
-    try:
-        with open(file_path, encoding='utf-8') as json_file:
-            json_data = json.load(json_file)
-            RootConfigModel(**json_data)
-            check_config_version(json_data)
-            return {'file_path': file_path}
-    except json.JSONDecodeError as e:
-        return {'error': 'JSONDecodeError', 'message': e.msg}
-    except ValidationError as e:
-        return {'error': 'ValidationError', 'message': json.dumps(e.json())}
-    except FileNotFoundError as e:
-        return {'error': 'FileNotFoundError', 'message': e.winerror}
-    except VersionError as e:
-        return {
-            'error': 'VersionError',
-            'message': json.dumps({'error': str(e)}),
-            'file_path': file_path
-        }
-    except Exception as e:
-        return {'error': 'UnknownError', 'message': json.dumps({'error': str(e)})}
-
-
-def check_config_version(data: dict):
-    for item in ['DefServiceConfiguration', 'OnlineServiceConfiguration']:
-        if item in data.keys() and data[item]:
-            raise VersionError('Unsupported configuration version')
-
-    check_keys = ['DefOnCreate', 'DefOnInput', 'DefOnlineOnCreate', 'DefOnlineOnInput']
-
-    for process in data['ClientConfiguration']['Processes']:
-        if not process.get('Operations'):
-            continue
-        for operation in process['Operations']:
-            for item in check_keys:
-                if item in operation.keys() and operation[item]:
-                    raise VersionError('Unsupported configuration version')
+def save_config_to_file(config_data, file_path):
+    if not file_path:
+        raise FileNotFoundError('Не указан файл конфигурации')
+    config = RootConfigModel(**config_data)
+    with open(file_path, 'w', encoding="utf-8") as f:
+        json.dump(config.dict(by_alias=True, exclude_none=True), f, ensure_ascii=False, indent=4,
+                  separators=(',', ': '))
 
 
 def check_file_paths(data: dict, path: str):
@@ -194,33 +155,6 @@ def validate_configuration_model(ui_configuration: dict) -> dict:
         raise e
     except Exception as e:
         raise e
-
-
-def convert_config_version(file_path):
-    with open(file_path, encoding='utf-8') as json_file:
-        data = json.load(json_file)
-
-        check_keys = {
-            'DefOnCreate': {'event': 'onStart', 'action': 'run', 'type': 'python'},
-            'DefOnInput': {'event': 'onInput', 'action': 'run', 'type': 'python'},
-            'DefOnlineOnCreate': {'event': 'onStart', 'action': 'run', 'type': 'online'},
-            'DefOnlineOnInput': {'event': 'onInput', 'action': 'run', 'type': 'online'}
-        }
-
-        for process in data['ClientConfiguration']['Processes']:
-            if not process.get('Operations'):
-                continue
-
-            for operation in process['Operations']:
-                handlers = operation.get('Handlers', [])
-                for item in check_keys:
-                    if item in operation.keys() and operation[item]:
-                        handlers.append(
-                            Handler(method=operation[item], **check_keys[item]))
-                operation['Handlers'] = handlers
-
-        result = RootConfigModel(**data).dict(by_alias=True, exclude_none=True)
-        return result
 
 
 def get_qr_code_config():

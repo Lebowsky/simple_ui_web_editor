@@ -19,31 +19,6 @@ ui_config_manager = None
 
 
 @eel.expose
-def save_configuration(data: dict, file_path: str, work_dir: str) -> dict:
-    try:
-        dir_path, file_name = os.path.split(file_path)
-        if work_dir and os.path.exists(work_dir):
-            file_path = os.path.join(work_dir, file_name)
-            dir_path = work_dir
-
-        utils.save_config_to_file(data, file_path)
-        utils.save_project_config_to_file(data, dir_path)
-        return {'result': 'success'}
-    except Exception as e:
-        return {'result': 'error', 'msg': str(e)}
-
-
-@eel.expose
-def load_configuration(file_path):
-    return utils.get_config_from_file(file_path, convert_version=True)
-
-
-@eel.expose
-def get_new_configuration():
-    return utils.get_new_config()
-
-
-@eel.expose
 def ask_file(file_type):
     """ Ask the user to select a file """
 
@@ -66,6 +41,31 @@ def ask_ui_config_file():
 @eel.expose
 def ask_dir():
     return dialogs.ask_dir()
+
+
+@eel.expose
+def load_configuration(file_path):
+    return utils.get_config_from_file(file_path, convert_version=True)
+
+
+@eel.expose
+def get_new_configuration():
+    return utils.get_new_config()
+
+
+@eel.expose
+def save_configuration(data: dict, file_path: str, work_dir: str) -> dict:
+    try:
+        dir_path, file_name = os.path.split(file_path)
+        if work_dir and os.path.exists(work_dir):
+            file_path = os.path.join(work_dir, file_name)
+            dir_path = work_dir
+
+        utils.save_config_to_file(data, file_path)
+        utils.save_project_config_to_file(data, dir_path)
+        return {'result': 'success'}
+    except Exception as e:
+        return {'result': 'error', 'msg': str(e)}
 
 
 @eel.expose

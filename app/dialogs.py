@@ -2,7 +2,6 @@ import platform
 
 from tkinter import Tk
 from tkinter.filedialog import askopenfilename, asksaveasfilename, askdirectory
-from .utils import check_config_file
 
 
 def ask_file(file_type):
