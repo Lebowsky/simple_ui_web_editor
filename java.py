@@ -1,5 +1,5 @@
 import json
-from app.config import resource_path
+from app.config import get_resource_path
 
 
 def jclass(cls_name):
@@ -11,7 +11,7 @@ class NoSQL:
     def __init__(self, database: str):
         if database:
             self.database = database
-            self.database_path = resource_path(f'{database}.json')
+            self.database_path = get_resource_path(f'{database}.json')
             with open(self.database_path, 'w', encoding='utf-8') as f:
                 json.dump({}, f, ensure_ascii=True, indent=4)
         else:
