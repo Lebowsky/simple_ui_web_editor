@@ -7,7 +7,7 @@ $(document).ready(function(){
 	if (!filePath) {
 		newFile();
 	} else {
-		readFile(filePath);
+		readUiConfigFile(filePath);
 	}
 
 	async function newFile () {
@@ -15,7 +15,7 @@ $(document).ready(function(){
 		initReadedConf(conf)
 	}
 
-	async function readFile (filePath) {
+	async function readUiConfigFile (filePath) {
 		conf = await loadConfiguration(filePath);
 		initReadedConf(conf, filePath);
 	}

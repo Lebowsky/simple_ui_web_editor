@@ -13,12 +13,18 @@ def ask_file(file_type):
     if (file_type is None) or (platform.system() == "Darwin"):
         file_path = askopenfilename(parent=root)
     else:
-        if file_type == 'simple_ui':
-            file_types = [('Simple UI files', '*.ui')]
-        elif file_type == 'python':
-            file_types = [('Python files', '*.py')]
+        file_mask_types = {
+            'simple_ui': [('Simple UI files', '*.ui')],
+            'python': [('Python files', '*.py')],
+            'project_config': [('Project config files', '*.json')],
+            'json': [('Project config files', '*.json')],
+        }
+
+        if file_type in file_mask_types:
+            file_types = file_mask_types[file_type]
         else:
             file_types = [('All files', '*')]
+
         file_path = askopenfilename(parent=root, filetypes=file_types)
     root.update()
 

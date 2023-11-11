@@ -11,7 +11,6 @@ async function pickFile(file_type) {
 			initReadedConf(conf, result.file_path);
 			localStorage.setItem('file-path', result.file_path);
 		} else if (file_type == 'python') {
-			console.log(result);
 			$("#file_path").val(result.file_path);
 			$("#PyFileKey").val(result.file_name);
 		}
