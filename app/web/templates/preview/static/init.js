@@ -9,7 +9,7 @@ $(document).ready(function () {
     $(document).on('keypress', function (e) {
         if (e.keyCode === 13) {
             if (code.length > 10) {
-                console.log(code);
+                console.debug(code);
                 formdata = { data: 'barcode', barcode: code }
                 socket.emit('input_event', formdata);
 
@@ -140,9 +140,9 @@ $(document).ready(function () {
         try {
             let r = await fetch('/upload_file?id=' + data.file_id + '&sid=' + socket.id,
                 { method: "POST", body: formData, signal: ctrl.signal });
-            console.log('HTTP response code:', r.status);
+            console.debug('HTTP response code:', r.status);
         } catch (e) {
-            console.log('Some problem...:', e);
+            console.error('Some problem...:', e);
         }
     }
     socket.on('upload_file', function (data) {

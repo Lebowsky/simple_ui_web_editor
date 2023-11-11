@@ -22,7 +22,6 @@ const getQRByteArrayAsBase64 = async () => {
 
 async function setConfigUIElements() {
 	result = await eel.get_config_ui_elements()();
-	console.log(result)
 	main.elementParams = result
 };
 

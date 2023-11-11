@@ -29,6 +29,7 @@ var keys = {
 	"27" : 'closeModal', // Esc
 	"ctrl+13" : 'saveElementModal', // Ctrl+Enter
         "ctrl+83" : 'fileLocationSave', // Ctrl+S
+        "ctrl+79" : 'showPickFile', //Ctrl+O
 }
 
 const newElements = {

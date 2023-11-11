@@ -16,8 +16,10 @@ $(document).ready(function(){
 	}
 
 	async function readUiConfigFile (filePath) {
-		conf = await loadConfiguration(filePath);
-		initReadedConf(conf, filePath);
+		result = await loadConfiguration(filePath);
+		if (result && result.ui_config_data){
+			initReadedConf(result.ui_config_data, filePath);
+		}
 	}
 
 	$('#prev').resizable({
@@ -302,7 +304,7 @@ $(document).ready(function(){
 		if (e.altKey)
 			key = "alt+"+key;
 
-		// console.log(e.keyCode);
+		console.debug(e.keyCode);
 
 		if (keys[key]) {
 			e.preventDefault();
@@ -365,7 +367,7 @@ function copyTextToClipboard(text) {
         return;
     }
     navigator.clipboard.writeText(text).then(function() {
-        console.log('Async: Copying to clipboard was successful!');
+        console.debug('Async: Copying to clipboard was successful!');
     	notificate('Скопировано в буфер', 'success') 
     }, function(err) {
         console.error('Async: Could not copy text: ', err);
@@ -392,7 +394,7 @@ function selectTab(tabNode) {
 
 	$(".main-conf-wrap section").removeClass("active");
 	$(".main-conf-wrap #" + tabID).addClass("active");
-	console.log($(this).data());
+	console.debug($(this).data());
 	//if ($(tabNode).data('tab-id') != 'main-conf-process') {
 		$("#main-conf-screen").removeClass('active');
 		$("#main-conf-cvframes").removeClass('active');
@@ -450,7 +452,7 @@ function sortableInit(node) {
     	cursor: "grabbing",
     	handle: ".move",
 		update: function(event, ui) {
-			console.log(ui.item.prev().attr("data-id"))
+			console.debug(ui.item.prev().attr("data-id"))
 			let element1Id = ui.item.attr("data-id");
 			
 			if (ui.originalPosition.top < ui.position.top)

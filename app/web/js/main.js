@@ -90,7 +90,7 @@ var Main = {
 			try {
 				[vendorLogin = '', vendorPassword = ''] = decodeURIComponent(atob(vendorAuth.split(' ')[1])).split(':');
 			}catch(error){
-				console.log(error);
+				console.error(error);
 			};
 		};
 		$('#vendor-login').val(vendorLogin);
@@ -100,7 +100,7 @@ var Main = {
 			try{
 				[handlersLogin = '', handlersPassword = ''] = decodeURIComponent(atob(handlerAuth.split(' ')[1])).split(':');
 			}catch(error){
-				console.log(error);
+				console.error(error);
 			};
 		};
 		$('#handlers-login').val(handlersLogin);
@@ -134,7 +134,10 @@ var Main = {
 			},
 			fileLocationSave: () => {
 				fileLocationSave();
-			}
+			},
+			showPickFile: () => {
+				showPickFile();
+			},
 		}[event];
 	}
 }
