@@ -7,7 +7,10 @@ async function pickFile(file_type) {
 	let result = await askFile(file_type);
 	if (checkAskFileResult(result)){
 		if (file_type == 'simple_ui') {
-			conf = await loadConfiguration(result.file_path);
+			if (result.ui_config_data)
+				conf = result.ui_config_data
+			else
+				conf = await loadConfiguration(result.file_path);
 			initReadedConf(conf, result.file_path);
 			localStorage.setItem('file-path', result.file_path);
 		} else if (file_type == 'python') {

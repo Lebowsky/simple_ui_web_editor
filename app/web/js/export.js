@@ -27,11 +27,12 @@ async function setConfigUIElements() {
 };
 
 async function askFile(file_type) {
-	return eel.ask_file(file_type)();
-};
-
-async function askUiConfigFile(){
-	return eel.ask_ui_config_file()();
+	if (file_type=='simple_ui'){
+		return eel.ask_ui_config_file()();
+	}else{
+		return eel.ask_file(file_type)();
+	};
+	
 };
 
 async function askDir() {

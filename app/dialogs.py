@@ -14,7 +14,7 @@ def ask_file(file_type):
         file_path = askopenfilename(parent=root)
     else:
         file_mask_types = {
-            'simple_ui': [('Simple UI files', '*.ui')],
+            'simple_ui': [('Simple UI files', '*.ui'), ('All files', '*')],
             'python': [('Python files', '*.py')],
             'project_config': [('Project config files', '*.json')],
             'json': [('Project config files', '*.json')],

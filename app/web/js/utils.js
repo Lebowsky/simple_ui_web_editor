@@ -3,7 +3,6 @@ function checkAskFileResult(answer){
     
     if (answer == null){
         result = false   
-
     }else if (answer.error){
         if (answer.error == 'VersionError' && 
             confirm('Выбранный файл будет преобразован в новый формат. Продолжить?')){
@@ -12,7 +11,7 @@ function checkAskFileResult(answer){
             notificate('Ошибка чтения файла: ' + answer.error)
             console.log(JSON.parse(answer.message))
         };
-	}else if (typeof answer.file_path != 'undefined'){
+	}else if (answer.file_path){
         result = true;
 	}else{
 		notificate('Ошибка выполнения команды чтения файла');

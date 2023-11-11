@@ -18,7 +18,7 @@ from .models.root_config import RootConfigModel, QRCodeConfig
 from .config import app_server_port
 
 python_modules = {}
-
+ui_config_manager = None
 
 def can_use_chrome():
     """ Identify if Chrome is available for Eel to use """
@@ -45,22 +45,20 @@ def save_config_to_file(config_data, file_path):
 
 
 def get_config_from_file(file_path):
-    if file_path:
-        check_result = check_config_file(file_path)
-        if check_result:
-            if check_result.get('error'):
-                if check_result['error'] == 'VersionError':
-                    return convert_config_version(file_path)
-                else:
-                    return check_result
-            else:
-                with open(file_path, encoding='utf-8') as json_file:
-                    json_data = json.load(json_file)
-                    check_file_paths(json_data, os.path.split(file_path)[0])
-                    return RootConfigModel(**json_data).dict(by_alias=True, exclude_none=True)
-        else:
-            raise Exception(check_result)
+    global ui_config_manager
+    try:
+        if ui_config_manager is None:
+            ui_config_manager = UiConfigManager(file_path=file_path)
+            ui_config_manager.init_config()
 
+        result = {
+            'file_path': file_path,
+            'ui_config_data' : ui_config_manager.get_config_data()
+        }
+    except InitUiConfigError as e:
+        result = e.json()
+
+    return result
 
 def get_new_config():
     return RootConfigModel().dict(by_alias=True, exclude_none=True)
@@ -303,17 +301,24 @@ def update_python_modules(new_modules: dict):
 def get_python_modules():
     return python_modules
 
+
 class UiConfigManager:
     def __init__(self, file_path):
         self.file_path = str(pathlib.Path(file_path))
         self.config_data = {}
         self.error = {}
+        self.unsupported_version = False
 
     def init_config(self):
-        if self._read_config():
-            self._check_config()
+        if self._read_config() and self._check_config():
+            self.config_data = RootConfigModel(**self.config_data).dict(by_alias=True, exclude_none=True)
         if self.error:
             raise InitUiConfigError(json.dumps(self.error))
+
+    def get_config_data(self):
+        if self._is_unsupported_version_config():
+            self._convert_config_version()
+        return RootConfigModel(**self.config_data).dict(by_alias=True, exclude_none=True)
 
     def _read_config(self):
         result = False
@@ -347,9 +352,15 @@ class UiConfigManager:
         return result
 
     def _check_config_version(self):
+        if self._is_unsupported_version_config():
+            self.unsupported_version = True
+            raise VersionError('Unsupported configuration version')
+        return True
+
+    def _is_unsupported_version_config(self):
         for item in ['DefServiceConfiguration', 'OnlineServiceConfiguration']:
             if item in self.config_data.keys() and self.config_data[item]:
-                raise VersionError('Unsupported configuration version')
+                return True
 
         check_keys = ['DefOnCreate', 'DefOnInput', 'DefOnlineOnCreate', 'DefOnlineOnInput']
 
@@ -359,11 +370,27 @@ class UiConfigManager:
             for operation in process['Operations']:
                 for item in check_keys:
                     if item in operation.keys() and operation[item]:
-                        raise VersionError('Unsupported configuration version')
+                        return True
 
-        return True
+    def _convert_config_version(self):
+        check_keys = {
+            'DefOnCreate': {'event': 'onStart', 'action': 'run', 'type': 'python'},
+            'DefOnInput': {'event': 'onInput', 'action': 'run', 'type': 'python'},
+            'DefOnlineOnCreate': {'event': 'onStart', 'action': 'run', 'type': 'online'},
+            'DefOnlineOnInput': {'event': 'onInput', 'action': 'run', 'type': 'online'}
+        }
 
+        for process in self.config_data['ClientConfiguration']['Processes']:
+            if not process.get('Operations'):
+                continue
 
+            for operation in process['Operations']:
+                handlers = operation.get('Handlers', [])
+                for item in check_keys:
+                    if item in operation.keys() and operation[item]:
+                        handlers.append(
+                            Handler(method=operation[item], **check_keys[item]))
+                operation['Handlers'] = handlers
 
 class ProjectConfigManager:
     def __init__(self, config_data):
@@ -625,7 +652,8 @@ class RequestsManager:
             raise requests.exceptions.RequestException()
 
 class InitUiConfigError(Exception):
-    pass
+    def json(self):
+        return json.loads(str(self))
 
 class VersionError(Exception):
     pass

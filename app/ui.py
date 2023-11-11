@@ -51,12 +51,13 @@ def ask_file(file_type):
         result = {'file_path': file_path}
         return result
 
+@eel.expose
 def ask_ui_config_file():
     """ Ask the user to select a simple_ui file """
 
     file_path = dialogs.ask_file('simple_ui')
     if file_path:
-        result = {'file_path': file_path}
+        result = utils.get_config_from_file(file_path)
         return result
 
 @eel.expose
