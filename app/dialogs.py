@@ -28,11 +28,7 @@ def ask_file(file_type):
         file_path = askopenfilename(parent=root, filetypes=file_types)
     root.update()
 
-    if file_path:
-        result = {'file_path': file_path}
-        if file_type == 'simple_ui':
-            result = check_config_file(file_path)
-        return result
+    return file_path
 
 
 def ask_save_file(file_type='simple_ui'):

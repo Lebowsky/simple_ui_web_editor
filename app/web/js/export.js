@@ -30,6 +30,10 @@ async function askFile(file_type) {
 	return eel.ask_file(file_type)();
 };
 
+async function askUiConfigFile(){
+	return eel.ask_ui_config_file()();
+};
+
 async function askDir() {
 	return eel.ask_dir()();
 };

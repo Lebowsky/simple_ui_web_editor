@@ -45,8 +45,19 @@ def get_new_configuration():
 @eel.expose
 def ask_file(file_type):
     """ Ask the user to select a file """
-    return dialogs.ask_file(file_type)
 
+    file_path = dialogs.ask_file(file_type)
+    if file_path:
+        result = {'file_path': file_path}
+        return result
+
+def ask_ui_config_file():
+    """ Ask the user to select a simple_ui file """
+
+    file_path = dialogs.ask_file('simple_ui')
+    if file_path:
+        result = {'file_path': file_path}
+        return result
 
 @eel.expose
 def ask_dir():
