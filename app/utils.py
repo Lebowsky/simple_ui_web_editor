@@ -19,7 +19,7 @@ from .models.root_config import RootConfigModel, QRCodeConfig
 from .config import app_server_port
 
 python_modules = {}
-ui_config_manager = None
+ui_config_manager: 'UiConfigManager' = None
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
@@ -59,13 +59,12 @@ def get_new_config():
     return RootConfigModel().dict(by_alias=True, exclude_none=True)
 
 
-def save_config_to_file(config_data, file_path):
-    if not file_path:
-        raise FileNotFoundError('Не указан файл конфигурации')
-    config = RootConfigModel(**config_data)
-    with open(file_path, 'w', encoding="utf-8") as f:
-        json.dump(config.dict(by_alias=True, exclude_none=True), f, ensure_ascii=False, indent=4,
-                  separators=(',', ': '))
+def save_configuration(config_data, file_path):
+    global ui_config_manager
+    if ui_config_manager is None:
+        ui_config_manager = UiConfigManager(file_path)
+
+    return ui_config_manager.save_configuration(config_data)
 
 
 def check_file_paths(data: dict, path: str):
@@ -258,6 +257,43 @@ class UiConfigManager:
         if convert_version and self._is_unsupported_version_config():
             self._convert_config_version()
         return RootConfigModel(**self.config_data).dict(by_alias=True, exclude_none=True)
+
+    def set_config_data(self, config_data):
+        self.config_data = config_data
+
+    def save_configuration(self, config_data):
+        self.set_config_data(config_data)
+        if self.save_config_to_file():
+            return {'result': 'success'}
+        else:
+            return {
+                'result': 'error',
+                'msg': json.dumps(self.error)
+            }
+
+    def save_config_to_file(self):
+        result = False
+        try:
+            config = RootConfigModel(**self.config_data)
+            with open(self.file_path, 'w', encoding="utf-8") as f:
+                json.dump(
+                    config.dict(by_alias=True, exclude_none=True),
+                    f,
+                    ensure_ascii=False,
+                    indent=4,
+                    separators=(',', ': ')
+                )
+            result = True
+        except ValidationError as e:
+            self.error = {'error': 'ValidationError', 'message': e.json()}
+        except FileExistsError as e:
+            self.error = {'error': 'FileExistsError', 'message': self.file_path}
+        except json.JSONDecodeError as e:
+            self.error = {'error': 'JSONDecodeError', 'message': str(e)}
+        except Exception as e:
+            self.error = {'error': 'UnknownError', 'message': str(e)}
+
+        return result
 
     def _read_config(self):
         result = False

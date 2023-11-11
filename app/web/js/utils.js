@@ -50,7 +50,10 @@ async function saveConfiguration(){
 
 	let handlers = await fillBase64Handlers();
 	if (saveConfFiles(main.conf, filePath, workingDir, handlers)){
-        //main.configGraph = new ClientConfiguration(main.conf.ClientConfiguration);
+        notificate('Файл успешно сохранен', 'success')
+        main.loadPrev();
+    }else{
+        notificate('Ошибка сохранения файла: ' + result_save.msg, 'danger')
     }
 }
 async function buildConfiguration(){
@@ -60,19 +63,13 @@ async function saveConfFiles(conf, filePath, workingDir, pyHandlers){
     let result_save = await saveConf(conf, filePath, workingDir)
     let result_check = checkSaveFileResult(result_save)
 
-    if (result_check){
-        result_save = await savePyHandlers(pyHandlers, workingDir)
-        result_check = checkSaveFileResult(result_save)
-    }
-
-    if (! result_check)
-        notificate('Ошибка сохранения файла: ' + result_save.msg, 'danger')
-    else
-        notificate('Файл успешно сохранен', 'success')
-        main.loadPrev();
-
+    // if (result_check){
+    //     result_save = await savePyHandlers(pyHandlers, workingDir)
+    //     result_check = checkSaveFileResult(result_save)
+    // }
     return result_check
 }
+
 async function fillBase64Handlers(){
     let result = null;
     const filePath = $('#py-handlers-file-path').attr('data-path');
@@ -84,6 +81,7 @@ async function fillBase64Handlers(){
 
     if (result != null && result.length > 0){
         conf.PyHandlers = result;
+        conf.pyHandlersPath = filePath
 		// main.saveElement(getSaveParamValueById('py-handlers-file-path', 'path'), "Configuration", "");
     }else{
         conf.pyHandlersPath = ''
