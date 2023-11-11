@@ -113,19 +113,21 @@ def check_file_paths(data: dict, path: str):
         if item.get('file_path') and not os.path.exists(item['file_path']):
             item['file_path'] = ''
 
-        # local_path = project_conf.get(item['PyFileKey'], '')
-        local_path = ''
+        folder_path = (project_config_data.get('modules', {}).get(item['PyFileKey']))
+        file_path = pathlib.Path(path, folder_path) or pathlib.Path(item.get('file_path', ''))
 
-        file_path = pathlib.Path(path, local_path, '{}.py'.format(item['PyFileKey']))
         if file_path.exists():
             item['file_path'] = str(file_path)
 
-    file_path = project_config_data.get('handlers') or data['ClientConfiguration'].get('pyHandlersPath')
-    if file_path and not os.path.exists(file_path):
+    file_path = (
+        pathlib.Path(path, project_config_data.get('handlers', ''))
+        or pathlib.Path(data['ClientConfiguration'].get('pyHandlersPath'))
+    )
+
+    if file_path and not file_path.exists():
         data['ClientConfiguration']['pyHandlersPath'] = ''
 
-    file_path = os.path.join(path, 'main.py')
-    if os.path.exists(file_path):
+    if file_path.exists():
         data['ClientConfiguration']['pyHandlersPath'] = file_path
 
 
