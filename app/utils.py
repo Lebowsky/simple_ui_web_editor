@@ -1,6 +1,5 @@
 import io
 import os
-import pathlib
 import logging
 import socket
 import base64
@@ -19,7 +18,6 @@ from .models.root_config import RootConfigModel, QRCodeConfig
 from .config import app_server_port
 
 python_modules = {}
-ui_config_manager: 'UiConfigManager' = None
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
@@ -39,101 +37,41 @@ def get_port():
     return port
 
 
-def get_configuration_from_file(file_path, convert_version=False):
-    global ui_config_manager
-    try:
-        if convert_version is False:
-            ui_config_manager = UiConfigManager(file_path=file_path)
-            ui_config_manager.init_config()
-
-        result = {
-            'file_path': ui_config_manager.file_path,
-            'ui_config_data': ui_config_manager.get_config_data(convert_version=convert_version)
-        }
-    except InitUiConfigError as e:
-        result = e.json()
-    return result
+def update_python_modules(new_modules: dict):
+    if new_modules:
+        global python_modules
+        python_modules = new_modules
 
 
-def get_new_configuration():
-    return RootConfigModel().dict(by_alias=True, exclude_none=True)
-
-
-def save_configuration(config_data, file_path):
-    global ui_config_manager
-    if ui_config_manager is None:
-        ui_config_manager = UiConfigManager(file_path)
-
-    return ui_config_manager.save_configuration(config_data)
+def get_python_modules():
+    return python_modules
 
 
 def check_file_paths(data: dict, path: str):
-    project_config_data = get_data_from_project_config(path)
+    pass
+    # project_config_data = get_data_from_project_config(path)
 
-    py_files = data['ClientConfiguration'].get('PyFiles', [])
-    for item in py_files:
-        if item.get('file_path') and not os.path.exists(item['file_path']):
-            item['file_path'] = ''
-
-        folder_path = (project_config_data.get('modules', {}).get(item['PyFileKey']))
-        file_path = pathlib.Path(path, folder_path) or pathlib.Path(item.get('file_path', ''))
-
-        if file_path.exists():
-            item['file_path'] = str(file_path)
-
-    file_path = (
-            pathlib.Path(path, project_config_data.get('handlers', ''))
-            or pathlib.Path(data['ClientConfiguration'].get('pyHandlersPath'))
-    )
-
-    if file_path and not file_path.exists():
-        data['ClientConfiguration']['pyHandlersPath'] = ''
-
-    if file_path.exists():
-        data['ClientConfiguration']['pyHandlersPath'] = file_path
-
-
-def get_data_from_project_config(path):
-    path_to_config = pathlib.Path(path) / 'project_config.json'
-    project_conf = {}
-    if path_to_config.exists():
-        with open(path_to_config) as f:
-            try:
-                project_conf = json.load(f)
-            except json.JSONDecodeError:
-                project_conf = {}
-
-    return project_conf
-
-
-def save_project_config_to_file(data, path_to_project):
-    file_name = 'project_config.json'
-    path_to_project_config = pathlib.Path(path_to_project, file_name)
-    config_data = create_project_config_data(data['ClientConfiguration'], path_to_project)
-    with open(path_to_project_config, 'w', encoding='utf-8') as f:
-        json.dump(config_data, f, ensure_ascii=False, indent=2)
-
-
-def create_project_config_data(files_data: dict, project_path: str):
-    def get_relpath(full_path, prefix):
-        full_path = str(pathlib.Path(full_path))
-        prefix = str(pathlib.Path(prefix))
-        return f'./{os.path.relpath(full_path, os.path.commonprefix([full_path, prefix]))}'
-
-    result = {}
-    handlers_path = files_data.get('pyHandlersPath')
-    py_files = files_data.get('PyFiles')
-
-    if handlers_path:
-        result['handlers'] = get_relpath(handlers_path, project_path)
-
-    if py_files:
-        modules = {
-            item['PyFileKey']: get_relpath(item['file_path'], project_path)
-            for item in py_files if item.get('file_path')
-        }
-        result['modules'] = modules
-    return result
+    # py_files = data['ClientConfiguration'].get('PyFiles', [])
+    # for item in py_files:
+    #     if item.get('file_path') and not os.path.exists(item['file_path']):
+    #         item['file_path'] = ''
+    #
+    #     folder_path = (project_config_data.get('modules', {}).get(item['PyFileKey']))
+    #     file_path = pathlib.Path(path, folder_path) or pathlib.Path(item.get('file_path', ''))
+    #
+    #     if file_path.exists():
+    #         item['file_path'] = str(file_path)
+    #
+    # file_path = (
+    #         pathlib.Path(path, project_config_data.get('handlers', ''))
+    #         or pathlib.Path(data['ClientConfiguration'].get('pyHandlersPath'))
+    # )
+    #
+    # if file_path and not file_path.exists():
+    #     data['ClientConfiguration']['pyHandlersPath'] = ''
+    #
+    # if file_path.exists():
+    #     data['ClientConfiguration']['pyHandlersPath'] = file_path
 
 
 def save_base64_data(ui_configuration):
@@ -145,6 +83,14 @@ def save_base64_data(ui_configuration):
     for item in py_files:
         if item.get('file_path'):
             item['PyFileData'] = make_base64_from_file(item['file_path'])
+
+
+def make_base64_from_file(file_path: str) -> str:
+    if os.path.exists(file_path):
+        with open(file_path, 'r', encoding='utf-8') as file:
+            data = file.read()
+            base64file = base64.b64encode(data.encode('utf-8')).decode('utf-8')
+            return base64file
 
 
 def validate_configuration_model(ui_configuration: dict) -> dict:
@@ -175,68 +121,8 @@ def get_qr_code_config():
     return base_64_mage
 
 
-def get_config_ui_elements(model=RootConfigModel) -> dict:
-    scheme = jsonref.loads(model.schema_json(indent=2, ensure_ascii=True))
-    elements = [v for v in scheme['definitions'].values() if v.get('properties', None)]
-    result = {}
-    containers = {}
-
-    for el in elements:
-        fields = {}
-        title = el['title']
-
-        for key, value in el['properties'].items():
-            props = value.copy()
-            props['required'] = key in (el.get('required') or [])
-            props['hidden'] = key in ['type', 'PyFileData']
-
-            fields[key] = ui_config.BaseField(text=value.get('title') or key, **props)
-            if key == 'Elements':
-                containers[title] = _get_elements_items(value)
-
-        result[title] = ui_config.create_element(title, fields).dict(exclude_none=True)
-
-    for key, value in containers.items():
-        for item in value:
-            element_type = ui_config.ElementType(parent=key, type='select', options=value, text='type')
-
-            result[item]['type_'].append(element_type)
-
-    return ui_config.convert_to_dict(result)
-
-
-def _get_elements_items(value):
-    result = []
-
-    if value.get('items', None):
-        if value['items'].get('oneOf', None):
-            result = [element['title'] for element in value['items']['oneOf']]
-        elif value['items'].get('anyOf', None):
-            result = [element['title'] for element in value['items']['anyOf']]
-
-    return result
-
-
-def make_base64_from_file(file_path: str) -> str:
-    if os.path.exists(file_path):
-        with open(file_path, 'r', encoding='utf-8') as file:
-            data = file.read()
-            base64file = base64.b64encode(data.encode('utf-8')).decode('utf-8')
-            return base64file
-
-
 def get_content_from_base64(base_64_str: str) -> str:
     return base64.b64decode(base_64_str).decode('utf-8')
-
-
-def update_python_modules(new_modules: dict):
-    if new_modules:
-        global python_modules
-        python_modules = new_modules
-
-
-def get_python_modules():
-    return python_modules
 
 
 class UiConfigManager:
@@ -368,170 +254,261 @@ class UiConfigManager:
                 operation['Handlers'] = handlers
 
 
-class ProjectConfigManager:
-    def __init__(self, config_data):
-        self.config_data = project_config.ConfigData(**config_data)
-        self.default_handlers = 'handlers'
-        self.default_external_modules = 'external_modules'
-        self.default_media_data = 'media_data'
-        self.default_config_name = 'sui_config.json'
-        self.config = None
+class UiElementsConfigManager:
 
-    def get_config(self):
-        if os.path.exists(self.config_data.work_dir):
-            self._init_config()
-            self._create_folders()
-            self._save_project_files()
-            return self._create_config().dict(by_alias=True)
+    def get_config_ui_elements(self, model=RootConfigModel) -> dict:
+        scheme = jsonref.loads(model.schema_json(indent=2, ensure_ascii=True))
+        elements = [v for v in scheme['definitions'].values() if v.get('properties', None)]
+        result = {}
+        containers = {}
 
-    def _get_config_file_path(self):
-        file_paths = [
-            self.config_data.file_path,
-            os.path.join(self.config_data.work_dir, self.default_config_name)
-        ]
+        for el in elements:
+            fields = {}
+            title = el['title']
 
-        for file_path in file_paths:
-            if os.path.exists(file_path):
-                return file_path
+            for key, value in el['properties'].items():
+                props = value.copy()
+                props['required'] = key in (el.get('required') or [])
+                props['hidden'] = key in ['type', 'PyFileData']
 
-    def _save_config_file(self, file_name):
-        file_path = os.path.join(
-            self.config_data.work_dir, file_name)
+                fields[key] = ui_config.BaseField(text=value.get('title') or key, **props)
+                if key == 'Elements':
+                    containers[title] = self._get_elements_items(value)
 
-        with open(file_path, 'w', encoding='utf-8') as f:
-            json.dump(self.config.dict(by_alias=True), f, ensure_ascii=False, indent=2)
-            self.file_path = file_path
+            result[title] = ui_config.create_element(title, fields).dict(exclude_none=True)
 
-    def _init_new(self):
-        self.config = project_config.ProjectConfig(
-            py_handlers=f'{self.default_handlers}/*.py',
-            py_files=f'{self.default_external_modules}/*.py',
-            media_files=f'{self.default_media_data}/*.*'
-        )
-        self._save_config_file(self.default_config_name)
+        for key, value in containers.items():
+            for item in value:
+                element_type = ui_config.ElementType(parent=key, type='select', options=value, text='type')
 
-    def _init_config(self):
-        file_path = self._get_config_file_path()
+                result[item]['type_'].append(element_type)
 
-        if file_path:
-            self.file_path = file_path
-            with open(file_path, encoding='utf-8') as f:
-                self.config = project_config.ProjectConfig.parse_raw(f.read())
-        else:
-            self._init_new()
+        return ui_config.convert_to_dict(result)
 
-    def _create_folders(self):
-        for key, value in self.config.dict().items():
-            if isinstance(value, list):
-                for item in value:
-                    dir_name = os.path.join(self.config_data.work_dir, os.path.dirname(item))
+    @staticmethod
+    def _get_elements_items(value):
+        result = []
 
-                    if dir_name and not os.path.exists(dir_name):
-                        os.makedirs(dir_name)
-            else:
-                dir_name = os.path.join(self.config_data.work_dir, os.path.dirname(value))
-                if dir_name and not os.path.exists(dir_name):
-                    os.makedirs(dir_name)
-
-    def _get_files_locations(self) -> list:
-        files_locations = []
-
-        if self.config_data.py_handlers:
-            files_locations.append({
-                'path': os.path.join(
-                    self.config_data.work_dir,
-                    self.default_handlers,
-                    'current_handlers.py'),
-                'data': self.config_data.py_handlers
-            })
-
-        for item in self.config_data.py_files:
-            files_locations.append({
-                'path': os.path.join(
-                    self.config_data.work_dir,
-                    self.default_external_modules,
-                    f'{item.py_file_key}'),
-                'data': item.py_file_data
-            })
-
-        for item in self.config_data.media_files:
-            files_locations.append({
-                'path': os.path.join(
-                    self.config_data.work_dir,
-                    self.default_media_data,
-                    f'{item.media_file_key}.{item.media_file_ext}'),
-                'data': item.media_file_data
-            })
-
-        return files_locations
-
-    def _save_project_files(self):
-        files_locations = self._get_files_locations()
-
-        for item in files_locations:
-            content = get_content_from_base64(item['data'])
-            with open(item['path'], 'w', encoding='utf-8') as f:
-                f.write(content)
-
-    def _create_config(self):
-        handlers = glob.glob(
-            os.path.join(self.config_data.work_dir, self.config.py_handlers),
-            recursive=True
-        )
-
-        max_len = max([len(item) for item in handlers])
-        handlers_content = ''
-        for path in handlers:
-            delimiter = self._get_delimiter(path, max_len)
-            with open(path, encoding='utf-8') as f:
-                handlers_content += f'\n{delimiter}\n\n{f.read()}\n'
-
-        py_files = []
-        external_modules = self._get_glob_data(self.config.py_files)
-        for path in external_modules:
-            py_files.append({
-                'py_file_key': os.path.basename(path),
-                'py_file_data': make_base64_from_file(path),
-                'file_path': path
-            })
-
-        media_files = []
-        media_data = self._get_glob_data(self.config.media_files)
-        for data in media_data:
-            path = pathlib.Path(data)
-            media_files.append({
-                'media_file_data': make_base64_from_file(data),
-                'media_file_key': path.stem,
-                'media_file_ext': path.suffix[1:]
-            })
-
-        result = project_config.ConfigData(
-            work_dir=self.config_data.work_dir,
-            file_path=self.file_path,
-            py_handlers=base64.b64encode(handlers_content.encode('utf-8')).decode('utf-8'),
-            py_files=py_files,
-            media_files=media_files,
-        )
+        if value.get('items', None):
+            if value['items'].get('oneOf', None):
+                result = [element['title'] for element in value['items']['oneOf']]
+            elif value['items'].get('anyOf', None):
+                result = [element['title'] for element in value['items']['anyOf']]
 
         return result
 
-    def _get_glob_data(self, path):
-        return glob.glob(
-            os.path.join(self.config_data.work_dir, path),
-            recursive=True
-        )
 
-    def _get_delimiter(self, path, max_len):
-        gap_len = (max_len - len(path)) // 2
-        indents = ['###' + ' ' * gap_len, ' ' * gap_len + '###']
+class ProjectConfigManager:
+    def __init__(self, work_dir, file_name='sui_config.json'):
+        self.work_dir = work_dir
+        self.file_name = file_name
+        self.file_path = pathlib.Path(self.work_dir, file_name)
 
-        max_len = max_len + 6
+        # self.config_data = project_config.ConfigData(**config_data)
+        # self.default_handlers = 'handlers'
+        # self.default_external_modules = 'external_modules'
+        # self.default_media_data = 'media_data'
+        # self.default_config_name = 'sui_config.json'
+        # self.config = None
 
-        delimiter = path.join(indents)
-        frame = '=' * max_len
-        frame = f'#{frame[1:-1]}#'
+    def save_project_config_to_file(self, data):
+        config_data = self.create_project_config_data(data)
+        # with open(path_to_project_config, 'w', encoding='utf-8') as f:
+        #     json.dump(config_data, f, ensure_ascii=False, indent=2)
 
-        return '\n'.join([frame, delimiter, frame])
+    def create_project_config_data(self, data: dict, project_path):
+        files_data = data.get('ClientConfiguration')
+        if not files_data:
+            return
+
+        result = {}
+        handlers_path = files_data.get('pyHandlersPath')
+        py_files = files_data.get('PyFiles')
+
+        if handlers_path:
+            result['handlers'] = self.get_relpath(handlers_path)
+
+        if py_files:
+            modules = {
+                item['PyFileKey']: self.get_relpath(item['file_path'])
+                for item in py_files if item.get('file_path')
+            }
+            result['modules'] = modules
+        return result
+
+    def get_relpath(self, prefix):
+        full_path = str(pathlib.Path(self.work_dir))
+        prefix = str(pathlib.Path(prefix))
+        return f'./{os.path.relpath(full_path, os.path.commonprefix([full_path, prefix]))}'
+
+    def get_data_from_project_config(self, path):
+        path_to_config = pathlib.Path(path) / 'project_config.json'
+        project_conf = {}
+        if path_to_config.exists():
+            with open(path_to_config) as f:
+                try:
+                    project_conf = json.load(f)
+                except json.JSONDecodeError:
+                    project_conf = {}
+
+        return project_conf
+
+
+    # def get_config(self):
+    #     if os.path.exists(self.config_data.work_dir):
+    #         self._init_config()
+    #         self._create_folders()
+    #         self._save_project_files()
+    #         return self._create_config().dict(by_alias=True)
+
+    # def _get_config_file_path(self):
+    #     file_paths = [
+    #         self.config_data.file_path,
+    #         os.path.join(self.config_data.work_dir, self.default_config_name)
+    #     ]
+    #
+    #     for file_path in file_paths:
+    #         if os.path.exists(file_path):
+    #             return file_path
+    #
+    # def _save_config_file(self, file_name):
+    #     file_path = os.path.join(
+    #         self.config_data.work_dir, file_name)
+    #
+    #     with open(file_path, 'w', encoding='utf-8') as f:
+    #         json.dump(self.config.dict(by_alias=True), f, ensure_ascii=False, indent=2)
+    #         self.file_path = file_path
+    #
+    # def _init_new(self):
+    #     self.config = project_config.ProjectConfig(
+    #         py_handlers=f'{self.default_handlers}/*.py',
+    #         py_files=f'{self.default_external_modules}/*.py',
+    #         media_files=f'{self.default_media_data}/*.*'
+    #     )
+    #     self._save_config_file(self.default_config_name)
+    #
+    # def _init_config(self):
+    #     file_path = self._get_config_file_path()
+    #
+    #     if file_path:
+    #         self.file_path = file_path
+    #         with open(file_path, encoding='utf-8') as f:
+    #             self.config = project_config.ProjectConfig.parse_raw(f.read())
+    #     else:
+    #         self._init_new()
+    #
+    # def _create_folders(self):
+    #     for key, value in self.config.dict().items():
+    #         if isinstance(value, list):
+    #             for item in value:
+    #                 dir_name = os.path.join(self.config_data.work_dir, os.path.dirname(item))
+    #
+    #                 if dir_name and not os.path.exists(dir_name):
+    #                     os.makedirs(dir_name)
+    #         else:
+    #             dir_name = os.path.join(self.config_data.work_dir, os.path.dirname(value))
+    #             if dir_name and not os.path.exists(dir_name):
+    #                 os.makedirs(dir_name)
+    #
+    # def _get_files_locations(self) -> list:
+    #     files_locations = []
+    #
+    #     if self.config_data.py_handlers:
+    #         files_locations.append({
+    #             'path': os.path.join(
+    #                 self.config_data.work_dir,
+    #                 self.default_handlers,
+    #                 'current_handlers.py'),
+    #             'data': self.config_data.py_handlers
+    #         })
+    #
+    #     for item in self.config_data.py_files:
+    #         files_locations.append({
+    #             'path': os.path.join(
+    #                 self.config_data.work_dir,
+    #                 self.default_external_modules,
+    #                 f'{item.py_file_key}'),
+    #             'data': item.py_file_data
+    #         })
+    #
+    #     for item in self.config_data.media_files:
+    #         files_locations.append({
+    #             'path': os.path.join(
+    #                 self.config_data.work_dir,
+    #                 self.default_media_data,
+    #                 f'{item.media_file_key}.{item.media_file_ext}'),
+    #             'data': item.media_file_data
+    #         })
+    #
+    #     return files_locations
+    #
+    # def _save_project_files(self):
+    #     files_locations = self._get_files_locations()
+    #
+    #     for item in files_locations:
+    #         content = get_content_from_base64(item['data'])
+    #         with open(item['path'], 'w', encoding='utf-8') as f:
+    #             f.write(content)
+    #
+    # def _create_config(self):
+    #     handlers = glob.glob(
+    #         os.path.join(self.config_data.work_dir, self.config.py_handlers),
+    #         recursive=True
+    #     )
+    #
+    #     max_len = max([len(item) for item in handlers])
+    #     handlers_content = ''
+    #     for path in handlers:
+    #         delimiter = self._get_delimiter(path, max_len)
+    #         with open(path, encoding='utf-8') as f:
+    #             handlers_content += f'\n{delimiter}\n\n{f.read()}\n'
+    #
+    #     py_files = []
+    #     external_modules = self._get_glob_data(self.config.py_files)
+    #     for path in external_modules:
+    #         py_files.append({
+    #             'py_file_key': os.path.basename(path),
+    #             'py_file_data': make_base64_from_file(path),
+    #             'file_path': path
+    #         })
+    #
+    #     media_files = []
+    #     media_data = self._get_glob_data(self.config.media_files)
+    #     for data in media_data:
+    #         path = pathlib.Path(data)
+    #         media_files.append({
+    #             'media_file_data': make_base64_from_file(data),
+    #             'media_file_key': path.stem,
+    #             'media_file_ext': path.suffix[1:]
+    #         })
+    #
+    #     result = project_config.ConfigData(
+    #         work_dir=self.config_data.work_dir,
+    #         file_path=self.file_path,
+    #         py_handlers=base64.b64encode(handlers_content.encode('utf-8')).decode('utf-8'),
+    #         py_files=py_files,
+    #         media_files=media_files,
+    #     )
+    #
+    #     return result
+    #
+    # def _get_glob_data(self, path):
+    #     return glob.glob(
+    #         os.path.join(self.config_data.work_dir, path),
+    #         recursive=True
+    #     )
+    #
+    # def _get_delimiter(self, path, max_len):
+    #     gap_len = (max_len - len(path)) // 2
+    #     indents = ['###' + ' ' * gap_len, ' ' * gap_len + '###']
+    #
+    #     max_len = max_len + 6
+    #
+    #     delimiter = path.join(indents)
+    #     frame = '=' * max_len
+    #     frame = f'#{frame[1:-1]}#'
+    #
+    #     return '\n'.join([frame, delimiter, frame])
 
 
 class SQLQueryManager:

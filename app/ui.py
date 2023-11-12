@@ -2,6 +2,7 @@ import os
 
 import eel
 
+from . import eel_handlers
 from . import utils
 from . import config
 from . import dialogs
@@ -34,33 +35,13 @@ def ask_ui_config_file():
 
     file_path = dialogs.ask_file('simple_ui')
     if file_path:
-        result = utils.get_configuration_from_file(file_path)
+        result = eel_handlers.get_configuration_from_file(file_path)
         return result
 
 
 @eel.expose
 def ask_dir():
     return dialogs.ask_dir()
-
-
-@eel.expose
-def load_configuration(file_path):
-    return utils.get_configuration_from_file(file_path, convert_version=True)
-
-
-@eel.expose
-def get_new_configuration():
-    return utils.get_new_configuration()
-
-
-@eel.expose
-def save_configuration(data: dict, file_path: str, work_dir: str) -> dict:
-    return utils.save_configuration(data, file_path)
-
-
-@eel.expose
-def get_project_config(config_data):
-    pass
 
 
 @eel.expose
@@ -71,13 +52,33 @@ def ask_save_file(file_type):
 
 
 @eel.expose
+def load_configuration(file_path):
+    return eel_handlers.get_configuration_from_file(file_path, convert_version=True)
+
+
+@eel.expose
+def get_new_configuration():
+    return eel_handlers.get_new_configuration()
+
+
+@eel.expose
+def save_configuration(data: dict, file_path: str, work_dir: str) -> dict:
+    return eel_handlers.save_configuration(data, file_path)
+
+
+@eel.expose
+def get_project_config(config_data):
+    pass
+
+
+@eel.expose
 def get_qr_settings():
     return str(utils.get_qr_code_config())
 
 
 @eel.expose
 def get_config_ui_elements():
-    return utils.get_config_ui_elements()
+    return eel_handlers.get_config_ui_elements()
 
 
 @eel.expose

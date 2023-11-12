@@ -12,7 +12,8 @@ from fastapi_socketio import SocketManager
 
 from .preview_app import AsyncSimple
 from ..config import get_resource_path, app_server_port, app_server_host
-from ..utils import get_configuration_from_file, get_python_modules
+from ..utils import get_python_modules
+from ..eel_handlers import get_configuration_from_file
 
 sw: AsyncSimple
 
