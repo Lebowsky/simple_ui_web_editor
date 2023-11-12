@@ -58,6 +58,10 @@ async function saveConf(data, filePath, workingDir){
 	return await eel.save_configuration(data, filePath, workingDir)();
 }
 
+async function saveProjectConfig(data, workingDir){
+	return await eel.save_project_config(data, workingDir)();
+}
+
 async function savePyHandlers(pyHandlers, workingDir){
 	return await eel.save_handlers_files(pyHandlers, workingDir)();
 }

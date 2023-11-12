@@ -60,14 +60,16 @@ async function buildConfiguration(){
     return main.configGraph.getConfig()
 }
 async function saveConfFiles(conf, filePath, workingDir, pyHandlers){
-    let result_save = await saveConf(conf, filePath, workingDir)
-    let result_check = checkSaveFileResult(result_save)
+    let resultSave = await saveConf(conf, filePath, workingDir)
+    let resultCheck = checkSaveFileResult(resultSave)
 
-    // if (result_check){
+    if (resultCheck){
+        resultSave = await saveProjectConfig(conf, workingDir);
+        resultCheck = checkSaveFileResult(resultSave);
     //     result_save = await savePyHandlers(pyHandlers, workingDir)
     //     result_check = checkSaveFileResult(result_save)
-    // }
-    return result_check
+    };
+    return resultCheck;
 }
 
 async function fillBase64Handlers(){

@@ -3,7 +3,6 @@ import os
 import logging
 import socket
 import base64
-import glob
 import pathlib
 import requests
 import json
@@ -12,7 +11,7 @@ from eel import chrome
 from pydantic import ValidationError
 import qrcode
 
-from .models import ui_config, project_config
+from .models import ui_config
 from .models.handlers import Handler
 from .models.root_config import RootConfigModel, QRCodeConfig
 from .config import app_server_port
@@ -305,12 +304,12 @@ class ProjectConfigManager:
         self.file_path = pathlib.Path(self.work_dir, file_name)
         self.config_data = {}
 
-    def save_project_config_to_file(self, data):
-        self.create_config_data(data)
+    def save_project_config_to_file(self, ui_config_data):
+        self.create_config_data(ui_config_data)
         self._save_config_data_to_file()
 
-    def create_config_data(self, data: dict):
-        files_data = data.get('ClientConfiguration')
+    def create_config_data(self, ui_config_data: dict):
+        files_data = ui_config_data.get('ClientConfiguration')
         if not files_data:
             return
 
@@ -361,7 +360,7 @@ class ProjectConfigManager:
     def _get_relpath(self, full_path):
         full_path = str(pathlib.Path(full_path))
         prefix = str(pathlib.Path(self.work_dir))
-        return f'./{os.path.relpath(full_path, os.path.commonprefix([full_path, prefix]))}'
+        return f'.\\{os.path.relpath(full_path, os.path.commonprefix([full_path, prefix]))}'
 
     def _load_config_data_from_file(self):
         if self.file_path.exists():

@@ -67,6 +67,11 @@ def save_configuration(data: dict, file_path: str, work_dir: str) -> dict:
 
 
 @eel.expose
+def save_project_config(data, work_dir):
+    return eel_handlers.save_project_config(data, work_dir)
+
+
+@eel.expose
 def get_project_config(config_data):
     pass
 
