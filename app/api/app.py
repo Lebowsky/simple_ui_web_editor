@@ -12,7 +12,7 @@ from fastapi_socketio import SocketManager
 
 from .preview_app import AsyncSimple
 from ..config import get_resource_path, app_server_port, app_server_host
-from ..utils import get_config_from_file, get_python_modules
+from ..utils import get_configuration_from_file, get_python_modules
 
 sw: AsyncSimple
 
@@ -22,6 +22,7 @@ templates = Jinja2Templates(directory=get_resource_path('app/web/templates'))
 
 sio = SocketManager(app)
 server = ...
+
 
 class Server(uvicorn.Server):
     @contextlib.contextmanager
@@ -36,9 +37,11 @@ class Server(uvicorn.Server):
             self.should_exit = True
             thread.join()
 
+
 def run_uvicorn():
     global server
     server = Server(uvicorn.Config(app=app, host=app_server_host, port=app_server_port, reload=True))
+
 
 def restart_uvicorn(port: int):
     global server
@@ -54,10 +57,8 @@ run_uvicorn()
 
 @app.get('/get_conf')
 async def get_config(request: Request):
-    from ..ui import get_current_file_path, set_device_host, get_configuration
+    from ..ui import set_device_host, get_configuration
 
-    # file_path = await get_current_file_path()
-    # config = get_config_from_file(file_path)
     config = await get_configuration()
     await set_device_host(request.client.host)
     return config

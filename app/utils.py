@@ -39,7 +39,7 @@ def get_port():
     return port
 
 
-def get_config_from_file(file_path, convert_version=False):
+def get_configuration_from_file(file_path, convert_version=False):
     global ui_config_manager
     try:
         if convert_version is False:
@@ -55,7 +55,7 @@ def get_config_from_file(file_path, convert_version=False):
     return result
 
 
-def get_new_config():
+def get_new_configuration():
     return RootConfigModel().dict(by_alias=True, exclude_none=True)
 
 

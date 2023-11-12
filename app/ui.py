@@ -34,7 +34,7 @@ def ask_ui_config_file():
 
     file_path = dialogs.ask_file('simple_ui')
     if file_path:
-        result = utils.get_config_from_file(file_path)
+        result = utils.get_configuration_from_file(file_path)
         return result
 
 
@@ -45,12 +45,12 @@ def ask_dir():
 
 @eel.expose
 def load_configuration(file_path):
-    return utils.get_config_from_file(file_path, convert_version=True)
+    return utils.get_configuration_from_file(file_path, convert_version=True)
 
 
 @eel.expose
 def get_new_configuration():
-    return utils.get_new_config()
+    return utils.get_new_configuration()
 
 
 @eel.expose
