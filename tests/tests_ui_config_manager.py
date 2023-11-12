@@ -1,10 +1,9 @@
 import os.path
 import json
 import unittest
-from unittest.mock import MagicMock
-# import config
 
 from app import utils
+
 
 class TestUiConfigManager(unittest.TestCase):
     def test_can_read_config_file(self):
@@ -12,7 +11,6 @@ class TestUiConfigManager(unittest.TestCase):
         manager = utils.UiConfigManager(file_path=file_path)
         manager.init_config()
         self.assertFalse(manager.error)
-
 
     def test_can_not_read_config_file_with_file_not_found_error(self):
         file_path = os.path.abspath('./tests/tests_files/not_found.json')
