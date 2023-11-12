@@ -298,10 +298,10 @@ class UiElementsConfigManager:
 
 
 class ProjectConfigManager:
-    def __init__(self, work_dir, file_name='sui_config.json'):
+    def __init__(self, work_dir, **kwargs):
         self.work_dir = work_dir
-        self.file_name = file_name
-        self.file_path = pathlib.Path(self.work_dir, file_name)
+        self.file_name = kwargs.get('file_name') or 'sui_config.json'
+        self.file_path = pathlib.Path(self.work_dir, self.file_name)
         self.config_data = {}
 
     def save_project_config_to_file(self, ui_config_data):
@@ -345,6 +345,8 @@ class ProjectConfigManager:
             for item in files_data.get('PyFiles', []):
                 item['file_path'] = self._get_absolute_path(
                     modules.get(item.get('PyFileKey', ''), item.get('file_path', '')))
+
+
 
     def _save_config_data_to_file(self):
         try:

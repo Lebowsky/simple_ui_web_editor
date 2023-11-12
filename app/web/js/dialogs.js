@@ -6,19 +6,42 @@ function notificate(text, type) {
 async function pickFile(file_type) {
 	let result = await askFile(file_type);
 	if (checkAskFileResult(result)){
-		if (file_type == 'simple_ui') {
-			if (!result.ui_config_data)
-				result = await loadConfiguration(result.file_path);
+		// if (file_type == 'simple_ui') {
+	// 		if (!result.ui_config_data)
+	// 			result = await loadConfiguration(result.file_path);
 
-			initReadedConf(result.ui_config_data, result.file_path);
-			localStorage.setItem('file-path', result.file_path);
+	// 		initReadedConf(result.ui_config_data, result.file_path);
+	// 		localStorage.setItem('file-path', result.file_path);
 
-		} else if (file_type == 'python') {
-			$("#file_path").val(result.file_path);
-			$("#PyFileKey").val(result.file_name);
-		}
+	// 	} else if (file_type == 'python') {
+	// 		$("#file_path").val(result.file_path);
+	// 		$("#PyFileKey").val(result.file_name);
+	// 	}
 	};
 };
+
+async function pickWorkingDir(){
+	const result = await askDir();
+	if (checkAskDirResult(result)){
+		// $('#working-dir-path').text(resultAsk.path);
+		// $('.dir-path').text(resultAsk.path);
+		// main.settings.dirPath = resultAsk.path;
+		// const projectConfigPath = $('#project-config-path').text() || `${resultAsk.path}\sui_config.json`;
+
+		// const configData = {
+		// 	workDir: resultAsk.path,
+		// 	filePath: projectConfigPath,
+		// 	PyHandlers : main.conf.ClientConfiguration['PyHandlers'] || '',
+		// 	PyFiles : main.conf.ClientConfiguration['PyFiles'] || [],
+		// 	Mediafile : main.conf.ClientConfiguration['Mediafile'] || []
+		// }
+		// const projectConfig = getProjectConfig(configData);
+		// if (resultCheck && !resultAsk.error){
+		// 	$('#project-config-path').text(resultAsk.file_path);
+		// }
+	}
+};
+
 
 async function pickNewFileProject() {
 	let result = await askSaveFile()
@@ -27,6 +50,16 @@ async function pickNewFileProject() {
 		initReadedConf(conf, result.file_path)
 		localStorage.setItem('file-path', result.file_path);
 		return result.file_path;
+	}
+}
+
+async function pickProjectConfigFile(){
+
+}
+
+async function applyPickFiles(){
+	if (answer.error == 'VersionError' && confirm('Выбранный файл будет преобразован в новый формат. Продолжить?')){
+		result = true
 	}
 }
 
@@ -55,28 +88,6 @@ async function pickHandlersFile(){
 	$('#py-handlers-file-path').text(filePathText);
 };
 
-async function pickWorkingDir(){
-	const resultAsk = await askDir();
-
-	if (resultAsk && resultAsk.path){
-		$('#working-dir-path').text(resultAsk.path);
-		$('.dir-path').text(resultAsk.path);
-		main.settings.dirPath = resultAsk.path;
-		const projectConfigPath = $('#project-config-path').text() || `${resultAsk.path}\sui_config.json`;
-
-		const configData = {
-			workDir: resultAsk.path,
-			filePath: projectConfigPath,
-			PyHandlers : main.conf.ClientConfiguration['PyHandlers'] || '',
-			PyFiles : main.conf.ClientConfiguration['PyFiles'] || [],
-			Mediafile : main.conf.ClientConfiguration['Mediafile'] || []
-		}
-		const projectConfig = getProjectConfig(configData);
-		// if (resultCheck && !resultAsk.error){
-		// 	$('#project-config-path').text(resultAsk.file_path);
-		// }
-	}
-};
 
 async function pickProjectConfigFile(){
 	if (! main.conf)

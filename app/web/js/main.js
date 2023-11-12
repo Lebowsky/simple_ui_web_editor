@@ -49,6 +49,9 @@ var Main = {
 
 		this.loadPrev();
 	},
+	updateFilePaths(){
+
+	},
 	clearMainSection() {
 		$(selectors.processList).html("No processes");
 		$(selectors.operationsList).html("No operations");
@@ -137,6 +140,8 @@ var Main = {
 				fileLocationSave();
 			},
 			showPickFile: () => {
+				if (ModalWindow.getCurrentModal())
+					return
 				showPickFile();
 			},
 		}[event];

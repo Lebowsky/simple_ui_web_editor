@@ -4,13 +4,8 @@ function checkAskFileResult(answer){
     if (answer == null){
         result = false   
     }else if (answer.error){
-        if (answer.error == 'VersionError' && 
-            confirm('Выбранный файл будет преобразован в новый формат. Продолжить?')){
-            result = true
-        }else{
-            notificate('Ошибка чтения файла: ' + answer.error)
-            console.error(answer.message)
-        };
+        notificate('Ошибка чтения файла: ' + answer.error)
+        console.error(answer.message)
 	}else if (answer.file_path){
         result = true;
 	}else{
@@ -18,6 +13,9 @@ function checkAskFileResult(answer){
 	};
 
     return result;
+}
+function checkAskDirResult(answer){
+
 }
 function checkSaveFileResult(answer){
     let result = false
