@@ -650,12 +650,13 @@ class AuthModal extends ModalWindow{
     }
 }
 class PickFileModal extends ModalWindow{
-    constructor(filePath, dirPath) {
+    constructor(filePath, dirPath, projectConfigPath) {
         super();
         this.modal = $('');
         this.html = '';
         this.filePath = filePath;
         this.dirPath = dirPath;
+        this.projectConfigPath = projectConfigPath;
     }
     render(){
         this.html = `
@@ -681,8 +682,8 @@ class PickFileModal extends ModalWindow{
             <ul class="list">
                 <li>
                     <label>Simple UI file</label>
-                    <span id="project-config-path" data-param-name="projectConfig">${this.filePath ? this.filePath : '&lt;Not selected&gt;'}</span>
-                    <button id="open-project-config" onclick="pickFile('simple_ui')">Open file</button>
+                    <span id="ui-file-path" data-param-name="uiFilePath">${this.filePath ? this.filePath : '&lt;Not selected&gt;'}</span>
+                    <button id="open-ui-file" onclick="pickFile('simple_ui')">Open file</button>
                 </li>
                 <li>
                     <label>Working dir</label>
@@ -691,8 +692,8 @@ class PickFileModal extends ModalWindow{
                 </li>
                 <li>
                     <label>Project config file</label>
-                    <span id="working-dir-path" data-param-name="workingDir">${this.dirPath ? this.dirPath : '&lt;Not selected&gt;'}</span>
-                    <button id="open-working-dir" onclick="pickWorkingDir()">Open dir</button>
+                    <span id="project-config-path" data-param-name="projectConfigPath">${this.projectConfigPath ? this.projectConfigPath : '&lt;Not selected&gt;'}</span>
+                    <button id="open-project-config" onclick="pickFile('project_config')">Open file</button>
                 </li>
             </ul>
         </div>

@@ -6,6 +6,7 @@ var Main = {
 		modalWidth: [],
 		filePath: '',
 		dirPath: '',
+		projectConfigPath: '',
 		reqBodyEditor: {},
 	},
 	initUIConf(conf, filePath = 'New project'){
@@ -49,8 +50,10 @@ var Main = {
 
 		this.loadPrev();
 	},
-	updateFilePaths(){
-
+	updateFilePaths({filePath, dirPath, projectConfigPath}){
+		main.settings.filePath = filePath ? filePath : main.settings.filePath
+		main.settings.dirPath = dirPath ? dirPath : main.settings.dirPath
+		main.settings.projectConfigPath = projectConfigPath ? projectConfigPath : main.settings.projectConfigPath
 	},
 	clearMainSection() {
 		$(selectors.processList).html("No processes");
@@ -143,6 +146,11 @@ var Main = {
 				if (ModalWindow.getCurrentModal())
 					return
 				showPickFile();
+			},
+			pickNewFileProject: () => {
+				if (ModalWindow.getCurrentModal())
+					return
+				pickNewFileProject();
 			},
 		}[event];
 	}

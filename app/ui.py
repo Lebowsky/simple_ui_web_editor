@@ -25,7 +25,7 @@ def ask_file(file_type):
 
     file_path = dialogs.ask_file(file_type)
     if file_path:
-        result = {'file_path': file_path}
+        result = {'filePath': file_path}
         return result
 
 
@@ -35,8 +35,7 @@ def ask_ui_config_file():
 
     file_path = dialogs.ask_file('simple_ui')
     if file_path:
-        result = eel_handlers.get_configuration_from_file(file_path)
-        return result
+        return utils.get_ui_config_paths(file_path)
 
 
 @eel.expose
@@ -69,11 +68,6 @@ def save_configuration(data: dict, file_path: str, work_dir: str) -> dict:
 @eel.expose
 def save_project_config(data, work_dir):
     return eel_handlers.save_project_config(data, work_dir)
-
-
-@eel.expose
-def get_project_config(config_data):
-    pass
 
 
 @eel.expose

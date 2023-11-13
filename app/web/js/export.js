@@ -31,16 +31,11 @@ async function askFile(file_type) {
 	}else{
 		return eel.ask_file(file_type)();
 	};
-	
 };
 
 async function askDir() {
 	return eel.ask_dir()();
 };
-
-async function getProjectConfig(configData){
-	return eel.get_project_config(configData)();
-}
 
 async function askSaveFile() {
 	return eel.ask_save_file('simple_ui')();

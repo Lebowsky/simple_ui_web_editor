@@ -45,6 +45,18 @@ def update_python_modules(new_modules: dict):
 def get_python_modules():
     return python_modules
 
+def get_ui_config_paths(path):
+    path = pathlib.Path(path)
+    working_dir = path.parent
+    project_config = pathlib.Path(working_dir / 'sui_config.json')
+
+    result = {
+        'filePath': str(path),
+        'dirPath': str(working_dir) if working_dir else '',
+        'projectConfigPath': str(project_config) if project_config.exists() else ''
+    }
+
+    return result
 
 def check_file_paths(data: dict, path: str):
     pass

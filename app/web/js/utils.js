@@ -6,7 +6,7 @@ function checkAskFileResult(answer){
     }else if (answer.error){
         notificate('Ошибка чтения файла: ' + answer.error)
         console.error(answer.message)
-	}else if (answer.file_path){
+	}else if (answer.filePath){
         result = true;
 	}else{
 		notificate('Ошибка выполнения команды чтения файла');

@@ -6,6 +6,7 @@ function notificate(text, type) {
 async function pickFile(file_type) {
 	let result = await askFile(file_type);
 	if (checkAskFileResult(result)){
+		main.updateFilePaths(result)
 		// if (file_type == 'simple_ui') {
 	// 		if (!result.ui_config_data)
 	// 			result = await loadConfiguration(result.file_path);
@@ -35,7 +36,6 @@ async function pickWorkingDir(){
 		// 	PyFiles : main.conf.ClientConfiguration['PyFiles'] || [],
 		// 	Mediafile : main.conf.ClientConfiguration['Mediafile'] || []
 		// }
-		// const projectConfig = getProjectConfig(configData);
 		// if (resultCheck && !resultAsk.error){
 		// 	$('#project-config-path').text(resultAsk.file_path);
 		// }
