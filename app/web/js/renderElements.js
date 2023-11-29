@@ -743,6 +743,7 @@ class SendReqModal extends ModalWindow{
             `
         this.modal = $(this.html)
         this.modal.find(selectors.modalContent).html(this.renderContent())
+        const data = {};
         
         main.settings.reqBodyEditor = renderEditor(this.modal.find("#req-body")[0], '');
 

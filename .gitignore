@@ -1,6 +1,6 @@
 ТЗ.txt
-tests
 venv
 .idea
 *.vscode
 __pycache__
+_ui_files

@@ -1,5 +1,6 @@
 import io
 import os
+import pathlib
 import socket
 import base64
 import glob
@@ -11,12 +12,10 @@ from eel import chrome
 from pydantic import ValidationError
 import qrcode
 
-
 from .models import ui_config, project_config
 from .models.handlers import Handler
 from .models.root_config import RootConfigModel, QRCodeConfig
 from .config import app_server_port
-
 
 python_modules = {}
 
@@ -107,16 +106,21 @@ def check_config_version(data: dict):
 
 
 def check_file_paths(data: dict, path: str):
+    project_config_data = get_data_from_project_config(path)
+
     py_files = data['ClientConfiguration'].get('PyFiles', [])
     for item in py_files:
         if item.get('file_path') and not os.path.exists(item['file_path']):
             item['file_path'] = ''
 
-        file_path = os.path.join(path, '{}.py'.format(item['PyFileKey']))
-        if os.path.exists(file_path):
-            item['file_path'] = file_path
+        # local_path = project_conf.get(item['PyFileKey'], '')
+        local_path = ''
 
-    file_path = data['ClientConfiguration'].get('pyHandlersPath')
+        file_path = pathlib.Path(path, local_path, '{}.py'.format(item['PyFileKey']))
+        if file_path.exists():
+            item['file_path'] = str(file_path)
+
+    file_path = project_config_data.get('handlers') or data['ClientConfiguration'].get('pyHandlersPath')
     if file_path and not os.path.exists(file_path):
         data['ClientConfiguration']['pyHandlersPath'] = ''
 
@@ -125,16 +129,58 @@ def check_file_paths(data: dict, path: str):
         data['ClientConfiguration']['pyHandlersPath'] = file_path
 
 
-def save_base64_data(ui_configuration):
-    py_files = ui_configuration['ClientConfiguration'].get('PyFiles', [])
-    for item in py_files:
-        if item.get('file_path'):
-            item['PyFileData'] = make_base64_from_file(item['file_path'])
+def get_data_from_project_config(path):
+    path_to_config = pathlib.Path(path) / 'project_config.json'
+    project_conf = {}
+    if path_to_config.exists():
+        with open(path_to_config) as f:
+            try:
+                project_conf = json.load(f)
+            except json.JSONDecodeError:
+                project_conf = {}
 
+    return project_conf
+
+
+def save_project_config_to_file(data, path_to_project):
+    file_name = 'project_config.json'
+    path_to_project_config = pathlib.Path(path_to_project, file_name)
+    config_data = create_project_config_data(data['ClientConfiguration'], path_to_project)
+    with open(path_to_project_config, 'w', encoding='utf-8') as f:
+        json.dump(config_data, f, ensure_ascii=False, indent=2)
+
+
+def create_project_config_data(files_data: dict, project_path: str):
+    def get_relpath(full_path, prefix):
+        full_path = str(pathlib.Path(full_path))
+        prefix = str(pathlib.Path(prefix))
+        return f'./{os.path.relpath(full_path, os.path.commonprefix([full_path, prefix]))}'
+
+    result = {}
+    handlers_path = files_data.get('pyHandlersPath')
+    py_files = files_data.get('PyFiles')
+
+    if handlers_path:
+        result['handlers'] = get_relpath(handlers_path, project_path)
+
+    if py_files:
+        modules = {
+            item['PyFileKey']: get_relpath(item['file_path'], project_path)
+            for item in py_files if item.get('file_path')
+        }
+        result['modules'] = modules
+    return result
+
+
+def save_base64_data(ui_configuration):
     file_path = ui_configuration['ClientConfiguration'].get('pyHandlersPath')
     if file_path:
         ui_configuration['ClientConfiguration']['PyHandlers'] = make_base64_from_file(file_path)
 
+    py_files = ui_configuration['ClientConfiguration'].get('PyFiles', [])
+    for item in py_files:
+        if item.get('file_path'):
+            item['PyFileData'] = make_base64_from_file(item['file_path'])
 
 
 def validate_configuration_model(ui_configuration: dict) -> dict:
@@ -144,6 +190,7 @@ def validate_configuration_model(ui_configuration: dict) -> dict:
         raise e
     except Exception as e:
         raise e
+
 
 def convert_config_version(file_path):
     with open(file_path, encoding='utf-8') as json_file:
@@ -204,7 +251,7 @@ def get_config_ui_elements(model=RootConfigModel) -> dict:
         for key, value in el['properties'].items():
             props = value.copy()
             props['required'] = key in (el.get('required') or [])
-            props['hidden'] = key == 'type'
+            props['hidden'] = key in ['type', 'PyFileData']
 
             fields[key] = ui_config.BaseField(text=value.get('title') or key, **props)
             if key == 'Elements':
@@ -469,6 +516,47 @@ class SQLQueryManager:
                 self.query,
                 self.params,
                 self.db_name
+            )
+        else:
+            raise requests.exceptions.RequestException()
+
+
+class RequestsManager:
+    def __init__(self, host, mode, method, **kwargs):
+        self.device_host = host
+        self.mode = mode
+        self.port = '8095'
+        self.method = method
+        self.method_type = 'listener' if self.mode == 'SyncCommand' else 'command'
+        self.body = kwargs.get('body')
+
+    def send_query(self, **kwargs):
+        result = {'error': '', 'content': '', 'data': None}
+        try:
+            response = requests.post(
+                self.get_url(),
+                headers={'Content-Type': 'Application/json; charset=utf-8'}
+            )
+            result['content'] = response.text
+            if response.status_code == 200:
+                result['data'] = response.json()
+            else:
+                result['error'] = str(response.status_code)
+
+        except requests.exceptions.RequestException as e:
+            result['error'] = 'Device connection error'
+            result['content'] = str(e.args[0])
+
+        return result
+
+    def get_url(self):
+        if self.device_host:
+            return 'http://{}:{}/?mode={}&{}={}'.format(
+                self.device_host,
+                self.port,
+                self.mode,
+                self.method_type,
+                self.method,
             )
         else:
             raise requests.exceptions.RequestException()

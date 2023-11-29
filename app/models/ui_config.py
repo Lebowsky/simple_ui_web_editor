@@ -38,7 +38,7 @@ class Tab:
                     'gravity_horizontal',
                     'gravity_vertical',
                 ],
-                'ordering': 1
+                'ordering': 2
             },
             'others': {
                 'title': 'Other',
@@ -56,7 +56,7 @@ class Tab:
             'elements': {
                 'title': 'Elements',
                 'items': ['Elements'],
-                'ordering': 5
+                'ordering': 1
             },
             'handlers': {
                 'title': 'Handlers',
@@ -85,7 +85,7 @@ class FieldType(Enum):
     operations = 'operations'
     elements = 'elements'
     handlers = 'handlers'
-    file='file'
+    file = 'file'
 
 
 class ElementType(BaseModel):
@@ -121,10 +121,9 @@ class BaseField(BaseModel):
         elif values.get('enum'):
             values['type'] = FieldType.select
             values['options'] = values['enum']
-
         elif values['title'] in ['Operations', 'Elements', 'Handlers']:
             values['type'] = values['title'].lower()
-        elif values['title'] == 'file_path':
+        elif values['title'] == 'File Path':
             values['type'] = FieldType.file
         elif values['type'] == 'boolean':
             values['type'] = FieldType.checkbox
