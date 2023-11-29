@@ -306,7 +306,7 @@ class ClientConfiguration {
 	getElementPath(elementId, path=[]){
 		let element = this.getElementById(elementId);
 		if (element.title){
-			path.unshift(element.title);
+			path.unshift(`<a class='element-path' data-id='${element.id}'>${element.title}</a>`);
 			this.getElementPath(element.parentId, path);
 		}
 		return path.join(' / ');
@@ -398,6 +398,7 @@ class ClientConfiguration {
 			$(node).siblings('.element-childs-wrap').html('');
 		} else {
 			$(node).html(listElement.renderElementChild());
+			return
 		}
 		
 
