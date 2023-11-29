@@ -13,6 +13,7 @@ const selectors = {
         list: ".list",
         listItem: ".list-item",
         btnEdit: ".edit",
+        btnJson: ".json",
         btnDelete: ".delete",
         btnSave: ".save-element",
         btnAdd: ".btn-add",

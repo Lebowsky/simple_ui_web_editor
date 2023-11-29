@@ -117,3 +117,9 @@ const showPickFile = async(event) => {
 	modal.render();
 	modal.show();
 }
+
+const showSearchElements = async(event) => {
+	modal = new SearchElementsModal();
+	modal.render();
+	modal.show();
+}

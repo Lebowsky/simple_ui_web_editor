@@ -30,6 +30,52 @@ $(document).ready(function(){
 			$('iframe').css('pointer-events','auto');
 		}
 	});
+	$(document).on('keyup', "#search", function(e){
+		const q = $(this).val();
+		let elements = [];
+		let listItems = [];
+		const node = $("#search-result-wrap");
+		
+		if (q != "") {
+			elements = main.configGraph.elements.filter(element =>
+				String(element.elementValues.Value).toLowerCase().includes(q.toLowerCase()) ||
+				String(element.elementValues.Variable).toLowerCase().includes(q.toLowerCase()) ||
+				String(element.elementValues.alias).toLowerCase().includes(q.toLowerCase()) ||
+				String(element.elementValues.method).toLowerCase().includes(q.toLowerCase())
+			);
+		}
+
+		if (elements.length > 0) {
+			elements.forEach((item) => {
+				let name = item.elementValues[item.parentConfig.rowKeys.filter(key => item.elementValues[key])[0]];
+				let value = Object.keys(item.elementValues).find((el) => ['Value', 'method'].includes(el));
+				let itemClasses = "";
+				let path = main.configGraph.getElementPath(item.id);
+				name = name || item.elementValues['type'];
+
+	            if (value)
+	                value = item.elementValues[[value]]
+
+	            if (item.elementValues.type == "CVOperation")
+	            	itemClasses = "cv";
+
+				listItems.push({
+					name: name,
+					value: value,
+					id: item.id,
+					itemClasses: itemClasses,
+					path: path
+				});
+			})
+		}
+
+		const listElement = new ListElement(listItems, "Processes");
+
+		listElement.render(false);
+
+		$(node).siblings('.element-childs-wrap').html('');
+		$(node).html(listElement.html);
+	})
 	$(document).on('click', selectors.btnEdit, function(){
 		const elementId = $(this).parents(selectors.listItem).attr('data-id');
 		editElement(elementId);
@@ -39,6 +85,10 @@ $(document).ready(function(){
 			const elementId = $(this).attr('data-id');
 			editElement(elementId);
 		}
+	})
+	$(document).on('click', '.path .element-path:not(:last-child)', function(e){
+		const elementId = $(this).attr('data-id');
+		editElement(elementId);
 	})
 	$(document).on('change', "#ip-address", function(){
 		main.settings.deviceHost = $(this).val();
@@ -63,6 +113,50 @@ $(document).ready(function(){
 		const elementId = $(this).parents(selectors.listItem).attr('data-id');
 		elementConf = main.configGraph.getConfigElement(elementId);
 		copyTextToClipboard(JSON.stringify(elementConf));
+	})
+	$(document).on('click', selectors.btnJson, function(e){
+		const elementId = $(this).parents(selectors.listItem).attr('data-id');
+		elementConf = main.configGraph.getConfigElement(elementId);
+		
+		modal = new JsonModal(elementConf);
+		modal.render();
+		modal.show();
+	})
+	$(document).on('dblclick', ".sql-table tr", function(e){
+		modal = ModalWindow.getCurrentModal();
+		table = modal.modal.find('.sql-table').DataTable();
+		rowData = table.row(this).data();
+	    data = {};
+
+	    table.columns().every(function (index) {
+	        var columnName = table.column(Number(index)).header().textContent;
+	        data[columnName] = rowData[index];
+	    });
+
+		modal = new JsonModal(data);
+		modal.render();
+		modal.show();
+	} );
+	$(document).on('click', ".show-sql-table-json", function(e){
+		modal = ModalWindow.getCurrentModal();
+		table = modal.modal.find('.sql-table').DataTable();
+		data = table.rows().data();
+		jsonData = [];
+
+		data.each(function (valueArray) {
+		    var rowData = {};
+
+		    table.columns().every(function (index) {
+		        var columnName = table.column(Number(index)).header().textContent;
+		        rowData[columnName] = valueArray[index];
+		    });
+
+		    jsonData.push(rowData);
+		});
+
+		modal = new JsonModal(jsonData);
+		modal.render();
+		modal.show();
 	})
 	$(document).on('click', selectors.btnPaste, function(e){
 		const parentId = $(this).parents('.list').attr('data-id');
@@ -201,7 +295,8 @@ $(document).ready(function(){
 
 		if (modal.element) {
 			element = main.configGraph.getElementById(modal.element.id);
-			main.configGraph.fillListElements(element.parentType, element.parentConfig['node'], element.parentId, modal.element.id)
+			fillNode = element.parentConfig['node']+"[data-id="+modal.element.id+"]";
+			main.configGraph.fillListElements(element.parentType, fillNode, element.parentId, modal.element.id)
 
 			if (element.parentType == "Processes") {
 				main.configGraph.fillListElements("Operations", selectors.operationsList, element.id);
@@ -218,14 +313,19 @@ $(document).ready(function(){
 			const type = element.parentType;
 
 			if (type == "Elements") {
-				const childsNode = ModalWindow.getCurrentModal().modal.find(".element-childs");
+				/*const childsNode = ModalWindow.getCurrentModal().modal.find(".element-childs");
 				if (childsNode.length) {
 					childsNode.remove();
-				} else {
+				} else {*/
 					main.configGraph.fillListElements(type, ".modal.active .list-param.active .element-childs-wrap", elementId, false, false);
-				}
+				//}
 			}
-		}
+		}/* else if (ModalWindow.getCurrentModal()) {
+			const childsNode = ModalWindow.getCurrentModal().modal.find(".element-childs");
+			if (childsNode.length) {
+				childsNode.remove();
+			} 
+		}*/
 	})
 	$(document).on('click', '#processes .list-item', function(e){
 		if ($(e.target).is(this) || $(e.target).is($(this).children("span"))) {
@@ -425,6 +525,15 @@ function hideMain() {
 	}
 
 	$(".main-conf-wrap").toggleClass("hide");
+}
+function renderEditor(node, data = ''){
+    const editor = new JSONEditor(node, {
+        mode: 'code'
+    });
+
+    editor.set(data);
+
+    return editor;
 }
 function showList(node, direction = "toggle") {
 	if (direction == "up") {
