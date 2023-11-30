@@ -1,16 +1,19 @@
 class ListElement {
     constructor(items, elementType) {
         this.items = items;
-        this.html;
+        this.html = "";
         this.elementType = elementType;
     }
-    render() {
-        this.html = `
-            <div class="btn-group">
-                <button class="btn-add">Add</button>
-                ${`<button class="btn-paste" data-childrens-type="${this.elementType}">Paste</button>`}
-            </div>
-        `
+    render(addBtn = true) {
+
+        if (addBtn) {
+            this.html += `
+                <div class="btn-group">
+                    <button class="btn-add">Add</button>
+                    ${`<button class="btn-paste" data-childrens-type="${this.elementType}">Paste</button>`}
+                </div>
+            `
+        }
 
         this.html += `${this.renderRows()}`
         return this;
@@ -22,10 +25,11 @@ class ListElement {
 
         this.items.forEach((item, index) => {
             html += `
-                <li class="list-item ${item.itemClasses ? item.itemClasses : ''}" data-id=${item.id}>
+                <li class="list-item ${item.itemClasses ? item.itemClasses : ''}" title="${item.path ? item.path : ''}" data-id=${item.id}>
                     <span class="item-name">${item.name}</span>
                     ${item.value ?`<div class="item-info"><span title="${item.value}">${item.value}</span></div>`: ''}
                     <div class="item-btn">
+                        <span class="json" title="json"><i class="fa-solid fa-code"></i></span>
                         <span class="copy" title="copy"><i class="fa fa-clipboard" aria-hidden="true"></i></span>
                         <span class="duplicate" title="duplicate"><i class="fa fa-copy" aria-hidden="true"></i></span>
                         <span class="edit" title="edit"><i class="fa fa-edit" aria-hidden="true"></i></span>
@@ -137,6 +141,12 @@ class ModalWindow {
         } else if (modalDiv.hasClass('send-req')){
             modalWindow = new SendReqModal();
             modalWindow.modal = modalDiv;
+        } else if (modalDiv.hasClass('json')){
+            modalWindow = new JsonModal();
+            modalWindow.modal = modalDiv;
+        } else if (modalDiv.hasClass('search')){
+            modalWindow = new SearchElementsModal();
+            modalWindow.modal = modalDiv;
         } else {
             const element = main.configGraph.getElementById(elementId);
             modalWindow = new ElementModal(element);
@@ -172,6 +182,12 @@ class ModalWindow {
                 modalWindow.modal = modalDiv;
             } else if (modalDiv.hasClass('start')){
                 modalWindow = new StartModal();
+                modalWindow.modal = modalDiv;
+            } else if (modalDiv.hasClass('json')){
+                modalWindow = new JsonModal();
+                modalWindow.modal = modalDiv;
+            } else if (modalDiv.hasClass('search')){
+                modalWindow = new SearchElementsModal();
                 modalWindow.modal = modalDiv;
             } else {
                 let element = main.configGraph.getElementById(elementId);
@@ -585,6 +601,7 @@ class SQLQueryModal extends ModalWindow{
         
         if (data) {
             html = `
+            <span class="show-sql-table-json"><i class="fa-solid fa-code"></i></span>
             <table class="sql-table display nowrap dataTable no-footer dtr-inline collapsed">
                 <thead>
                     ${data.header.split('|').map((el) => `<th>${el}</th>`).join('\n')}
@@ -600,10 +617,14 @@ class SQLQueryModal extends ModalWindow{
         this.modal.find('#sql-table-wrap').html(html)
         this.modal.find('.sql-table').DataTable({
             responsive: true,
+            pageLength: localStorage.getItem('lengthTable') ? localStorage.getItem('lengthTable') : 10,
             language: {
                 "lengthMenu": "_MENU_",
                 "url": "https://cdn.datatables.net/plug-ins/1.13.4/i18n/ru.json"
             }
+        });
+        this.modal.find('.sql-table').on('length.dt', function (e, settings, len){
+            localStorage.setItem('lengthTable', len);
         });
     }
 }
@@ -650,12 +671,13 @@ class AuthModal extends ModalWindow{
     }
 }
 class PickFileModal extends ModalWindow{
-    constructor(filePath, dirPath) {
+    constructor(filePath='', dirPath='', uiPath='') {
         super();
         this.modal = $('');
         this.html = '';
         this.filePath = filePath;
         this.dirPath = dirPath;
+        this.uiPath = uiPath;
     }
     render(){
         this.html = `
@@ -665,6 +687,7 @@ class PickFileModal extends ModalWindow{
                 </div>
                 <div class='modal-head'>
                     <h2 class='modal-title'>Pick File</h2>
+                    <button id='' onclick=''>Apply</button>
                 </div>
                 <div class='modal-content'></div>
             </div>
@@ -687,6 +710,11 @@ class PickFileModal extends ModalWindow{
                     <label>Working dir</label>
                     <span id="working-dir-path" data-param-name="workingDir">${this.dirPath ? this.dirPath : '&lt;Not selected&gt;'}</span>
                     <button id="open-working-dir" onclick="pickWorkingDir()">Open dir</button>
+                </li>
+                <li>
+                    <label>UI Config</label>
+                    <span id="ui-config-path" data-param-name="uiConfigDir">${this.uiPath ? this.uiPath : '&lt;Not selected&gt;'}</span>
+                    <button id="open-ui-dir" onclick="pickUiConfigDir()">Open dir</button>
                 </li>
             </ul>
         </div>
@@ -715,11 +743,9 @@ class SendReqModal extends ModalWindow{
             `
         this.modal = $(this.html)
         this.modal.find(selectors.modalContent).html(this.renderContent())
-
-        // const data = {"parentType":"Operations","type":"Operation","Name":"SeriesSelectScreen","Timer":false,"hideToolBarScreen":false,"hideBottomBarScreen":true,"noScroll":false,"handleKeyUp":false,"noConfirmation":true,"Elements":[{"type":"LinearLayout","Variable":"","orientation":"vertical","height":"wrap_content","width":"match_parent","weight":"0","Elements":[{"Value":"@doc_data","Variable":"","height":"wrap_content","width":"match_parent","weight":"0","TextBold":false,"TextItalic":false,"TextSize":"16","type":"TextView"},{"type":"LinearLayout","Variable":"","orientation":"vertical","height":"wrap_content","width":"match_parent","weight":"0","Elements":[{"type":"LinearLayout","Variable":"","orientation":"horizontal","height":"match_parent","width":"match_parent","weight":"0","Elements":[{"type":"LinearLayout","Variable":"","orientation":"horizontal","height":"wrap_content","width":"match_parent","weight":"1","Elements":[{"Value":"Артикул:","Variable":"","height":"wrap_content","width":"wrap_content","weight":"0","TextBold":true,"TextColor":"#000000","type":"TextView"},{"Value":"@good_art","Variable":"","height":"wrap_content","width":"wrap_content","weight":"0","TextBold":false,"TextItalic":false,"TextColor":"#000000","type":"TextView"}]}]},{"type":"LinearLayout","Variable":"","orientation":"horizontal","height":"wrap_content","width":"wrap_content","weight":"0","Elements":[{"Value":"Характеристика:","Variable":"","height":"wrap_content","width":"wrap_content","weight":"0","TextBold":true,"TextColor":"#000000","type":"TextView"},{"Value":"@properties_name","Variable":"","height":"wrap_content","width":"wrap_content","weight":"0","TextBold":false,"TextItalic":false,"TextColor":"#000000","type":"TextView"}]},{"type":"LinearLayout","Variable":"","orientation":"horizontal","height":"wrap_content","width":"wrap_content","weight":"0","Elements":[{"Value":"Цена:","Variable":"","height":"wrap_content","width":"wrap_content","weight":"0","TextBold":true,"TextColor":"#cc0000","type":"TextView"},{"Value":"@price","Variable":"","height":"wrap_content","width":"wrap_content","weight":"0","TextBold":false,"TextItalic":false,"TextColor":"#cc0000","type":"TextView"}]},{"type":"LinearLayout","Variable":"","orientation":"horizontal","height":"wrap_content","width":"wrap_content","weight":"0","Elements":[{"Value":"Упаковка:","Variable":"","height":"wrap_content","width":"wrap_content","weight":"0","TextBold":true,"TextColor":"#000000","type":"TextView"},{"Value":"@good_unit","Variable":"","height":"wrap_content","width":"wrap_content","weight":"0","TextBold":false,"TextItalic":false,"TextColor":"#000000","type":"TextView"}]}]},{"Value":"@good_name","Variable":"","height":"wrap_content","width":"match_parent","weight":"0","TextBold":true,"TextItalic":false,"TextSize":"24","TextColor":"#7A005C","type":"TextView"},{"type":"LinearLayout","Variable":"","orientation":"horizontal","height":"wrap_content","width":"match_parent","weight":"0","Elements":[{"type":"LinearLayout","Variable":"","orientation":"vertical","height":"wrap_content","width":"match_parent","weight":"1","Elements":[{"Value":"План","Variable":"","height":"wrap_content","width":"match_parent","weight":"0","type":"TextView"},{"Value":"@qtty_plan","Variable":"qtty_plan","height":"wrap_content","width":"match_parent","weight":"0","TextBold":false,"TextItalic":false,"TextSize":"24","type":"TextView"}]},{"type":"LinearLayout","Variable":"","orientation":"vertical","height":"wrap_content","width":"match_parent","weight":"1","Elements":[{"Value":"Факт","Variable":"","height":"wrap_content","width":"match_parent","weight":"0","TextBold":false,"TextItalic":false,"type":"TextView"},{"Value":"@qtty","Variable":"qtty","height":"wrap_content","width":"match_parent","weight":"0","TextBold":false,"TextItalic":false,"TextSize":"24","type":"TextView"}]}]},{"Value":"@series_cards","Variable":"series_cards","height":"wrap_content","width":"match_parent","weight":"0","TextBold":false,"TextItalic":false,"type":"CardsLayout"}]},{"type":"barcode","Value":"","Variable":"barcode"}],"Handlers":[{"event":"onStart","listener":"","action":"run","type":"python","method":"series_list_on_start","postExecute":""},{"event":"onInput","listener":"","action":"run","type":"python","method":"series_list_on_input","postExecute":""}]};
         const data = {};
         
-        main.settings.reqBodyEditor = this.renderEditor(this.modal.find("#req-body")[0], data);
+        main.settings.reqBodyEditor = renderEditor(this.modal.find("#req-body")[0], '');
 
         return this;
     }
@@ -743,13 +769,13 @@ class SendReqModal extends ModalWindow{
                         <label for="req-params">Param Value</label>
                         <input type="text" name="req-params" value="" id="req-params">
                     </div>
+                    <div class="btn-wrap">
+                        <button onclick="sendRequest(this)">send</button>
+                    </div>
                 </div>
                 <div class="param active">
                     <label onclick="showList(this)" for="req-body">Body <i class="fa fa-angle-up" aria-hidden="true"></i></label>
                     <div id="req-body" class="list-wrap"></div>
-                    <div class="btn-wrap">
-                        <button onclick="sendRequest(this)">send</button>
-                    </div>
                 </div>
             </div>
         </div>
@@ -759,7 +785,7 @@ class SendReqModal extends ModalWindow{
     }
     renderRequestResult(data){
         this.modal.find("#req-result-wrap").html("");
-        this.renderEditor(this.modal.find("#req-result-wrap")[0], data);
+        renderEditor(this.modal.find("#req-result-wrap")[0], data);
     }
     renderEditor(node, data = ''){
         const editor = new JSONEditor(node, {
@@ -795,6 +821,77 @@ class StartModal extends ModalWindow{
         const html = `
             <button id="new-project" onclick="pickNewFileProject(main)">New Project</button>
             <button id="open-project" onclick="showPickFile()">Open Project</button>
+        `
+        return html;    
+    }
+}
+class JsonModal extends ModalWindow{
+    constructor(json) {
+        super();
+        this.modal = $('');
+        this.html = '';
+        this.json = json;
+    }
+    render(){
+        this.html = `
+            <div class='modal json' data-modal-type='json'>
+                <div class='close-modal'>
+                    <i class='fa fa-times' aria-hidden='true'></i>
+                </div>
+                <div class='modal-head'>
+                    <h2 class='modal-title'>Json</h2>
+                </div>
+                <div class='modal-content'></div>
+            </div>
+            `
+        this.modal = $(this.html)
+        this.modal.find(selectors.modalContent).html(this.renderContent())
+        renderEditor(this.modal.find("#json-editor")[0], this.json);
+
+        return this;
+    } 
+    renderContent(){
+        const html = `<div id="json-editor"></div>`
+
+        return html;    
+    }
+}
+class SearchElementsModal extends ModalWindow{
+    constructor(json) {
+        super();
+        this.modal = $('');
+        this.html = '';
+    }
+    render(){
+        this.html = `
+            <div class='modal search' data-modal-type='element'>
+                <div class='close-modal'>
+                    <i class='fa fa-times' aria-hidden='true'></i>
+                </div>
+                <div class='modal-head'>
+                    <h2 class='modal-title'>Search Elements</h2>
+                </div>
+                <div class='modal-content'></div>
+            </div>
+            `
+        this.modal = $(this.html)
+        this.modal.find(selectors.modalContent).html(this.renderContent())
+
+        return this;
+    } 
+    renderContent(){
+        const html = `
+        <div>
+            <div id="search-content">
+                <div id="search-params-wrap">
+                    <div class="param active">
+                        <label for="ip-address">Search</label>
+                        <input type="text" name="search" value="" id="search">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="search-result-wrap" class="list ui-sortable"></div>
         `
         return html;    
     }

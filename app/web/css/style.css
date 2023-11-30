@@ -382,6 +382,10 @@ span.path {
     font-style: italic;
     font-weight: 500;
 }
+a.element-path:not(:last-child) {
+    text-decoration: underline;
+    cursor: pointer;
+}
 .modal-head {
     padding: 20px;
     border-bottom: 1px #e7e7e7 solid;
@@ -396,6 +400,8 @@ span.path {
 .modal-content {
     padding: 0 5px 20px 20px;
     position: relative;
+    max-height: 600px;
+    overflow-y: auto;
 }
 .start .modal-content {
     display: flex;
@@ -683,10 +689,17 @@ span.edited {
     font-style: italic;
     font-size: 10pt;
 }
-
+.pick-file .modal-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.pick-file .modal-head button {
+    margin: 0;
+}
 /*-------sql-query-------*/
 #sql-table-wrap {
-    text-align: center;
+    text-align: right;
     padding: 20px 20px 20px 0;
 }
 #sql-table-wrap .dataTables_length select {
@@ -765,6 +778,11 @@ ul.querys li i {
     bottom: 0;
     margin: auto;
     height: 13px;
+}
+.show-sql-table-json {
+    margin-bottom: 20px;
+    display: inline-block;
+    cursor: pointer;
 }
 /*-------sql-query-end-------*/
 /*-------dataTable--------*/
@@ -889,6 +907,9 @@ div.ui-resizable-e {
     margin-bottom: 20px;
     display: block;
 }
+#send-req-content #req-result-wrap {
+    height: 500px;
+}
 .jsoneditor-menu {
     height: 19px;
 }
@@ -904,19 +925,44 @@ div.jsoneditor-outer.has-main-menu-bar {
     padding-top: 19px;
 }
 #send-req-content .btn-wrap {
-    width: 100%;
+    width: auto;
     text-align: center;
+    padding: 20px;
 }
 #send-req-content .btn-wrap > button {
     text-transform: uppercase;
-    padding: 10px 100px;
+    padding: 10px 80px;
     margin-right: 0;
+    margin-bottom: 0;
 }
 #req-params-wrap {
     display: flex;
+    align-items: center;
 }
 #req-result-wrap {
     padding: 0 15px 0 10px;
+}
+.jsoneditor * {
+    font-family: monospace;
+}
+.jsoneditor {
+    border: thin solid #FBAF2E;
+}
+.jsoneditor-menu {
+    background: linear-gradient(-45deg, #21B9E1, #E71F53, #FBAF2E) !important;
+    border-bottom: 1px solid #FBAF2E;
+}
+/*----------json-modal----------*/
+#json-editor {
+    padding-right: 20px;
+    padding-top: 20px;
+    height: 500px;
+}
+/*----------search-modal----------*/
+.search .item-btn span.copy,
+.search .item-btn span.move,
+.search .item-btn span.duplicate {
+    display: none;
 }
 /*----------media----------*/
 @media (max-width: 1376px) {
