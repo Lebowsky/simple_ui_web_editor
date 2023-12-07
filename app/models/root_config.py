@@ -30,6 +30,7 @@ class MainMenuModel(BaseConfigModel):
 
 
 class MediaFileModel(BaseConfigModel):
+    file_path: str = Field(default='', alias='file_path', title='File Path')
     media_file_data: str = Field(default='', alias='MediafileData')
     media_file_ext: str = Field(default='', alias='MediafileExt')
     media_file_key: str = Field(default='', alias='MediafileKey')  # media
