@@ -206,7 +206,7 @@ const listElements = {
                 type: 'Mediafile',
                 parentType: 'Mediafile',
                 path: '',
-                rowKeys: ['MediafileData']
+                rowKeys: ['MediafileKey']
         },
         StyleTemplates:{
                 node: selectors.styles,

@@ -2,7 +2,7 @@ from typing import List, Optional, Union
 from typing_extensions import Annotated
 import uuid
 
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, validator, root_validator
 
 from ..config import su_settings
 
@@ -30,10 +30,17 @@ class MainMenuModel(BaseConfigModel):
 
 
 class MediaFileModel(BaseConfigModel):
-    file_path: str = Field(default='', alias='file_path', title='File Path')
+    file_path: Optional[str] = Field(alias='file_path', title='File Path')
+    file_name: Optional[str] = Field(alias='file_name', title='File name')
     media_file_data: str = Field(default='', alias='MediafileData')
     media_file_ext: str = Field(default='', alias='MediafileExt')
     media_file_key: str = Field(default='', alias='MediafileKey')  # media
+
+    @root_validator(pre=True)
+    def fill_file_values(cls, values):
+        file_path = values.pop('file_path', None)
+        values.pop('file_name', None)
+        return values
 
     class Config:
         title = 'Mediafile'

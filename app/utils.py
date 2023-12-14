@@ -1,6 +1,5 @@
 import io
 import os
-import pathlib
 import socket
 import base64
 import glob
@@ -181,6 +180,15 @@ def save_base64_data(ui_configuration):
     for item in py_files:
         if item.get('file_path'):
             item['PyFileData'] = make_base64_from_file(item['file_path'])
+
+    media_files = ui_configuration['ClientConfiguration'].get('Mediafile', [])
+
+    for item in media_files:
+        if item.get('file_path'):
+            item['MediafileData'] = make_base64_from_file(item['file_path'])
+            file_path = pathlib.Path(item['file_path'])
+            item['MediafileKey'] = file_path.stem
+            item['MediafileExt'] = file_path.suffix[1:]
 
 
 def validate_configuration_model(ui_configuration: dict) -> dict:

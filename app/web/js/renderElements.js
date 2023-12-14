@@ -339,7 +339,7 @@ class ElementModal extends ModalWindow{
     }
     renderModalElement(params) {
         const value = this.getParamsValue(params);
-        const { type, name, text, description } = params;
+        const { type, name, text, description, onclick=`pickFile('python')` } = params;
 
         const renderElements = {
             text: `
@@ -388,7 +388,7 @@ class ElementModal extends ModalWindow{
                 <label for="${name}">${text}</label>
                 <div class="input-wrap">
                     <input type="text" name="${name}" id="${name}" data-param-name="${name}" value="${value}">
-                    <button id="open-py" onclick="pickFile('python')">Open</button>
+                    <button id="open-py" onclick="${onclick}">Open</button>
                 </div>
                 `,
         }

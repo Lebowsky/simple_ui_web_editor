@@ -1,5 +1,5 @@
 import platform
-
+from pathlib import Path
 from tkinter import Tk
 from tkinter.filedialog import askopenfilename, asksaveasfilename, askdirectory
 from .utils import check_config_file
@@ -16,14 +16,14 @@ def ask_file(file_type):
         if file_type == 'simple_ui':
             file_types = [('Simple UI files', '*.ui')]
         elif file_type == 'python':
-            file_types = [('Python files', '*.py')]
+            file_types = [('Python files', '*.py'), ('All files', '*')]
         else:
             file_types = [('All files', '*')]
         file_path = askopenfilename(parent=root, filetypes=file_types)
     root.update()
 
     if file_path:
-        result = {'file_path': file_path}
+        result = {'file_path': file_path, 'file_name': Path(file_path).name}
         if file_type == 'simple_ui':
             result = check_config_file(file_path)
         return result

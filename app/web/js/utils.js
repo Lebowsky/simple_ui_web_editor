@@ -49,7 +49,7 @@ async function saveConfiguration(){
 
     const workingDir = workingDirValue == '<Not selected>' ? '' : workingDirValue
 
-	let handlers = await fillBase64Handlers();
+	let handlers = await fillBase64Data();
 	if (saveConfFiles(main.conf, filePath, workingDir, handlers)){
         //main.configGraph = new ClientConfiguration(main.conf.ClientConfiguration);
     }
@@ -74,7 +74,7 @@ async function saveConfFiles(conf, filePath, workingDir, pyHandlers){
 
     return result_check
 }
-async function fillBase64Handlers(){
+async function fillBase64Data(){
     let result = null;
     const filePath = $('#py-handlers-file-path').attr('data-path');
     const conf = main.conf.ClientConfiguration;

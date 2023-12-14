@@ -3,7 +3,7 @@ function notificate(text, type) {
     console.log(text)
 };
 
-async function pickFile(file_type) {
+async function pickFile(file_type='') {
 	let result = await askFile(file_type);
 	if (checkAskFileResult(result)){
 		if (file_type == 'simple_ui') {
@@ -11,10 +11,9 @@ async function pickFile(file_type) {
 			initReadedConf(conf, result.file_path);
 			localStorage.setItem('file-path', result.file_path);
 		} else if (file_type == 'python') {
-			console.log(result);
 			$("#file_path").val(result.file_path);
-			$("#PyFileKey").val(result.file_name);
-		}
+			$("#PyFileKey").val(result.file_name  ? result.file_name.split('.py')[0] : '');
+			$("#file_name").val(result.file_name);
 	};
 };
 

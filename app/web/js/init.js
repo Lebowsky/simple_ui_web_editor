@@ -492,7 +492,7 @@ function selectTab(tabNode) {
 
 	$(".main-conf-wrap section").removeClass("active");
 	$(".main-conf-wrap #" + tabID).addClass("active");
-	console.log($(this).data());
+	console.debug($(this).data());
 	//if ($(tabNode).data('tab-id') != 'main-conf-process') {
 		$("#main-conf-screen").removeClass('active');
 		$("#main-conf-cvframes").removeClass('active');
