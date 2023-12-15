@@ -14,6 +14,7 @@ async function pickFile(file_type='') {
 			$("#file_path").val(result.file_path);
 			$("#PyFileKey").val(result.file_name  ? result.file_name.split('.py')[0] : '');
 			$("#file_name").val(result.file_name);
+		}
 	};
 };
 
