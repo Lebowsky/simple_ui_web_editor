@@ -455,7 +455,6 @@ $(document).ready(function(){
 	    e.stopPropagation();
 	});
 });
-
 function toggleMainMenu () {
 	$('.toggle-mnu').toggleClass("on");
 	$('.btn-group.main').toggleClass("active");
@@ -676,4 +675,3 @@ async function auth(node){
 		}
 	}
 }
-

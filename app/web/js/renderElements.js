@@ -671,13 +671,14 @@ class AuthModal extends ModalWindow{
     }
 }
 class PickFileModal extends ModalWindow{
-    constructor(filePath='', dirPath='', uiPath='') {
+    constructor({uiPath='', dirPath='', configPath=''}='') {
         super();
         this.modal = $('');
         this.html = '';
-        this.filePath = filePath;
-        this.dirPath = dirPath;
         this.uiPath = uiPath;
+        this.configPath = configPath;
+        this.dirPath = dirPath;
+        
     }
     render(){
         this.html = `
@@ -713,7 +714,7 @@ class PickFileModal extends ModalWindow{
                 </li>
                 <li>
                     <label>Project config file</label>
-                    <span id="project-config-path" data-param-name="projectConfig">${this.filePath ? this.filePath : '&lt;Not selected&gt;'}</span>
+                    <span id="project-config-path" data-param-name="projectConfig">${this.configPath ? this.configPath : '&lt;Not selected&gt;'}</span>
                     <button id="open-project-config" onclick="pickProjectConfig()">Open file</button>
                 </li>
             </ul>

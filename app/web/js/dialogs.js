@@ -6,10 +6,6 @@ function notificate(text, type) {
 async function pickFile(file_type='') {
 	let result = await askFile(file_type);
 	if (checkAskFileResult(result)){
-		// if (file_type == 'simple_ui') {
-		// 	conf = await loadConfiguration(result.file_path);
-		// 	initReadedConf(conf, result.file_path);
-		// 	localStorage.setItem('file-path', result.file_path);
 		if (file_type == 'python') {
 			$("#file_path").val(result.file_path);
 			$("#PyFileKey").val(result.file_name  ? result.file_name.split('.py')[0] : '');
@@ -62,17 +58,20 @@ async function pickNewFileProject() {
 }
 
 async function applyOpenConfFile(){
-	const filePath = $("#ui-config-path").val();
+	const uiPath = $("#ui-config-path").val();
 	const workdir = $("#working-dir-path").val();
 	const projectConfig = $("#project-config-path").val();
 
-	result = checkAskFileResult(await checkConfigFile(filePath));
+	result = checkAskFileResult(await checkConfigFile(uiPath));
 	if (result){
-		conf = await loadConfiguration(filePath, workdir, projectConfig);
-		initReadedConf(conf, filePath);
-		localStorage.setItem('file-path', filePath);
-		ModalWindow.getCurrentModal().close()
+		conf = await loadConfiguration(uiPath, workdir, projectConfig);
+		initReadedConf(conf, uiPath);
+		localStorage.setItem('file-path', uiPath);
+		ModalWindow.getCurrentModal().close();
 	}
+	main.settings.uiPath = uiPath;
+	main.settings.dirPath = workdir;
+	main.settings.configPath = projectConfig;
 };
 
 const fileLocationSave = async (event) => {	
@@ -99,29 +98,6 @@ async function pickHandlersFile(){
 
 	$('#py-handlers-file-path').text(filePathText);
 };
-
-// async function pickWorkingDir(){
-// 	const resultAsk = await askDir();
-
-// 	if (resultAsk && resultAsk.path){
-// 		$('#working-dir-path').text(resultAsk.path);
-// 		$('.dir-path').text(resultAsk.path);
-// 		main.settings.dirPath = resultAsk.path;
-// 		const projectConfigPath = $('#project-config-path').text() || `${resultAsk.path}\sui_config.json`;
-
-// 		const configData = {
-// 			workDir: resultAsk.path,
-// 			filePath: projectConfigPath,
-// 			PyHandlers : main.conf.ClientConfiguration['PyHandlers'] || '',
-// 			PyFiles : main.conf.ClientConfiguration['PyFiles'] || [],
-// 			Mediafile : main.conf.ClientConfiguration['Mediafile'] || []
-// 		}
-// 		const projectConfig = getProjectConfig(configData);
-// 		// if (resultCheck && !resultAsk.error){
-// 		// 	$('#project-config-path').text(resultAsk.file_path);
-// 		// }
-// 	}
-// };
 
 async function pickProjectConfigFile(){
 	if (! main.conf)
@@ -160,7 +136,7 @@ const showAuth = async(event) => {
 }
 
 const showPickFile = async(event) => {
-	modal = new PickFileModal(main.settings.filePath, main.settings.dirPath);
+	modal = new PickFileModal(main.settings);
 	modal.render();
 	modal.show();
 }
