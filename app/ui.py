@@ -33,8 +33,8 @@ def save_configuration(data: dict, file_path: str, work_dir: str) -> dict:
 
 
 @eel.expose
-def load_configuration(file_path):
-    return utils.get_config_from_file(file_path)
+def load_configuration(file_path, workdir='', project_config=''):
+    return utils.get_config_from_file(file_path, workdir, project_config)
 
 
 @eel.expose
@@ -52,6 +52,11 @@ def ask_file(file_type):
 def ask_ui_file():
     """ Ask the user to select a file """
     return dialogs.ask_file('simple_ui')
+
+
+@eel.expose
+def check_config_file(file_path):
+    return utils.check_config_file(file_path)
 
 
 @eel.expose

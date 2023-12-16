@@ -34,16 +34,20 @@ async function askDir() {
 	return eel.ask_dir()();
 };
 
+async function checkConfigFile(file_path){
+	return eel.check_config_file(file_path)();
+};
+
 async function getProjectConfig(configData){
 	return eel.get_project_config(configData)();
-}
+};
 
 async function askSaveFile() {
 	return eel.ask_save_file('simple_ui')();
 };
 
-async function loadConfiguration(filePath){
-	return eel.load_configuration(filePath)();
+async function loadConfiguration(filePath, workDir, projectConfig){
+	return eel.load_configuration(filePath, workDir, projectConfig)();
 }
 
 async function getNewConfiguration(){

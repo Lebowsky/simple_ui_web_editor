@@ -27,12 +27,11 @@ async function pickUiConfig(){
 		const projectConfig = $("#project-config-path").val() || result.project_config;
 
 		$("#ui-config-path").text(filePath);
+		$("#ui-config-path").val(filePath);
 		$("#working-dir-path").text(workdir ? workdir : emptyText);
 		$("#working-dir-path").val(workdir);
 		$("#project-config-path").text(projectConfig ? projectConfig : emptyText);
 		$("#project-config-path").val(projectConfig);
-		
-		// localStorage.setItem('file-path', result.file_path);
 	};
 };
 
@@ -61,6 +60,20 @@ async function pickNewFileProject() {
 		return result.file_path;
 	}
 }
+
+async function applyOpenConfFile(){
+	const filePath = $("#ui-config-path").val();
+	const workdir = $("#working-dir-path").val();
+	const projectConfig = $("#project-config-path").val();
+
+	result = checkAskFileResult(await checkConfigFile(filePath));
+	if (result){
+		conf = await loadConfiguration(filePath, workdir, projectConfig);
+		initReadedConf(conf, filePath);
+		localStorage.setItem('file-path', filePath);
+		ModalWindow.getCurrentModal().close()
+	}
+};
 
 const fileLocationSave = async (event) => {	
 	modals = ModalWindow.getModals();

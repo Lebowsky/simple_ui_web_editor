@@ -43,7 +43,7 @@ def save_config_to_file(config_data, file_path):
                   separators=(',', ': '))
 
 
-def get_config_from_file(file_path):
+def get_config_from_file(file_path, workdir='', project_config_path=''):
     if file_path:
         check_result = check_config_file(file_path)
         if check_result:

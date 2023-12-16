@@ -687,7 +687,7 @@ class PickFileModal extends ModalWindow{
                 </div>
                 <div class='modal-head'>
                     <h2 class='modal-title'>Pick File</h2>
-                    <button id='' onclick=''>Apply</button>
+                    <button id='apply-open-conf-file' onclick='applyOpenConfFile()'>Apply</button>
                 </div>
                 <div class='modal-content'></div>
             </div>
