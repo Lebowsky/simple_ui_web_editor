@@ -1,3 +1,4 @@
+import os
 import platform
 from pathlib import Path
 from tkinter import Tk
@@ -17,16 +18,36 @@ def ask_file(file_type):
             file_types = [('Simple UI files', '*.ui')]
         elif file_type == 'python':
             file_types = [('Python files', '*.py'), ('All files', '*')]
+        elif file_type == 'project_config':
+            file_types = [('Config files', '*.json'), ('All files', '*')]
         else:
             file_types = [('All files', '*')]
         file_path = askopenfilename(parent=root, filetypes=file_types)
     root.update()
 
     if file_path:
-        result = {'file_path': file_path, 'file_name': Path(file_path).name}
-        if file_type == 'simple_ui':
-            result = check_config_file(file_path)
-        return result
+        # if file_type == 'simple_ui':
+        #     result = check_config_file(file_path)
+        return _get_ask_file_result(file_path, file_type)
+
+
+def _get_ask_file_result(file_path, file_type):
+    workdir, file_name = os.path.split(file_path)
+    if file_type == 'simple_ui':
+        project_config = f'{workdir}/project_config.json'
+        result = {
+            'file_path': file_path,
+            'file_name': file_name,
+            'workdir': workdir,
+            'project_config': project_config if os.path.exists(project_config) else ''
+        }
+    else:
+        result = {
+            'file_path': file_path,
+            'file_name': file_name,
+        }
+
+    return result
 
 
 def ask_save_file(file_type='simple_ui'):

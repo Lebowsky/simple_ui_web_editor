@@ -702,9 +702,9 @@ class PickFileModal extends ModalWindow{
         <div class="list-wrap show">
             <ul class="list">
                 <li>
-                    <label>Project config file</label>
-                    <span id="project-config-path" data-param-name="projectConfig">${this.filePath ? this.filePath : '&lt;Not selected&gt;'}</span>
-                    <button id="open-project-config" onclick="pickFile('simple_ui')">Open file</button>
+                    <label>UI Config</label>
+                    <span id="ui-config-path" data-param-name="uiConfigDir">${this.uiPath ? this.uiPath : '&lt;Not selected&gt;'}</span>
+                    <button id="open-ui-dir" onclick="pickUiConfig()">Open dir</button>
                 </li>
                 <li>
                     <label>Working dir</label>
@@ -712,9 +712,9 @@ class PickFileModal extends ModalWindow{
                     <button id="open-working-dir" onclick="pickWorkingDir()">Open dir</button>
                 </li>
                 <li>
-                    <label>UI Config</label>
-                    <span id="ui-config-path" data-param-name="uiConfigDir">${this.uiPath ? this.uiPath : '&lt;Not selected&gt;'}</span>
-                    <button id="open-ui-dir" onclick="pickUiConfigDir()">Open dir</button>
+                    <label>Project config file</label>
+                    <span id="project-config-path" data-param-name="projectConfig">${this.filePath ? this.filePath : '&lt;Not selected&gt;'}</span>
+                    <button id="open-project-config" onclick="pickProjectConfig()">Open file</button>
                 </li>
             </ul>
         </div>

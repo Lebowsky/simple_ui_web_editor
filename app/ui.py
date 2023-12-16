@@ -49,6 +49,12 @@ def ask_file(file_type):
 
 
 @eel.expose
+def ask_ui_file():
+    """ Ask the user to select a file """
+    return dialogs.ask_file('simple_ui')
+
+
+@eel.expose
 def ask_dir():
     return dialogs.ask_dir()
 
