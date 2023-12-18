@@ -14,39 +14,6 @@ async function pickFile(file_type='') {
 	};
 };
 
-async function pickUiConfig(){
-	let result = await askFile('simple_ui');	
-	if (checkAskFileResult(result)){
-		const emptyText = "<Not selected>";
-		const filePath = result.file_path;
-		const workdir = $("#working-dir-path").val() || result.workdir;
-		const projectConfig = $("#project-config-path").val() || result.project_config;
-
-		$("#ui-config-path").text(filePath);
-		$("#ui-config-path").val(filePath);
-		$("#working-dir-path").text(workdir ? workdir : emptyText);
-		$("#working-dir-path").val(workdir);
-		$("#project-config-path").text(projectConfig ? projectConfig : emptyText);
-		$("#project-config-path").val(projectConfig);
-	};
-};
-
-async function pickWorkingDir(){
-	const resultAsk = await askDir();
-	if (resultAsk && resultAsk.path){
-		$('#working-dir-path').text(resultAsk.path);
-		$("#working-dir-path").val(resultAsk.path);	
-	};
-};
-
-async function pickProjectConfig(){
-	let result = await askFile('project_config');
-	if (checkAskFileResult(result)){
-		$("#project-config-path").text(result.file_path);
-		$("#project-config-path").val(result.file_path);	
-	};
-};
-
 async function pickNewFileProject() {
 	let result = await askSaveFile()
 	if (checkAskFileResult(result)){
@@ -56,23 +23,6 @@ async function pickNewFileProject() {
 		return result.file_path;
 	}
 }
-
-async function applyOpenConfFile(){
-	const uiPath = $("#ui-config-path").val();
-	const workdir = $("#working-dir-path").val();
-	const projectConfig = $("#project-config-path").val();
-
-	result = checkAskFileResult(await checkConfigFile(uiPath));
-	if (result){
-		conf = await loadConfiguration(uiPath, workdir, projectConfig);
-		initReadedConf(conf, uiPath);
-		localStorage.setItem('file-path', uiPath);
-		ModalWindow.getCurrentModal().close();
-	}
-	main.settings.uiPath = uiPath;
-	main.settings.dirPath = workdir;
-	main.settings.configPath = projectConfig;
-};
 
 const fileLocationSave = async (event) => {	
 	modals = ModalWindow.getModals();

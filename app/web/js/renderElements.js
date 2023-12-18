@@ -101,6 +101,7 @@ class ModalWindow {
         });
 
         sortableInit(selectors.list);
+        main.current_modal = this
     }
     close(){
         if (this.modal.siblings(selectors.modal).length) {
@@ -111,7 +112,8 @@ class ModalWindow {
             $("body").removeClass("no-scroll");
             $('.content').removeClass("blur");
         }
-        this.modal.remove();    
+        this.modal.remove();
+        main.current_modal = null   
     }
     static getCurrentModal() {
         const modalDiv = $('#modals-wrap.active').find('.modal.active');
@@ -120,8 +122,10 @@ class ModalWindow {
 
         let modalWindow;
         const elementId = modalDiv.find('.params').attr('data-id');
-
-        if (modalDiv.hasClass('type-select-modal')) {
+        
+        if (main.current_modal) {
+            modalWindow = main.current_modal
+        }else if (modalDiv.hasClass('type-select-modal')) {
             const types = main.configGraph.getElementChildrensTypes(elementId)
             modalWindow = new SelectTypeModal(types);
         } else if (modalDiv.hasClass('qr')) { 
@@ -198,6 +202,9 @@ class ModalWindow {
         }
 
         return modalsWindow;
+    }
+    getHotkeys(){
+        return {}
     }
 }
 class ElementModal extends ModalWindow{
@@ -678,7 +685,6 @@ class PickFileModal extends ModalWindow{
         this.uiPath = uiPath;
         this.configPath = configPath;
         this.dirPath = dirPath;
-        
     }
     render(){
         this.html = `
@@ -688,13 +694,14 @@ class PickFileModal extends ModalWindow{
                 </div>
                 <div class='modal-head'>
                     <h2 class='modal-title'>Pick File</h2>
-                    <button id='apply-open-conf-file' onclick='applyOpenConfFile()'>Apply</button>
+                    <button id='apply-open-conf-file'>Apply</button>
                 </div>
                 <div class='modal-content'></div>
             </div>
             `
-        this.modal = $(this.html)
-        this.modal.find(selectors.modalContent).html(this.renderContent())
+        this.modal = $(this.html);
+        this.modal.find(selectors.modalContent).html(this.renderContent());
+        this.addHandlers()
 
         return this;
     } 
@@ -705,22 +712,80 @@ class PickFileModal extends ModalWindow{
                 <li>
                     <label>UI Config</label>
                     <span id="ui-config-path" data-param-name="uiConfigDir">${this.uiPath ? this.uiPath : '&lt;Not selected&gt;'}</span>
-                    <button id="open-ui-dir" onclick="pickUiConfig()">Open dir</button>
+                    <button id="open-ui-config">Open dir</button>
                 </li>
                 <li>
                     <label>Working dir</label>
                     <span id="working-dir-path" data-param-name="workingDir">${this.dirPath ? this.dirPath : '&lt;Not selected&gt;'}</span>
-                    <button id="open-working-dir" onclick="pickWorkingDir()">Open dir</button>
+                    <button id="open-working-dir">Open dir</button>
                 </li>
                 <li>
                     <label>Project config file</label>
                     <span id="project-config-path" data-param-name="projectConfig">${this.configPath ? this.configPath : '&lt;Not selected&gt;'}</span>
-                    <button id="open-project-config" onclick="pickProjectConfig()">Open file</button>
+                    <button id="open-project-config">Open file</button>
                 </li>
             </ul>
         </div>
         `
         return html;    
+    }
+    addHandlers(){
+        this.modal.find("#apply-open-conf-file").click(this.btnApplyHandler);
+        this.modal.find("#open-ui-config").click(this.btnPickUiConfigHandler);
+        this.modal.find("#open-working-dir").click(this.btnPickWorkingDirHandler);
+        this.modal.find("#open-project-config").click(this.btnPickProjectConfigHandler);
+    }
+    getHotkeys(){
+        return {
+            '27': () => {}, //Esc
+            'ctrl+79': this.btnPickUiConfigHandler // Ctrl+O
+        }
+    }
+    async btnApplyHandler(){
+        const uiPath = $("#ui-config-path").val();
+        const workdir = $("#working-dir-path").val();
+        const projectConfig = $("#project-config-path").val();
+
+        result = checkAskFileResult(await checkConfigFile(uiPath));
+        if (result) {
+            conf = await loadConfiguration(uiPath, workdir, projectConfig);
+            initReadedConf(conf, uiPath);
+            localStorage.setItem('file-path', uiPath);
+            ModalWindow.getCurrentModal().close();
+        }
+        main.settings.uiPath = uiPath;
+        main.settings.dirPath = workdir;
+        main.settings.configPath = projectConfig;
+    }
+    async btnPickUiConfigHandler(){
+        let result = await askFile('simple_ui');
+        if (checkAskFileResult(result)) {
+            const emptyText = "<Not selected>";
+            const filePath = result.file_path;
+            const workdir = $("#working-dir-path").val() || result.workdir;
+            const projectConfig = $("#project-config-path").val() || result.project_config;
+
+            $("#ui-config-path").text(filePath);
+            $("#ui-config-path").val(filePath);
+            $("#working-dir-path").text(workdir ? workdir : emptyText);
+            $("#working-dir-path").val(workdir);
+            $("#project-config-path").text(projectConfig ? projectConfig : emptyText);
+            $("#project-config-path").val(projectConfig);
+        };
+    }
+    async btnPickWorkingDirHandler(){
+        const resultAsk = await askDir();
+        if (resultAsk && resultAsk.path) {
+            $('#working-dir-path').text(resultAsk.path);
+            $("#working-dir-path").val(resultAsk.path);
+        };
+    }
+    async btnPickProjectConfigHandler(){
+        let result = await askFile('project_config');
+        if (checkAskFileResult(result)) {
+            $("#project-config-path").text(result.file_path);
+            $("#project-config-path").val(result.file_path);
+        };
     }
 }
 class SendReqModal extends ModalWindow{
