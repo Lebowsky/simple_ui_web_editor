@@ -112,14 +112,14 @@ var Main = {
 	loadPrev() {
 		// $("#prev .prev-content").html('<div class="preload">Load preview...</div><iframe onload="loadedPrev(this)" id="prev-if" src="http://localhost:5000/prev?' + Date.now() + '"></iframe>');
 	},
-	events(event) {
+	events() {
 		return {
-			closeModal: () => {
+			'27': () => { //Esc
 				modal = ModalWindow.getCurrentModal();
 				if (modal)
 					modal.close();
 			},
-			saveElementModal: () => {
+			'ctrl+13': () => { // Ctrl+Enter
 				modal = ModalWindow.getCurrentModal();
 				if (!modal)
 					return
@@ -132,10 +132,22 @@ var Main = {
 				element = main.configGraph.getElementById(elementId);
 				main.configGraph.fillListElements(element.parentType, element.parentConfig['node'], element.parentId)
 			},
-			fileLocationSave: () => {
+			'ctrl+83': () => { // Ctrl+S
 				fileLocationSave();
+			},
+			'ctrl+79': () => { // Ctrl+O
+				showPickFile();
+			},
+			'ctrl+78': () => { // Ctrl+N
+				pickNewFileProject();
+			},
+			'ctrl+81': () => { // Ctrl+Q
+				showQRSettings();
+			},
+			'alt+ctrl+83': () => { // Alt+Ctrl+S
+				showSqlQueries();
 			}
-		}[event];
+		};
 	}
 }
 

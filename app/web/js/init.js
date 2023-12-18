@@ -393,7 +393,10 @@ $(document).ready(function(){
 		}
 	})
 	$(window).keydown(function(e) {
-		key = e.keyCode;
+		let key = e.keyCode;
+		const currentModal = ModalWindow.getCurrentModal()
+		hotkeys = currentModal ? currentModal.getHotkeys() : {}	
+		const events = Object.assign(main.events(), hotkeys)
 
 		if (e.ctrlKey)
 			key = "ctrl+"+key;
@@ -402,11 +405,11 @@ $(document).ready(function(){
 		if (e.altKey)
 			key = "alt+"+key;
 
-		// console.log(e.keyCode);
+		console.log(key);
 
-		if (keys[key]) {
+		if (events[key]) {
 			e.preventDefault();
-			main.events(keys[key])();
+			events[key]();
 			return false;
 		};
 	});
