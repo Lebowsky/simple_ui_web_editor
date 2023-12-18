@@ -738,7 +738,8 @@ class PickFileModal extends ModalWindow{
     getHotkeys(){
         return {
             '27': () => {}, //Esc
-            'ctrl+79': this.btnPickUiConfigHandler // Ctrl+O
+            'ctrl+79': this.btnPickUiConfigHandler, // Ctrl+O
+            'ctrl+13': this.btnApplyHandler // Ctrl+Enter
         }
     }
     async btnApplyHandler(){

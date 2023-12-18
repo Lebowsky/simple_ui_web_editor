@@ -146,7 +146,11 @@ var Main = {
 			},
 			'alt+ctrl+83': () => { // Alt+Ctrl+S
 				showSqlQueries();
+			},
+			'shift+ctrl+70': () => {
+				showSearchElements();
 			}
+			
 		};
 	}
 }
