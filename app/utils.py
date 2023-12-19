@@ -1,5 +1,6 @@
 import io
 import os
+import logging
 import socket
 import base64
 import glob
@@ -17,6 +18,8 @@ from .models.root_config import RootConfigModel, QRCodeConfig
 from .config import app_server_port
 
 python_modules = {}
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 
 
 def can_use_chrome():
@@ -310,170 +313,257 @@ def get_python_modules():
     return python_modules
 
 
-class ProjectConfig:
-    def __init__(self, config_data):
-        self.config_data = project_config.ConfigData(**config_data)
-        self.default_handlers = 'handlers'
-        self.default_external_modules = 'external_modules'
-        self.default_media_data = 'media_data'
-        self.default_config_name = 'sui_config.json'
-        self.config = None
+class UiConfigManager:
+    def __init__(self, file_path):
+        self.file_path = str(pathlib.Path(file_path))
+        self.config_data = {}
+        self.error = {}
+        self.unsupported_version = False
 
-    def get_config(self):
-        if os.path.exists(self.config_data.work_dir):
-            self._init_config()
-            self._create_folders()
-            self._save_project_files()
-            return self._create_config().dict(by_alias=True)
+    def init_config(self):
+        if self._read_config() and self._check_config():
+            self.config_data = RootConfigModel(**self.config_data).dict(by_alias=True, exclude_none=True)
+        if self.error:
+            logger.error(f'Init config error as cause: {self.error}')
+            raise InitUiConfigError(json.dumps(dict(**{'file_path': self.file_path}, **self.error)))
 
-    def _get_config_file_path(self):
-        file_paths = [
-            self.config_data.file_path,
-            os.path.join(self.config_data.work_dir, self.default_config_name)
-        ]
+    def get_config_data(self, convert_version=False):
+        if convert_version and self._is_unsupported_version_config():
+            self._convert_config_version()
+        return RootConfigModel(**self.config_data).dict(by_alias=True, exclude_none=True)
 
-        for file_path in file_paths:
-            if os.path.exists(file_path):
-                return file_path
+    def set_config_data(self, config_data):
+        self.config_data = config_data
 
-    def _save_config_file(self, file_name):
-        file_path = os.path.join(
-            self.config_data.work_dir, file_name)
-
-        with open(file_path, 'w', encoding='utf-8') as f:
-            json.dump(self.config.dict(by_alias=True), f, ensure_ascii=False, indent=2)
-            self.file_path = file_path
-
-    def _init_new(self):
-        self.config = project_config.ProjectConfig(
-            py_handlers=f'{self.default_handlers}/*.py',
-            py_files=f'{self.default_external_modules}/*.py',
-            media_files=f'{self.default_media_data}/*.*'
-        )
-        self._save_config_file(self.default_config_name)
-
-    def _init_config(self):
-        file_path = self._get_config_file_path()
-
-        if file_path:
-            self.file_path = file_path
-            with open(file_path, encoding='utf-8') as f:
-                self.config = project_config.ProjectConfig.parse_raw(f.read())
+    def save_configuration(self, config_data):
+        self.set_config_data(config_data)
+        if self.save_config_to_file():
+            return {'result': 'success'}
         else:
-            self._init_new()
+            return {
+                'result': 'error',
+                'msg': json.dumps(self.error)
+            }
 
-    def _create_folders(self):
-        for key, value in self.config.dict().items():
-            if isinstance(value, list):
-                for item in value:
-                    dir_name = os.path.join(self.config_data.work_dir, os.path.dirname(item))
-
-                    if dir_name and not os.path.exists(dir_name):
-                        os.makedirs(dir_name)
-            else:
-                dir_name = os.path.join(self.config_data.work_dir, os.path.dirname(value))
-                if dir_name and not os.path.exists(dir_name):
-                    os.makedirs(dir_name)
-
-    def _get_files_locations(self) -> list:
-        files_locations = []
-
-        if self.config_data.py_handlers:
-            files_locations.append({
-                'path': os.path.join(
-                    self.config_data.work_dir,
-                    self.default_handlers,
-                    'current_handlers.py'),
-                'data': self.config_data.py_handlers
-            })
-
-        for item in self.config_data.py_files:
-            files_locations.append({
-                'path': os.path.join(
-                    self.config_data.work_dir,
-                    self.default_external_modules,
-                    f'{item.py_file_key}'),
-                'data': item.py_file_data
-            })
-
-        for item in self.config_data.media_files:
-            files_locations.append({
-                'path': os.path.join(
-                    self.config_data.work_dir,
-                    self.default_media_data,
-                    f'{item.media_file_key}.{item.media_file_ext}'),
-                'data': item.media_file_data
-            })
-
-        return files_locations
-
-    def _save_project_files(self):
-        files_locations = self._get_files_locations()
-
-        for item in files_locations:
-            content = get_content_from_base64(item['data'])
-            with open(item['path'], 'w', encoding='utf-8') as f:
-                f.write(content)
-
-    def _create_config(self):
-        handlers = glob.glob(
-            os.path.join(self.config_data.work_dir, self.config.py_handlers),
-            recursive=True
-        )
-
-        max_len = max([len(item) for item in handlers])
-        handlers_content = ''
-        for path in handlers:
-            delimiter = self._get_delimiter(path, max_len)
-            with open(path, encoding='utf-8') as f:
-                handlers_content += f'\n{delimiter}\n\n{f.read()}\n'
-
-        py_files = []
-        external_modules = self._get_glob_data(self.config.py_files)
-        for path in external_modules:
-            py_files.append({
-                'py_file_key': os.path.basename(path),
-                'py_file_data': make_base64_from_file(path),
-                'file_path': path
-            })
-
-        media_files = []
-        media_data = self._get_glob_data(self.config.media_files)
-        for data in media_data:
-            path = pathlib.Path(data)
-            media_files.append({
-                'media_file_data': make_base64_from_file(data),
-                'media_file_key': path.stem,
-                'media_file_ext': path.suffix[1:]
-            })
-
-        result = project_config.ConfigData(
-            work_dir=self.config_data.work_dir,
-            file_path=self.file_path,
-            py_handlers=base64.b64encode(handlers_content.encode('utf-8')).decode('utf-8'),
-            py_files=py_files,
-            media_files=media_files,
-        )
+    def save_config_to_file(self):
+        result = False
+        try:
+            config = RootConfigModel(**self.config_data)
+            with open(self.file_path, 'w', encoding="utf-8") as f:
+                json.dump(
+                    config.dict(by_alias=True, exclude_none=True),
+                    f,
+                    ensure_ascii=False,
+                    indent=4,
+                    separators=(',', ': ')
+                )
+            result = True
+        except ValidationError as e:
+            self.error = {'error': 'ValidationError', 'message': e.json()}
+        except FileExistsError as e:
+            self.error = {'error': 'FileExistsError', 'message': self.file_path}
+        except json.JSONDecodeError as e:
+            self.error = {'error': 'JSONDecodeError', 'message': str(e)}
+        except Exception as e:
+            self.error = {'error': 'UnknownError', 'message': str(e)}
 
         return result
 
-    def _get_glob_data(self, path):
-        return glob.glob(
-            os.path.join(self.config_data.work_dir, path),
-            recursive=True
-        )
+    def _read_config(self):
+        result = False
+        try:
+            with open(self.file_path, encoding='utf-8') as f:
+                self.config_data = json.load(f)
+                result = True
+        except json.JSONDecodeError as e:
+            self.error = {'error': 'JSONDecodeError', 'message': str(e)}
+        except FileNotFoundError as e:
+            self.error = {'error': 'FileNotFoundError', 'message': self.file_path}
+        except Exception as e:
+            self.error = {'error': 'UnknownError', 'message': str(e)}
 
-    def _get_delimiter(self, path, max_len):
-        gap_len = (max_len - len(path)) // 2
-        indents = ['###' + ' ' * gap_len, ' ' * gap_len + '###']
+        return result
 
-        max_len = max_len + 6
+    def _check_config(self):
+        result = False
+        try:
+            RootConfigModel(**self.config_data)
+            result = self._check_config_version()
+        except ValidationError as e:
+            self.error = {'error': 'ValidationError', 'message': e.json()}
+        except ValueError as e:
+            self.error = {'error': 'ValueError', 'message': str(e)}
+        except VersionError as e:
+            self.error = {'error': 'VersionError', 'message': str(e)}
+        except Exception as e:
+            self.error = {'error': 'UnknownError', 'message': str(e)}
 
-        delimiter = path.join(indents)
-        frame = '=' * max_len
-        frame = f'#{frame[1:-1]}#'
+        return result
 
-        return '\n'.join([frame, delimiter, frame])
+    def _check_config_version(self):
+        if self._is_unsupported_version_config():
+            self.unsupported_version = True
+            raise VersionError('Unsupported configuration version')
+        return True
+
+    def _is_unsupported_version_config(self):
+        for item in ['DefServiceConfiguration', 'OnlineServiceConfiguration']:
+            if item in self.config_data.keys() and self.config_data[item]:
+                return True
+
+        check_keys = ['DefOnCreate', 'DefOnInput', 'DefOnlineOnCreate', 'DefOnlineOnInput']
+
+        for process in self.config_data['ClientConfiguration']['Processes']:
+            if not process.get('Operations'):
+                continue
+            for operation in process['Operations']:
+                for item in check_keys:
+                    if item in operation.keys() and operation[item]:
+                        return True
+
+    def _convert_config_version(self):
+        check_keys = {
+            'DefOnCreate': {'event': 'onStart', 'action': 'run', 'type': 'python'},
+            'DefOnInput': {'event': 'onInput', 'action': 'run', 'type': 'python'},
+            'DefOnlineOnCreate': {'event': 'onStart', 'action': 'run', 'type': 'online'},
+            'DefOnlineOnInput': {'event': 'onInput', 'action': 'run', 'type': 'online'}
+        }
+
+        for process in self.config_data['ClientConfiguration']['Processes']:
+            if not process.get('Operations'):
+                continue
+
+            for operation in process['Operations']:
+                handlers = operation.get('Handlers', [])
+                for item in check_keys:
+                    if item in operation.keys() and operation[item]:
+                        handlers.append(
+                            Handler(method=operation[item], **check_keys[item]))
+                operation['Handlers'] = handlers
+
+
+class UiElementsConfigManager:
+
+    def get_config_ui_elements(self, model=RootConfigModel) -> dict:
+        scheme = jsonref.loads(model.schema_json(indent=2, ensure_ascii=True))
+        elements = [v for v in scheme['definitions'].values() if v.get('properties', None)]
+        result = {}
+        containers = {}
+
+        for el in elements:
+            fields = {}
+            title = el['title']
+
+            for key, value in el['properties'].items():
+                props = value.copy()
+                props['required'] = key in (el.get('required') or [])
+                props['hidden'] = key in ['type', 'PyFileData']
+
+                fields[key] = ui_config.BaseField(text=value.get('title') or key, **props)
+                if key == 'Elements':
+                    containers[title] = self._get_elements_items(value)
+
+            result[title] = ui_config.create_element(title, fields).dict(exclude_none=True)
+
+        for key, value in containers.items():
+            for item in value:
+                element_type = ui_config.ElementType(parent=key, type='select', options=value, text='type')
+
+                result[item]['type_'].append(element_type)
+
+        return ui_config.convert_to_dict(result)
+
+    @staticmethod
+    def _get_elements_items(value):
+        result = []
+
+        if value.get('items', None):
+            if value['items'].get('oneOf', None):
+                result = [element['title'] for element in value['items']['oneOf']]
+            elif value['items'].get('anyOf', None):
+                result = [element['title'] for element in value['items']['anyOf']]
+
+        return result
+
+
+class ProjectConfigManager:
+    def __init__(self, work_dir, **kwargs):
+        self.work_dir = work_dir
+        self.file_name = kwargs.get('file_name') or 'sui_config.json'
+        self.file_path = pathlib.Path(self.work_dir, self.file_name)
+        self.config_data = {}
+
+    def save_project_config_to_file(self, ui_config_data):
+        self.create_config_data(ui_config_data)
+        self._save_config_data_to_file()
+
+    def create_config_data(self, ui_config_data: dict):
+        files_data = ui_config_data.get('ClientConfiguration')
+        if not files_data:
+            return
+
+        result = {}
+        handlers_path = files_data.get('pyHandlersPath')
+        py_files = files_data.get('PyFiles')
+
+        if handlers_path:
+            result['handlers'] = self._get_relpath(handlers_path)
+
+        if py_files:
+            modules = {
+                item['PyFileKey']: self._get_relpath(item['file_path'])
+                for item in py_files if item.get('file_path')
+            }
+            result['modules'] = modules
+        self.config_data = result
+
+    def fill_config_data_from_file(self, ui_config_data):
+        self._load_config_data_from_file()
+        self.fill_data_from_config(ui_config_data)
+
+    def fill_data_from_config(self, ui_config_data):
+        files_data = ui_config_data.get('ClientConfiguration')
+        if not self.config_data or not files_data:
+            return
+
+        files_data['pyHandlersPath'] = self._get_absolute_path(self.config_data.get('handlers', ''))
+
+        modules = self.config_data.get('modules')
+
+        if files_data.get('PyFiles') and modules:
+            for item in files_data.get('PyFiles', []):
+                item['file_path'] = self._get_absolute_path(
+                    modules.get(item.get('PyFileKey', ''), item.get('file_path', '')))
+
+    def _save_config_data_to_file(self):
+        try:
+            with open(self.file_path, 'w', encoding='utf-8') as f:
+                json.dump(self.config_data, f, ensure_ascii=False, indent=2)
+                return {'result': 'success'}
+        except json.JSONDecodeError as e:
+            return {
+                'result': 'error',
+                'msg': str(e)
+            }
+
+    def _get_relpath(self, full_path):
+        full_path = str(pathlib.Path(full_path))
+        prefix = str(pathlib.Path(self.work_dir))
+        return f'.\\{os.path.relpath(full_path, os.path.commonprefix([full_path, prefix]))}'
+
+    def _load_config_data_from_file(self):
+        if self.file_path.exists():
+            with open(self.file_path) as f:
+                try:
+                    project_conf = json.load(f)
+                except Exception as e:
+                    project_conf = {}
+                    logger.error(str(e))
+
+            self.config_data = project_conf
+
+    def _get_absolute_path(self, *args):
+        return str(pathlib.Path(self.work_dir, *args))
 
 
 class SQLQueryManager:
@@ -570,5 +660,14 @@ class RequestsManager:
             raise requests.exceptions.RequestException()
 
 
+class InitUiConfigError(Exception):
+    def json(self):
+        return json.loads(str(self))
+
+
 class VersionError(Exception):
+    pass
+
+
+class CheckUiConfigError(Exception):
     pass

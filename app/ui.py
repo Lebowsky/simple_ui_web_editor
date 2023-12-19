@@ -2,6 +2,7 @@ import os
 
 import eel
 
+from . import eel_handlers
 from . import utils
 from . import config
 from . import dialogs
@@ -74,6 +75,26 @@ def ask_save_file(file_type):
     """ Ask the user to select a save file """
     file_name = dialogs.ask_save_file(file_type)
     return file_name
+
+
+# @eel.expose
+# def load_configuration(file_path):
+#     return eel_handlers.get_configuration_from_file(file_path, convert_version=True)
+
+
+# @eel.expose
+# def get_new_configuration():
+#     return eel_handlers.get_new_configuration()
+
+
+# @eel.expose
+# def save_configuration(data: dict, file_path: str, work_dir: str) -> dict:
+#     return eel_handlers.save_configuration(data, file_path)
+
+
+# @eel.expose
+# def save_project_config(data, work_dir):
+#     return eel_handlers.save_project_config(data, work_dir)
 
 
 @eel.expose
