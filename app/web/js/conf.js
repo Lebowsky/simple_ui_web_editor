@@ -117,7 +117,7 @@ const newElements = {
         },
         Mediafile: {
                 type: "Mediafile",
-                MediafileData: 'New media file',
+                MediafileData: '',
                 MediafileExt: '',
                 MediafileKey: ''
         },

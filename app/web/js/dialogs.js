@@ -9,7 +9,7 @@ async function pickFile(file_type='') {
 		if (file_type == 'python') {
 			$("#file_path").val(result.file_path);
 			$("#PyFileKey").val(result.file_name  ? result.file_name.split('.py')[0] : '');
-			$("#file_name").val(result.file_name);
+			$("#MediafileKey").val(result.file_name ? result.file_name.split('.')[0]: result.file_name);
 		}
 	};
 };
