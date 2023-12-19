@@ -155,6 +155,7 @@ class ModalWindow {
             const element = main.configGraph.getElementById(elementId);
             modalWindow = new ElementModal(element);
         }
+        main.current_modal=modalWindow
         modalWindow.modal = modalDiv;
         return modalWindow;
     }
@@ -441,6 +442,7 @@ class ElementModal extends ModalWindow{
         }
 
         this.modal.remove();
+        main.current_modal = null
     }
     getValues() {
         const values = {};
