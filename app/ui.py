@@ -115,6 +115,8 @@ def get_base64_from_file(file_path):
 
 @eel.expose
 def save_handlers_files(handlers: dict, work_dir: str) -> dict:
+    # TODO: Добавить функционал сохранения всех base64 файлов
+
     result = {'result': 'success'}
     if handlers:
         for file_name, value in handlers.items():

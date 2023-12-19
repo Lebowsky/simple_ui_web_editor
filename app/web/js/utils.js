@@ -61,10 +61,11 @@ async function saveConfFiles(conf, filePath, workingDir, pyHandlers){
     let result_save = await saveConf(conf, filePath, workingDir)
     let result_check = checkSaveFileResult(result_save)
 
-    if (result_check){
-        result_save = await savePyHandlers(pyHandlers, workingDir)
-        result_check = checkSaveFileResult(result_save)
-    }
+    //TODO Функционал сохренения всех base64 файлов перенести в отдельную команду глобального меню 
+    // if (result_check){
+        // result_save = await savePyHandlers(pyHandlers, workingDir)
+        // result_check = checkSaveFileResult(result_save)
+    // }
 
     if (! result_check)
         notificate('Ошибка сохранения файла: ' + result_save.msg, 'danger')
