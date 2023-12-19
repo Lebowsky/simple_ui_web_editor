@@ -405,7 +405,7 @@ $(document).ready(function(){
 		if (e.altKey)
 			key = "alt+"+key;
 
-		console.log(key);
+		// console.debug(key);
 
 		if (events[key]) {
 			e.preventDefault();

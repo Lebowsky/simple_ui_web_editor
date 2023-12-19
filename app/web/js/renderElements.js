@@ -943,7 +943,7 @@ class SearchElementsModal extends ModalWindow{
             `
         this.modal = $(this.html)
         this.modal.find(selectors.modalContent).html(this.renderContent())
-
+        
         return this;
     } 
     renderContent(){
@@ -953,7 +953,7 @@ class SearchElementsModal extends ModalWindow{
                 <div id="search-params-wrap">
                     <div class="param active">
                         <label for="ip-address">Search</label>
-                        <input type="text" name="search" value="" id="search">
+                        <input type="text" name="search" value="" id="search" placeholder="Enter search text here...">
                     </div>
                 </div>
             </div>
@@ -961,5 +961,9 @@ class SearchElementsModal extends ModalWindow{
         <div id="search-result-wrap" class="list ui-sortable"></div>
         `
         return html;    
+    }
+    show(){
+        super.show()
+        this.modal.find('#search').focus()
     }
 }
