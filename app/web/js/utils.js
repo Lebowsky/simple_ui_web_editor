@@ -49,15 +49,15 @@ async function saveConfiguration(){
 
     const workingDir = workingDirValue == '<Not selected>' ? '' : workingDirValue
 
-	let handlers = await fillBase64Data();
-	if (saveConfFiles(main.conf, filePath, workingDir, handlers)){
+	// let handlers = await fillBase64Data();//TODO Выносим формирование base64 на backed
+	if (saveConfFiles(main.conf, filePath, workingDir)){
         //main.configGraph = new ClientConfiguration(main.conf.ClientConfiguration);
     }
 }
 async function buildConfiguration(){
     return main.configGraph.getConfig()
 }
-async function saveConfFiles(conf, filePath, workingDir, pyHandlers){
+async function saveConfFiles(conf, filePath, workingDir){
     let result_save = await saveConf(conf, filePath, workingDir)
     let result_check = checkSaveFileResult(result_save)
 
