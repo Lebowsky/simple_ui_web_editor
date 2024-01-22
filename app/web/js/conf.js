@@ -12,6 +12,7 @@ const selectors = {
         listWrap: ".list-wrap",
         list: ".list",
         listItem: ".list-item",
+        itemNav: ".item-nav",
         btnEdit: ".edit",
         btnJson: ".json",
         btnDelete: ".delete",

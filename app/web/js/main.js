@@ -406,5 +406,7 @@ class ClientConfiguration {
 		$(node).html(listElement.html);
 		if (type == 'Processes')
 			listElement.addProcessesButton($(node));
+
+		sortableInit(selectors.list);
 	}
 }

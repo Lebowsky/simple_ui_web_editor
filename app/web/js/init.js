@@ -80,6 +80,12 @@ $(document).ready(function(){
 		const elementId = $(this).parents(selectors.listItem).attr('data-id');
 		editElement(elementId);
 	})
+	$(document).on('dblclick', selectors.itemNav, function(e){
+		if (e.target === this) {
+			const elementId = $(this).parent(selectors.listItem).attr('data-id');
+			editElement(elementId);
+		}
+	})
 	$(document).on('dblclick', selectors.listItem, function(e){
 		if (e.target === this) {
 			const elementId = $(this).attr('data-id');
@@ -104,8 +110,9 @@ $(document).ready(function(){
 			main.configGraph.removeElement(element);
 			main.configGraph.fillListElements(type, node, parentId);
 
-			if (type == "Processes") {
-				main.configGraph.fillListElements("Operations", selectors.operationsList, 1);
+			if (element.parentType == "Operations" || element.parentType == "CVFrames") {
+				const operationListNode = $(selectors.processList).find("#operations[data-id='"+parentId+"']")
+				main.configGraph.fillListElements(element.parentType, operationListNode, parentId);
 			}
 		}
 	})
@@ -184,7 +191,13 @@ $(document).ready(function(){
 
 				const element = main.configGraph.getElementById(elementId);
 				const type = element.parentType;
-				const node = element.parentConfig['node'];
+
+				if (element.parentType == "Operations" || element.parentType == "CVFrames") {
+					node = $(selectors.processList).find("#operations[data-id='"+parentId+"']")
+				} else {
+					node = element.parentConfig['node'];
+				}
+
 				main.configGraph.fillListElements(type, node, parentId);
     		} else {
         		notificate('Неверный тип элемента');
@@ -211,19 +224,26 @@ $(document).ready(function(){
     	const newElementId = main.configGraph.addElementFromDict(elementConf, parentId, parentType);
 		const element = main.configGraph.getElementById(newElementId);
 		const type = element.parentType;
-		const node = element.parentConfig['node'];
+
+		if (element.parentType == "Operations" || element.parentType == "CVFrames") {
+			node = $(selectors.processList).find("#operations[data-id='"+parentId+"']")
+		} else {
+			node = element.parentConfig['node'];
+		}
 
 		main.configGraph.fillListElements(type, node, parentId);
 	})
 	$(document).on('click', selectors.btnAdd, function(e){
-		const listId = $(this).parents('.list').attr('id');
-		const parentId = $(this).parents('.list').attr('data-id');
+		const listId = $($(this).parents('.list')[0]).attr('id');
+		const parentId = $($(this).parents('.list')[0]).attr('data-id');
 
 		if ($(this).hasClass('cv')) {
 			listConfig = listElements['CVOperations'];
 			listConfig['parentType'] = 'CVOperations';
 		} else if ($(this).hasClass('process')) {
 			listConfig = listElements['Processes'];
+		} else if ($($(this).parents('.list-item')[0]).hasClass('cv')) {
+			listConfig = listElements['CVFrames'];
 		} else {
 			listConfig = Object.values(listElements).find(
 				(el) => el.node=="#" + listId || el.node=='.modal.active #' + listId);
@@ -249,11 +269,20 @@ $(document).ready(function(){
 
 		elementId = $(this).parents('.params').attr('data-id');
 		element = main.configGraph.getElementById(elementId);
-		main.configGraph.fillListElements(element.parentType, element.parentConfig['node'], element.parentId, elementId)
 
-		if (element.parentType == "Processes") {
-			main.configGraph.fillListElements("Operations", selectors.operationsList, element.id);
+		if (element.parentType == "Operations" || element.parentType == "CVFrames") {
+			node = $(selectors.processList).find("#operations[data-id='"+element.parentId+"']")
+		} else {
+			node = element.parentConfig['node']
 		}
+		
+		main.configGraph.fillListElements(element.parentType, node, element.parentId, elementId)
+	})
+	$(document).on('click', ".tab#save-project", function(){
+		modal = ModalWindow.getCurrentModal();
+		main.configGraph.setConfigValues(modal.element.id, modal.getValues());
+
+		main.events("fileLocationSave")();
 	})
 	$(document).on('click', '.btn-type-select', function(){
 		const checked = $(this).parents('.params').find('input[name=type]:checked');
@@ -297,15 +326,16 @@ $(document).ready(function(){
 			element = main.configGraph.getElementById(modal.element.id);
 			fillNode = element.parentConfig['node']+"[data-id="+modal.element.id+"]";
 			main.configGraph.fillListElements(element.parentType, fillNode, element.parentId, modal.element.id)
-
-			if (element.parentType == "Processes") {
-				main.configGraph.fillListElements("Operations", selectors.operationsList, element.id);
-			}
 		}
 	});
 	$(document).on('click', selectors.listItem, function(e){
-		$(this).parents(selectors.list).find(selectors.listItem).removeClass("active");
-		$(this).addClass("active");
+		e.stopPropagation();
+
+		if ($(this).attr("data-type") != "process") {
+			$(this).parent(selectors.list).find(selectors.listItem).removeClass("active");
+		}
+
+		$(this).toggleClass("active");
 
 		if ($(e.target).is(".list .item-name")) {
 			const elementId = $(this).attr("data-id");
@@ -327,25 +357,19 @@ $(document).ready(function(){
 			} 
 		}*/
 	})
-	$(document).on('click', '#processes .list-item', function(e){
-		if ($(e.target).is(this) || $(e.target).is($(this).children("span"))) {
-			const elementId = $(this).attr('data-id');
+	$(document).on('click', '#processes > .list-item > .item-nav', function(e){
+		const processNode = $(this).parent(".list-item");
 
-			if ($(this).hasClass('cv')) {
-				main.configGraph.fillListElements("CVFrames", selectors.CVFramesList, elementId);
-				$("#main-conf-cvframes").addClass('active');
-				if ($("#main-conf-screen").hasClass('active')) {
-					$("#main-conf-screen").removeClass('active');
-				}
-				showList($("#main-conf-cvframes .section-header"), "down");
-			} else {
-				main.configGraph.fillListElements("Operations", selectors.operationsList, elementId);
-				$("#main-conf-screen").addClass('active');
-				if ($("#main-conf-cvframes").hasClass('active')) {
-					$("#main-conf-cvframes").removeClass('active');
-				}
-				showList($("#main-conf-screen .section-header"), "down");
-			}
+		if ($(e.target).is(this) || $(e.target).is($(this).children("span"))) {
+			const elementId = processNode.attr('data-id');
+			const childsNode = processNode.find(".item-childs");
+
+			if (processNode.hasClass('cv'))
+				main.configGraph.fillListElements("CVFrames", childsNode, elementId);
+			else
+				main.configGraph.fillListElements("Operations", childsNode, elementId);
+
+			childsNode.stop().slideToggle();
 		}
 	})
 	$(document).on('click', '.main-conf-wrap .section-header', function(e){
@@ -559,7 +583,6 @@ function sortableInit(node) {
     	cursor: "grabbing",
     	handle: ".move",
 		update: function(event, ui) {
-			console.log(ui.item.prev().attr("data-id"))
 			let element1Id = ui.item.attr("data-id");
 			
 			if (ui.originalPosition.top < ui.position.top)
@@ -588,7 +611,7 @@ async function sendSQLQuery(node){
 		params: params
 	};
 	
-	$(node).html(`<img style="width: 70px;height: 13px;transform: scale(2.5);" src="/js/pre.svg">`)
+	$(node).html(`<i class="fa-solid fa-spinner preloader" aria-hidden="true"></i>`)
 
 	const result = await sendSqlQueryToDevice(query_params);
 	
