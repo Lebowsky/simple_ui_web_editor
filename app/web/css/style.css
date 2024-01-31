@@ -252,12 +252,11 @@ footer {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 5px 10px;
     cursor: default;
     position: relative;
-    border-bottom: 1px #e9e9e9 solid;
+    flex-wrap: wrap;
 }
-.list-item:last-child {
+.list .list-item:last-child .item-nav {
     border-bottom: none;
 }
 .list-item span.item-name {
@@ -283,22 +282,44 @@ footer {
     border-radius: 3px;
     cursor: pointer;
 }
-.list .list-item.active,
-.list .list-item:hover,
-.list .list-item.ui-sortable-helper {
+.list .list-item.active > .item-nav,
+.list .list-item:hover > .item-nav,
+.list .list-item.ui-sortable-helper > .item-nav {
     background: #e9e9e9;
     border-radius: 4px;
+}
+.list .list-item > .item-nav {
+    padding: 5px 10px;
+    border-bottom: 1px #e9e9e9 solid;
+}
+
+.list .list-item > .item-nav:last-child {
+    border-bottom: none;
 }
 .item-btn {
     display: flex;
     align-items: center;
     visibility: hidden;
 }
-.list-item.active .item-btn,
-.list-item:hover .item-btn,
-.list-item.ui-sortable-helper .item-btn {
+.list-item.active > .item-nav .item-btn,
+.list-item:hover > .item-nav .item-btn,
+.list-item.ui-sortable-helper > .item-nav .item-btn {
     display: flex;
     visibility: visible;
+}
+.item-nav {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+}
+.list-item .item-childs {
+    display: none;
+    width: 100%;
+    padding: 20px 20px;
+    border: 1px #e9e9e9 solid;
+    border-radius: 0 0 4px 4px;
+    margin: -1px 0 5px;
+    background: #a5a5a529;
 }
 .item-btn span {
     font-size: 15px;
@@ -445,6 +466,7 @@ label i,
 }
 .main-conf-wrap {
     position: relative;
+    box-shadow: 2px 2px 2px rgba(0, 0, 0, .5);
 }
 .main-conf-wrap section .list-wrap {
     overflow-y: auto;
@@ -783,6 +805,39 @@ ul.querys li i {
     margin-bottom: 20px;
     display: inline-block;
     cursor: pointer;
+}
+.preloader {
+    font-size: 15px;
+    color: #fff;
+    -webkit-transition-property: -webkit-transform;
+    -webkit-transition-duration: .7s;
+    -webkit-animation-name: rotate;
+    -webkit-animation-iteration-count: infinite;
+    -webkit-animation-timing-function: linear;
+
+    -moz-transition-property: -moz-transform;
+    -moz-animation-name: rotate; 
+    -moz-animation-duration: .7s; 
+    -moz-animation-iteration-count: infinite;
+    -moz-animation-timing-function: linear;
+
+    transition-property: transform;
+    animation-name: rotate; 
+    animation-duration: .7s; 
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
+@-webkit-keyframes rotate {
+    from {-webkit-transform: rotate(0deg);}
+    to {-webkit-transform: rotate(360deg);}
+}
+@-moz-keyframes rotate {
+    from {-moz-transform: rotate(0deg);}
+    to {-moz-transform: rotate(360deg);}
+}
+@keyframes rotate {
+    from {transform: rotate(0deg);}
+    to {transform: rotate(360deg);}
 }
 /*-------sql-query-end-------*/
 /*-------dataTable--------*/

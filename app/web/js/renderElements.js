@@ -25,17 +25,20 @@ class ListElement {
 
         this.items.forEach((item, index) => {
             html += `
-                <li class="list-item ${item.itemClasses ? item.itemClasses : ''}" title="${item.path ? item.path : ''}" data-id=${item.id}>
-                    <span class="item-name">${item.name}</span>
-                    ${item.value ?`<div class="item-info"><span title="${item.value}">${item.value}</span></div>`: ''}
-                    <div class="item-btn">
-                        <span class="json" title="json"><i class="fa-solid fa-code"></i></span>
-                        <span class="copy" title="copy"><i class="fa fa-clipboard" aria-hidden="true"></i></span>
-                        <span class="duplicate" title="duplicate"><i class="fa fa-copy" aria-hidden="true"></i></span>
-                        <span class="edit" title="edit"><i class="fa fa-edit" aria-hidden="true"></i></span>
-                        <span class="delete" title="delete"><i class="fa fa-trash" aria-hidden="true"></i></span>
-                        <span class="move"><i class="fa fa-bars" aria-hidden="true"></i></span>
+                <li class="list-item ${item.itemClasses ? item.itemClasses : ''}" ${item.path ? 'title="'+item.path+'"' : ''}" data-id=${item.id} data-type="${this.elementType}">
+                    <div class="item-nav">
+                        <span class="item-name">${item.name}</span>
+                        ${item.value ?`<div class="item-info"><span title="${item.value}">${item.value}</span></div>`: ''}
+                        <div class="item-btn">
+                            <span class="json" title="json"><i class="fa-solid fa-code"></i></span>
+                            <span class="copy" title="copy"><i class="fa fa-clipboard" aria-hidden="true"></i></span>
+                            <span class="duplicate" title="duplicate"><i class="fa fa-copy" aria-hidden="true"></i></span>
+                            <span class="edit" title="edit"><i class="fa fa-edit" aria-hidden="true"></i></span>
+                            <span class="delete" title="delete"><i class="fa fa-trash" aria-hidden="true"></i></span>
+                            <span class="move"><i class="fa fa-bars" aria-hidden="true"></i></span>
+                        </div>
                     </div>
+                    <div class="item-childs list" id="${this.elementType == "Processes" ? "operations" : ""}"></div>
                 </li>
             `
         });
@@ -258,7 +261,7 @@ class ElementModal extends ModalWindow{
                 let [name, value] = Object.entries(el)[0]
                 html += `<div onclick="selectModalTab(this)" class="tab" data-tab="${name}">${value.title}</div>`
             })
-            html += `<div class='tab' id='save-project' onclick='fileLocationSave()'>Save Project</div>`
+            html += `<div class='tab' id='save-project'>Save Project</div>`
             html += '</div>'
         }
         return html;
