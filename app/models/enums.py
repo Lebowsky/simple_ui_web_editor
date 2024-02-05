@@ -60,6 +60,7 @@ class CVDetectorType(str, Enum):
 class EventCommonHandlerEnum(str, Enum):
     empty_value: str = ''
     on_launch: str = 'onLaunch'
+    on_launch_menu: str = 'onLaunchMenu'
     on_intent_barcode: str = 'onIntentBarcode'
     on_bluetooth_barcode: str = 'onBluetoothBarcode'
     on_background_command: str = 'onBackgroundCommand'
