@@ -270,6 +270,13 @@ class ClientConfigurationModel(BaseConfigModel):
     common_handlers: Optional[List[CommonHandler]] = Field(default=[], alias='CommonHandlers')
     recognition_templates: Optional[List[RecognitionTemplate]] = Field(alias='RecognitionTemplates')
 
+    py_general: Optional[Union[str, List]] = Field(alias='PyGeneral')
+    html_document_ready: Optional[Union[str, List]] = Field(alias='HTMLdocument_ready')
+    html_head: Optional[Union[str, List]] = Field(alias='HTMLHead')
+    agent: Optional[bool] = Field(alias='agent')
+    configuration_file_name: Optional[Union[str, List]] = Field(alias='ConfigurationFileName')
+    host_uid: Optional[Union[str, List]] = Field(alias='host_uid')
+
     class Config:
         title = 'ClientConfiguration'
 

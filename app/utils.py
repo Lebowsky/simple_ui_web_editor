@@ -76,6 +76,7 @@ def check_config_file(file_path):
     except json.JSONDecodeError as e:
         return {'error': 'JSONDecodeError', 'message': e.msg}
     except ValidationError as e:
+        print(e.json())
         return {'error': 'ValidationError', 'message': json.dumps(e.json())}
     except FileNotFoundError as e:
         return {'error': 'FileNotFoundError', 'message': e.winerror}
@@ -187,6 +188,7 @@ def validate_configuration_model(ui_configuration: dict) -> dict:
     try:
         return RootConfigModel(**ui_configuration).dict(by_alias=True, exclude_none=True)
     except ValidationError as e:
+        print(e.json())
         raise e
     except Exception as e:
         raise e

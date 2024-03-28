@@ -6,6 +6,7 @@ from enum import Enum
 class LaunchType(str, Enum):
     menu: str = 'Menu'
     tiles: str = 'Tiles'
+    empty: str = ''
 
 
 class ElementsIcon(str, Enum):
@@ -70,6 +71,8 @@ class EventCommonHandlerEnum(str, Enum):
     on_sql_data_change: str = 'onSQLDataChange'
     on_sql_error: str = 'onSQLError'
     on_open_file: str = 'onOpenFile'
+    on_handler_error: str = 'onHandlerError'
+    on_service_started: str = 'onServiceStarted'
 
 
 class EventHandlerEnum(str, Enum):
@@ -95,6 +98,7 @@ class HandlerType(str, Enum):
     python: str = 'python'
     python_reload: str = 'pythonreload'
     python_args: str = 'pythonargs'
+    pythonscript: str = 'pythonscript'
     online: str = 'online'
     http: str = 'http'
     sql: str = 'sql'
