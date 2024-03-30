@@ -39,9 +39,15 @@ def save_config_to_file(config_data, file_path):
     if not file_path:
         raise FileNotFoundError('Не указан файл конфигурации')
     config = RootConfigModel(**config_data)
+    clear_local_paths_data(config)
     with open(file_path, 'w', encoding="utf-8") as f:
         json.dump(config.dict(by_alias=True, exclude_none=True), f, ensure_ascii=False, indent=4,
                   separators=(',', ': '))
+
+def clear_local_paths_data(config_model: RootConfigModel):
+    config_model.client_configuration.py_handlers_path = None
+    for py_file in config_model.client_configuration.py_files:
+        py_file.file_path = None
 
 
 def get_config_from_file(file_path):
