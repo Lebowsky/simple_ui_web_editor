@@ -699,4 +699,7 @@ async function auth(node){
 		}
 	}
 }
+function saveAllPyFiles(){
+	saveAllPyFilesToDisk();
+}
 

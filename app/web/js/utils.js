@@ -61,10 +61,10 @@ async function saveConfFiles(conf, filePath, workingDir, pyHandlers){
     let result_save = await saveConf(conf, filePath, workingDir)
     let result_check = checkSaveFileResult(result_save)
 
-    if (result_check){
-        result_save = await savePyHandlers(pyHandlers, workingDir)
-        result_check = checkSaveFileResult(result_save)
-    }
+    // if (result_check){
+    //     result_save = await savePyHandlers(pyHandlers, workingDir)
+    //     result_check = checkSaveFileResult(result_save)
+    // }
 
     if (! result_check)
         notificate('Ошибка сохранения файла: ' + result_save.msg, 'danger')
@@ -74,6 +74,26 @@ async function saveConfFiles(conf, filePath, workingDir, pyHandlers){
 
     return result_check
 }
+async function saveAllPyFilesToDisk(){
+    const result = await askDir();
+    if (!result)
+        return
+
+    const dirToSave = result.path;
+    console.debug(dirToSave);
+
+    let handlers = await fillBase64Handlers();
+
+    result_save = await savePyHandlers(handlers, dirToSave)
+    result_check = checkSaveFileResult(result_save)
+
+    if (! result_check)
+        notificate('Ошибка сохранения файла: ' + result_save.msg, 'danger')
+    else
+        notificate('Файл успешно сохранен', 'success')
+        main.loadPrev();
+}
+
 async function fillBase64Handlers(){
     let result = null;
     const filePath = $('#py-handlers-file-path').attr('data-path');
@@ -153,9 +173,5 @@ function updateDeviceHost(){
     if (main.settings.deviceHost && (query_modal.length || req_modal.length)){
         query_modal.find('#ip-address').val(main.settings.deviceHost)
         req_modal.find('#ip-address').val(main.settings.deviceHost)
-    }
-
-    
-
-    
+    }    
 }
