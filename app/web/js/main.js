@@ -47,6 +47,17 @@ var Main = {
 		$('#py-handlers-file-path').attr('data-path', pyHandlersPath)
 
 		this.loadPrev();
+		this.postInit();
+	},
+	postInit(){
+		const btnPyfilesListButtons = document.getElementById('py-files').getElementsByClassName('btn-group')
+
+		if (btnPyfilesListButtons){
+			const newButton = document.createElement('button');
+			newButton.textContent = 'Save all';
+			newButton.addEventListener('click', saveAllPyFiles);
+			btnPyfilesListButtons[0].appendChild(newButton);
+		}
 	},
 	clearMainSection() {
 		$(selectors.processList).html("No processes");
@@ -110,7 +121,9 @@ var Main = {
 		this.configGraph.fillConfigValues('ClientConfiguration');
 	},
 	loadPrev() {
+//	    url = fetch.post(body_json)
 		// $("#prev .prev-content").html('<div class="preload">Load preview...</div><iframe onload="loadedPrev(this)" id="prev-if" src="http://localhost:5000/prev?' + Date.now() + '"></iframe>');
+//		$("#prev .prev-content").html('<div class="preload">Load preview...</div><iframe onload="loadedPrev(this)" id="prev-if" src="http://localhost:5000/prev?' + Date.now() + '"></iframe>');
 	},
 	events(event) {
 		return {
@@ -174,7 +187,7 @@ class ClientConfiguration {
 		try {
 			elementConfig = main.elementParams[elementValues.type] || main.elementParams[listElements[parentType]['type']]
 		} catch {
-			console.debug(parentType)
+			console.debug('cant add element in graph:', parentType)
 		}
 
 		const parentConfig = { ...listElements[parentType] };
