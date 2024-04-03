@@ -58,6 +58,33 @@ class CVDetectorType(str, Enum):
     multiscanner: str = 'multiscanner'
 
 
+class CVResolution(str, Enum):
+    hd_1080: str = "HD1080"
+    hd_720: str = 'HD720'
+    vga: str = 'VGA'
+    qvga: str = 'QVGA'
+
+
+class CVMode(str, Enum):
+    empty: str = ''
+    list_only: str = 'list_only'
+    green_and_grey: str = 'green_and_grey'
+    green_and_red: str = 'green_and_red'
+    list_and_grey: str = 'list_and_grey'
+
+
+class CVCameraDevice(str, Enum):
+    empty: str = ''
+    train: str = 'Обучение'
+    predict: str = 'Предсказание'
+
+
+class CVDetectorMode(str, Enum):
+    empty: str = ''
+    rear: str = "Тыловая"
+    front: str = 'Фронтальная'
+
+
 class EventCommonHandlerEnum(str, Enum):
     empty_value: str = ''
     on_launch: str = 'onLaunch'

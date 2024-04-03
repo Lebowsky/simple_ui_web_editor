@@ -8,10 +8,12 @@ from ..config import su_settings
 
 from .elements import Barcode, HorizontalGallery, Voice, Photo, PhotoGallery, \
     Signature, Vision, Cart, ImageSlider, MenuItem, DimensionElement, TextElement, Fab
-from .enums import CVDetectorType, LaunchType
+from .enums import CVDetectorType, LaunchType, CVResolution, CVMode, CVCameraDevice, \
+    CVDetectorMode
 from .containers import LinearLayout, Tiles
 from .handlers import CommonHandler, Handler, CVHandler
 from .recognition_templates import RecognitionTemplate
+
 
 class BaseConfigModel(BaseModel):
     class Config:
@@ -135,16 +137,16 @@ class CVFrames(BaseConfigModel):
     type: str = Field(default='CVFrame')
     cv_online: bool = Field(default=False, alias='CVOnline')
     cv_detector: CVDetectorType = Field(default='', alias='CVDetector')
-    cv_resolution: str = Field(alias='CVResolution')  # HD1080
-    cv_mode: str = Field(default='', alias='CVMode')  # list_only
+    cv_resolution: CVResolution = Field(alias='CVResolution')
+    cv_mode: CVMode = Field(default='', alias='CVMode')
     cv_action_buttons: Optional[str] = Field(alias='CVActionButtons')
     cv_recognition_settings: Optional[str] = Field(alias='CVRecognitionSettings')
     recognition_template: Optional[str] = Field(alias='RecognitionTemplate')
     cv_mask: Optional[str] = Field(alias='CVMask')
     cv_action: Optional[str] = Field(alias='CVAction')  # Title
     cv_info: Optional[str] = Field(alias='CVInfo')
-    cv_camera_device: Optional[str] = Field(alias='CVCameraDevice')  # "Back"/Front,
-    cv_detector_mode: Optional[str] = Field(alias='CVDetectorMode')  # "train"/predict,
+    cv_camera_device: Optional[CVCameraDevice] = Field(alias='CVCameraDevice')
+    cv_detector_mode: Optional[CVDetectorMode] = Field(alias='CVDetectorMode')
     handlers: Optional[List[CVHandler]] = Field(alias='Handlers')
 
     class Config:
@@ -239,7 +241,7 @@ class ClientConfigurationModel(BaseConfigModel):
     version: str = Field(default='0.0.1', alias='ConfigurationVersion')
 
     processes: List[Union[ProcessesModel, CVOperationModel]] = Field(
-        default=[ProcessesModel(Operations=[OperationsModel()])],
+        default=[ProcessesModel(operations=[OperationsModel()])],
         alias='Processes')
 
     settings: ConfigurationSettingsModel = Field(

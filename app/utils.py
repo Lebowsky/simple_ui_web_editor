@@ -77,7 +77,8 @@ def check_config_file(file_path):
         return {'error': 'JSONDecodeError', 'message': e.msg}
     except ValidationError as e:
         print(e.json())
-        return {'error': 'ValidationError', 'message': json.dumps(e.json())}
+        return {'error': 'ValidationError', 'message': json.dumps(e.json(),
+                                                                  ensure_ascii=False)}
     except FileNotFoundError as e:
         return {'error': 'FileNotFoundError', 'message': e.winerror}
     except VersionError as e:
