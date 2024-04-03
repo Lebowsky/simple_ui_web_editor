@@ -84,6 +84,7 @@ async function fillBase64Handlers(){
     }
 
     if (result != null && result.length > 0){
+        conf.pyHandlersPath = filePath;
         conf.PyHandlers = result;
 		// main.saveElement(getSaveParamValueById('py-handlers-file-path', 'path'), "Configuration", "");
     }else{
