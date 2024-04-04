@@ -60,7 +60,7 @@ class AsyncSimple(Simple):
             for handler in common_handlers:
                 if handler.get('event') == 'onLaunch':
                     if handler.get('action') == 'run':
-                        if handler.get('type') == 'python':
+                        if handler.get('type') in ('python', 'pythonscript'):
                             operation = handler.get('method')
                             self.set_input(operation, json.dumps(json_str, ensure_ascii=False).encode('utf-8'),
                                            self.process_data)
