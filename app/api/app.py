@@ -160,7 +160,8 @@ def disconnect_request():
 async def flet_app(page: ft.Page):
     invite_text = ft.Text(value="Для отображения превью необходимо выбрать процесс или экран..", size=16, color=ft.colors.BLACK54)
     page.add(invite_text)
-    await listen_for_updates(page)
+    uri = f"ws://localhost:{app_server_port}/ws_flet"
+    await listen_for_updates(page, uri)
 
 app.mount("/flet_preview", ft.app(flet_app, export_asgi_app=True))
 

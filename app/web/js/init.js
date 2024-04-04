@@ -342,11 +342,19 @@ $(document).ready(function(){
 			const element = main.configGraph.getElementById(elementId);
 			const type = element.parentType;
 
-			if (elementId > 2) {
+			if (elementId == 3) {
 				//console.log("YEEEP 3", element);
 				elementConf = main.configGraph.getConfigElement(elementId);
 				sendDataToUpdatePreview(elementConf)
+				console.log("YEEEP 3", elementId);
 			}
+			if (elementId == 9) {
+				//console.log("YEEEP 3", element);
+				elementConf = main.configGraph.getConfigElement(elementId);
+				sendDataToUpdatePreview(elementConf, flag=true)
+				console.log("YEEEP 4", elementId);
+			}
+			console.log("WHAT ID", elementId);
 
 
 			if (type == "Elements") {
@@ -535,13 +543,22 @@ function selectTab(tabNode) {
         $("#main-conf-cvframes").removeClass('active');
     }
 }
-async function sendDataToUpdatePreview(dataToSend) {
+async function sendDataToUpdatePreview(dataToSend, flag) {
 	let data; 
     if (dataToSend) {
-        data = {
-            "action": "screen_items",
-            "data": dataToSend
-        };
+		if (flag){
+			data = {
+				"action": "screen_documents",
+				"data": dataToSend
+			};	
+		}
+		else{
+			data = {
+				"action": "screen_items",
+				"data": dataToSend
+			};
+		}
+        
     } else {
         const processesList = main.configGraph.elements.filter((el) => el.parentType == 'Processes').map((item) => item.title);
         data = {
