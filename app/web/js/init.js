@@ -342,6 +342,13 @@ $(document).ready(function(){
 			const element = main.configGraph.getElementById(elementId);
 			const type = element.parentType;
 
+			if (elementId > 2) {
+				//console.log("YEEEP 3", element);
+				elementConf = main.configGraph.getConfigElement(elementId);
+				sendDataToUpdatePreview(elementConf)
+			}
+
+
 			if (type == "Elements") {
 				/*const childsNode = ModalWindow.getCurrentModal().modal.find(".element-childs");
 				if (childsNode.length) {
@@ -509,19 +516,58 @@ function togglePrev() {
 	$(".prev-wrap").toggleClass("show");
 }
 function selectTab(tabNode) {
-	$(".tabs .tab").removeClass("active");
-	$(tabNode).addClass("active");
+    $(".tabs .tab").removeClass("active");
+    $(tabNode).addClass("active");
 
-	tabID = $(tabNode).attr("data-tab-id");
+    var tabID = $(tabNode).attr("data-tab-id");
 
-	$(".main-conf-wrap section").removeClass("active");
-	$(".main-conf-wrap #" + tabID).addClass("active");
-	console.log($(this).data());
-	//if ($(tabNode).data('tab-id') != 'main-conf-process') {
-		$("#main-conf-screen").removeClass('active');
-		$("#main-conf-cvframes").removeClass('active');
-	/*} else {
-	}*/
+    $(".main-conf-wrap section").removeClass("active");
+    $(".main-conf-wrap #" + tabID).addClass("active");
+
+    if ($(tabNode).data('tab-id') === 'main-conf-process') {
+
+        sendDataToUpdatePreview(); 
+		
+        $("#main-conf-screen").addClass('active');
+        $("#main-conf-cvframes").addClass('active');
+    } else {
+        $("#main-conf-screen").removeClass('active');
+        $("#main-conf-cvframes").removeClass('active');
+    }
+}
+async function sendDataToUpdatePreview(dataToSend) {
+	let data; 
+    if (dataToSend) {
+        data = {
+            "action": "screen_items",
+            "data": dataToSend
+        };
+    } else {
+        const processesList = main.configGraph.elements.filter((el) => el.parentType == 'Processes').map((item) => item.title);
+        data = {
+            "action": "processes_list",
+            "data": processesList
+        };
+    }
+	console.log(data);
+    try {
+        const response = await fetch('http://localhost:5000/ws_editor', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        });
+
+        if (!response.ok) {
+            throw new Error(`Ошибка: ${response.statusText}`);
+        }
+
+        const responseData = await response.json();
+        console.log("Ответ сервера:", responseData);
+    } catch (error) {
+        console.error("Ошибка при обмене данными с сервером:", error);
+    }
 }
 function selectModalTab(tabNode) {
 	// $(".tabs .tab").removeClass("active");
