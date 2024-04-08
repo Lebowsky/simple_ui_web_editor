@@ -560,13 +560,16 @@ async function sendDataToUpdatePreview(dataToSend, flag) {
 		}
         
     } else {
-        const processesList = main.configGraph.elements.filter((el) => el.parentType == 'Processes').map((item) => item.title);
+		//берем заголовки только у не скрытых процессов
+        const processesList = main.configGraph.elements
+			.filter((el) => el.parentType == 'Processes' && el.elementValues['hidden'] == false)
+			.map((item) => item.title);
+			
         data = {
             "action": "processes_list",
             "data": processesList
         };
     }
-	console.log(data);
     try {
         const response = await fetch('http://localhost:5000/ws_editor', {
             method: 'POST',
