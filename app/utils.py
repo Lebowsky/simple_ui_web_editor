@@ -126,12 +126,12 @@ def check_file_paths(data: dict, path: str):
         if file_path.exists():
             item['file_path'] = str(file_path)
 
-    file_path = project_config_data.get('handlers') or data['ClientConfiguration'].get('pyHandlersPath')
+    file_path = data['ClientConfiguration'].get('pyHandlersPath') or project_config_data.get('handlers')
     if file_path and not os.path.exists(file_path):
         data['ClientConfiguration']['pyHandlersPath'] = ''
 
     file_path = os.path.join(path, 'main.py')
-    if os.path.exists(file_path):
+    if os.path.exists(file_path) and not data['ClientConfiguration']['pyHandlersPath']:
         data['ClientConfiguration']['pyHandlersPath'] = file_path
 
 
