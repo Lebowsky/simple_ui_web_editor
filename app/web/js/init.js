@@ -340,21 +340,25 @@ $(document).ready(function(){
 		if ($(e.target).is(".list .item-name")) {
 			const elementId = $(this).attr("data-id");
 			const element = main.configGraph.getElementById(elementId);
-			const type = element.parentType;
+			const type = element.parentType; 
 
-			if (elementId == 3) {
-				//console.log("YEEEP 3", element);
+			if (element.type != "Process") {
 				elementConf = main.configGraph.getConfigElement(elementId);
 				sendDataToUpdatePreview(elementConf)
-				console.log("YEEEP 3", elementId);
 			}
-			if (elementId == 9) {
+			//if (elementId == 3) {
 				//console.log("YEEEP 3", element);
-				elementConf = main.configGraph.getConfigElement(elementId);
-				sendDataToUpdatePreview(elementConf, flag=true)
-				console.log("YEEEP 4", elementId);
-			}
-			console.log("WHAT ID", elementId);
+			//	elementConf = main.configGraph.getConfigElement(elementId);
+			//	sendDataToUpdatePreview(elementConf)
+			//	console.log("YEEEP 3", elementId);
+			//}
+			//if (elementId == 9) {
+				//console.log("YEEEP 3", element);
+			//	elementConf = main.configGraph.getConfigElement(elementId);
+			//	sendDataToUpdatePreview(elementConf, flag=true)
+			//	console.log("YEEEP 4", elementId);
+			//}
+			//console.log("WHAT ID", elementId);
 
 
 			if (type == "Elements") {

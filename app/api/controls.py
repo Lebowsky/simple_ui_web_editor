@@ -19,6 +19,54 @@ class ProcessButton(ElevatedButton):
             shape=RoundedRectangleBorder(radius=15),
         )
         self.elevation = 0
+
+class MainButton(ElevatedButton):
+    def __init__(self, text, text_size):
+        super().__init__(text=text)
+        self.text_size = text_size
+        self.width = 1000
+        self._initialize_button()
+
+    def _initialize_button(self):
+        self.content = Text(value=self.text, size=self.text_size, weight=FontWeight.W_600, text_align=TextAlign.CENTER, color=colors.BLACK87)
+        
+        self.bgcolor = "#d5d7d4"
+        self.color = "#585b57"
+        self.height = "30"
+        self.width = self.width
+        self.style = ButtonStyle(
+            overlay_color="#d5d7d4",
+            shape=ContinuousRectangleBorder(),
+        )
+        self.elevation = 0
+
+class ProgressButton(OutlinedButton):
+    def __init__(self, text):
+        super().__init__(text=text)
+        self._initialize_button()
+
+    def _initialize_button(self):
+        self.content = Row([Text(
+            value=self.text, 
+            size=16, 
+            weight=FontWeight.W_500, 
+            text_align=TextAlign.LEFT, 
+            color=colors.BLACK54, 
+            )], alignment=MainAxisAlignment.START)
+        
+        self.bgcolor = colors.WHITE
+        self.color = colors.WHITE
+        self.height = "35"
+        self.style = ButtonStyle(
+            bgcolor = colors.WHITE,
+            shadow_color= colors.BLACK,
+            overlay_color=colors.WHITE,
+            shape=RoundedRectangleBorder(radius=25),
+            padding=Padding(left=35, right=0, top=0, bottom=0),
+            elevation={"pressed": 0, "": 1},
+            side=BorderSide(1, colors.BLACK12)
+        )
+
 class BaseScreen(View):
     def __init__(self):
         super().__init__()

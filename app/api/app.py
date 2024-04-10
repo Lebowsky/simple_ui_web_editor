@@ -84,7 +84,7 @@ async def trigger_update(request: Request):
     try:
         data = await request.json()
         data_str = json.dumps(data, ensure_ascii=False, indent=2)
-        print(f"Data received: {data_str}")
+        # print(f"Data received: {data_str}")
         # Отправляем данные всем подключенным клиентам
         for ws in active_websockets:
             await ws.send_text(data_str)
