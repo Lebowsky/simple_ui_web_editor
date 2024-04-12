@@ -346,20 +346,6 @@ $(document).ready(function(){
 				elementConf = main.configGraph.getConfigElement(elementId);
 				sendDataToUpdatePreview(elementConf)
 			}
-			//if (elementId == 3) {
-				//console.log("YEEEP 3", element);
-			//	elementConf = main.configGraph.getConfigElement(elementId);
-			//	sendDataToUpdatePreview(elementConf)
-			//	console.log("YEEEP 3", elementId);
-			//}
-			//if (elementId == 9) {
-				//console.log("YEEEP 3", element);
-			//	elementConf = main.configGraph.getConfigElement(elementId);
-			//	sendDataToUpdatePreview(elementConf, flag=true)
-			//	console.log("YEEEP 4", elementId);
-			//}
-			//console.log("WHAT ID", elementId);
-
 
 			if (type == "Elements") {
 				/*const childsNode = ModalWindow.getCurrentModal().modal.find(".element-childs");
@@ -547,22 +533,13 @@ function selectTab(tabNode) {
         $("#main-conf-cvframes").removeClass('active');
     }
 }
-async function sendDataToUpdatePreview(dataToSend, flag) {
+async function sendDataToUpdatePreview(dataToSend) {
 	let data; 
     if (dataToSend) {
-		if (flag){
-			data = {
-				"action": "screen_documents",
-				"data": dataToSend
-			};	
-		}
-		else{
-			data = {
-				"action": "screen_items",
-				"data": dataToSend
-			};
-		}
-        
+		data = {
+			"action": "screen_items",
+			"data": dataToSend
+		};
     } else {
 		//берем заголовки только у не скрытых процессов
         const processesList = main.configGraph.elements

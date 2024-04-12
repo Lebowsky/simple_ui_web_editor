@@ -15,7 +15,7 @@ from fastapi_socketio import SocketManager
 
 from .preview_app import AsyncSimple
 from ..config import resource_path, app_server_port, app_server_host
-from ..utils import get_config_from_file, get_python_modules
+from ..utils import get_python_modules
 from .priview import listen_for_updates
 
 sw: AsyncSimple
@@ -70,7 +70,6 @@ async def websocket_endpoint(websocket: WebSocket):
     active_websockets.add(websocket)
     try:
         while True:
-            # В Flet это будет обрабатываться иначе, здесь же мы просто ожидаем сообщения
             message = await websocket.receive_text()
             await sio.emit('some_event', {'message': message}, namespace='/simpleweb') # Используем sio для отправки сообщений
     except Exception as e:
@@ -84,8 +83,6 @@ async def trigger_update(request: Request):
     try:
         data = await request.json()
         data_str = json.dumps(data, ensure_ascii=False, indent=2)
-        # print(f"Data received: {data_str}")
-        # Отправляем данные всем подключенным клиентам
         for ws in active_websockets:
             await ws.send_text(data_str)
         return {"message": "Data processed and sent"}
@@ -99,9 +96,6 @@ run_uvicorn()
 @app.get('/get_conf')
 async def get_config(request: Request):
     from ..ui import get_current_file_path, set_device_host, get_configuration
-
-    # file_path = await get_current_file_path()
-    # config = get_config_from_file(file_path)
     config = await get_configuration()
     await set_device_host(request.client.host)
     return config
