@@ -121,9 +121,7 @@ var Main = {
 		this.configGraph.fillConfigValues('ClientConfiguration');
 	},
 	loadPrev() {
-//	    url = fetch.post(body_json)
-		// $("#prev .prev-content").html('<div class="preload">Load preview...</div><iframe onload="loadedPrev(this)" id="prev-if" src="http://localhost:5000/prev?' + Date.now() + '"></iframe>');
-//		$("#prev .prev-content").html('<div class="preload">Load preview...</div><iframe onload="loadedPrev(this)" id="prev-if" src="http://localhost:5000/prev?' + Date.now() + '"></iframe>');
+		$("#prev .prev-content").html('<div class="preload">Load preview...</div><iframe onload="loadedPrev(this)" id="prev-if" src="http://localhost:5000/flet_preview"></iframe>');
 	},
 	events(event) {
 		return {
