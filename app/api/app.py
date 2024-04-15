@@ -13,12 +13,10 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from fastapi_socketio import SocketManager
 
-from .preview_app import AsyncSimple
 from ..config import resource_path, app_server_port, app_server_host
 from ..utils import get_python_modules
-from .priview import listen_for_updates
+from ..preview.preview import listen_for_updates
 
-sw: AsyncSimple
 
 app = FastAPI()
 app.add_middleware(
@@ -71,7 +69,7 @@ async def websocket_endpoint(websocket: WebSocket):
     try:
         while True:
             message = await websocket.receive_text()
-            await sio.emit('some_event', {'message': message}, namespace='/simpleweb') # Используем sio для отправки сообщений
+            await sio.emit('some_event', {'message': message}) # Используем sio для отправки сообщений
     except Exception as e:
         print(f"WebSocket Error: {e}")
     finally:
@@ -92,64 +90,12 @@ async def trigger_update(request: Request):
 
 run_uvicorn()
 
-
 @app.get('/get_conf')
 async def get_config(request: Request):
     from ..ui import get_current_file_path, set_device_host, get_configuration
     config = await get_configuration()
     await set_device_host(request.client.host)
     return config
-
-
-@app.get('/prev', response_class=HTMLResponse)
-async def prev_index(request: Request):
-    global sw
-    try:
-        sw = AsyncSimple(sio, templates=templates, python_modules=get_python_modules())
-        response = await sw.get_preview_page(request)
-        return response
-    except Exception as e:
-        import traceback
-        with open(resource_path('app/web/templates/error_500_response.html'), encoding='utf-8') as f:
-            response = HTMLResponse(content=f.read().replace('Message Here', str(e)))
-            print(traceback.format_exc())
-            return response
-
-
-@sio.on('connect_event', namespace='/simpleweb')
-async def connect(sid, message):
-    sw.set_sid(sid)
-    await sw.connect_event(message=message)
-    print('connect_event')
-
-
-@sio.on('run_process', namespace='/simpleweb')
-async def run_process(sid, message):
-    print('run_process')
-    await sw.run_process(message)
-
-
-@sio.on('input_event', namespace='/simpleweb')
-async def input_event(sid, message):
-    print('input_event')
-    await sw.input_event(message)
-
-
-@sio.on('close_maintab', namespace='/simpleweb')
-async def close_maintab(sid, message):
-    print('close_maintab')
-    await sw.close_maintab(message)
-
-
-@sio.on('select_tab', namespace='/simpleweb')
-async def select_tab(sid, message):
-    print('select_tab')
-    await sw.select_tab(message)
-
-
-@sio.on('disconnect_request', namespace='/simpleweb')
-def disconnect_request():
-    print('disconnect_request')
 
 async def flet_app(page: ft.Page):
     invite_text = ft.Text(value="Для отображения превью необходимо выбрать процесс или экран..", size=16, color=ft.colors.BLACK54)

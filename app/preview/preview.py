@@ -323,6 +323,7 @@ async def listen_for_updates(page: ft.Page, uri: str):
             page.update()
 
 async def _get_processes_list_view(page: ft.Page, processes_data: dict):
+    page.appbar = None # убираем контекстное меню
     # Обрабатываем список процессов
     if isinstance(processes_data, list) and all(isinstance(item, str) for item in processes_data):
         list_view = ft.ListView(expand=1, spacing=15, padding=3)
