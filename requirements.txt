@@ -11,3 +11,5 @@ fastapi_socketio
 lxml
 uiweb
 requests
+flet~=0.21.2
+websockets~=11.0.3
