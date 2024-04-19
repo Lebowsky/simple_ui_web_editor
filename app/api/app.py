@@ -98,12 +98,12 @@ async def get_config(request: Request):
     return config
 
 @app.post('/set_conf')
-async def save_config(request: Request):   
+async def save_config(request: Request):
     file_path = await get_current_file_path()
-    data = await request.body()
+    data = await request.json()
     try:
-        with open(file_path, 'wb') as f: 
-            f.write(data)
+        with open(file_path, 'w', encoding='utf-8') as f:
+            json.dump(data, f, indent=2, ensure_ascii=False)
     except Exception as e:
         print(f"Error saving config: {e}")
         return {"error": str(e)}
