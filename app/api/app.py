@@ -16,6 +16,7 @@ from fastapi_socketio import SocketManager
 from ..config import resource_path, app_server_port, app_server_host
 from ..utils import get_python_modules
 from ..preview.preview import listen_for_updates
+from ..ui import get_current_file_path, set_device_host, get_configuration
 
 
 app = FastAPI()
@@ -92,10 +93,22 @@ run_uvicorn()
 
 @app.get('/get_conf')
 async def get_config(request: Request):
-    from ..ui import get_current_file_path, set_device_host, get_configuration
     config = await get_configuration()
     await set_device_host(request.client.host)
     return config
+
+@app.post('/set_conf')
+async def save_config(request: Request):   
+    file_path = await get_current_file_path()
+    data = await request.body()
+    try:
+        with open(file_path, 'wb') as f: 
+            f.write(data)
+    except Exception as e:
+        print(f"Error saving config: {e}")
+        return {"error": str(e)}
+
+    return {"message": "Configuration saved successfully!"}
 
 async def flet_app(page: ft.Page):
     invite_text = ft.Text(value="Для отображения превью необходимо выбрать процесс или экран..", size=16, color=ft.colors.BLACK54)
