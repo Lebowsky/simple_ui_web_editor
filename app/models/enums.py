@@ -126,6 +126,7 @@ class HandlerType(str, Enum):
     python_reload: str = 'pythonreload'
     python_args: str = 'pythonargs'
     pythonscript: str = 'pythonscript'
+    pythonbytes: str = 'pythonbytes',
     online: str = 'online'
     http: str = 'http'
     sql: str = 'sql'
