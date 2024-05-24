@@ -13,8 +13,9 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from fastapi_socketio import SocketManager
 
+
 from ..config import resource_path, app_server_port, app_server_host
-from ..utils import get_python_modules
+from ..utils import get_python_modules, save_config_to_file
 from ..preview.preview import listen_for_updates
 from ..ui import get_current_file_path, set_device_host, get_configuration
 
@@ -102,8 +103,7 @@ async def save_config(request: Request):
     file_path = await get_current_file_path()
     data = await request.json()
     try:
-        with open(file_path, 'w', encoding='utf-8') as f:
-            json.dump(data, f, indent=2, ensure_ascii=False)
+        save_config_to_file(data, file_path)
     except Exception as e:
         print(f"Error saving config: {e}")
         return {"error": str(e)}
