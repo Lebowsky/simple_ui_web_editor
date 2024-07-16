@@ -6,6 +6,7 @@ from enum import Enum
 class LaunchType(str, Enum):
     menu: str = 'Menu'
     tiles: str = 'Tiles'
+    empty: str = ''
 
 
 class ElementsIcon(str, Enum):

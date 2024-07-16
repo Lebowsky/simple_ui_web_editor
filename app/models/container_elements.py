@@ -138,3 +138,9 @@ class Object(ContainerElement):
 
     class Config:
         title = 'object'
+
+class Camera(ContainerElement):
+    type: Literal['camera']
+
+    class Config:
+        title = 'camera'

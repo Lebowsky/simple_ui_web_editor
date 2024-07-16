@@ -1,9 +1,7 @@
 from typing import List, Optional, Literal, Union, Annotated
 from pydantic import Field, BaseModel
 
-from .container_elements import Tabs, Tab, TextView, Button, EditTextText, EditTextNumeric, EditTextPass, \
-    EditTextAuto, EditTextAutocomplete, ModernEditText, Picture, CheckBox, Gauge, Chart, SpinnerLayout, TableLayout, \
-    MultilineText, CardsLayout, CButtons, CButtonsHorizontal, DateField, ProgressButton, HTML, Map, File, Object
+from .container_elements import *
 from .elements import BaseElement, DimensionElement, Cart, LayoutElement, OrientationType, DimensionsType
 
 
@@ -63,7 +61,8 @@ Element = Annotated[
         HTML,
         Map,
         File,
-        Object
+        Object,
+        Camera
     ], Field(discriminator='type')
 ]
 
