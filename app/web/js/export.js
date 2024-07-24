@@ -56,7 +56,7 @@ async function getNewConfiguration(){
 }
 
 async function saveConf(data, filePath, workingDir){
-	return await eel.save_configuration(data, filePath, workingDir)();
+	return await eel.save_configuration(data, filePath, workingDir, localStorage.configProjectPath)();
 }
 
 async function savePyHandlers(pyHandlers, workingDir){

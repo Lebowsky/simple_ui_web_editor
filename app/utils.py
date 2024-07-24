@@ -35,13 +35,16 @@ def get_port():
     return port
 
 
-def save_config_to_file(config_data, file_path):
+def save_config_to_file(config_data, file_path, project_config_path=None):
     if not file_path:
         raise FileNotFoundError('Не указан файл конфигурации')
     config = RootConfigModel(**config_data)
     clear_local_paths_data(config)
+    data_to_save = config.dict(by_alias=True, exclude_none=True)
+    if project_config_path:
+        save_base64_data(data_to_save, project_config_path)
     with open(file_path, 'w', encoding="utf-8") as f:
-        json.dump(config.dict(by_alias=True, exclude_none=True), f, ensure_ascii=False, indent=4,
+        json.dump(data_to_save, f, ensure_ascii=False, indent=4,
                   separators=(',', ': '))
 
 def clear_local_paths_data(config_model: RootConfigModel):
@@ -131,7 +134,7 @@ def check_file_paths(data: dict, path: str):
         data['ClientConfiguration']['pyHandlersPath'] = ''
 
     file_path = os.path.join(path, 'main.py')
-    if os.path.exists(file_path) and not data['ClientConfiguration']['pyHandlersPath']:
+    if os.path.exists(file_path) and not data['ClientConfiguration'].get('pyHandlersPath'):
         data['ClientConfiguration']['pyHandlersPath'] = file_path
 
 
@@ -178,17 +181,17 @@ def create_project_config_data(files_data: dict, project_path: str):
     return result
 
 
-def save_base64_data(ui_configuration, config_path: str = None):
-    if config_path:
+def save_base64_data(ui_configuration: dict, project_config_path: str = None):
+    if project_config_path:
         try:
-            with open(config_path, encoding='utf-8') as fp:
+            with open(project_config_path, encoding='utf-8') as fp:
                 project_config_data = json.load(fp)
                 handlers_path = project_config_data.get('handlers')
                 modules = project_config_data.get('modules', {})
         except json.JSONDecodeError:
             return
 
-        work_dir = pathlib.Path(config_path).parent
+        work_dir = pathlib.Path(project_config_path).parent
 
         if handlers_path:
             file_path = pathlib.Path(work_dir / handlers_path)
