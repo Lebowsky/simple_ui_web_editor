@@ -15,9 +15,9 @@ from fastapi_socketio import SocketManager
 
 
 from ..config import resource_path, app_server_port, app_server_host
-from ..utils import get_python_modules, save_config_to_file
+from ..utils import make_ui_config, save_config_to_file
 from ..preview.preview import listen_for_updates
-from ..ui import get_current_file_path, set_device_host, get_configuration
+from ..ui import get_current_file_path, set_device_host, get_configuration, get_config_project_path
 
 
 app = FastAPI()
@@ -94,9 +94,10 @@ run_uvicorn()
 
 @app.get('/get_conf')
 async def get_config(request: Request):
-    config = await get_configuration()
+    configuration = await get_configuration()
+    config_path = await get_config_project_path()
     await set_device_host(request.client.host)
-    return config
+    return make_ui_config(configuration, config_path)
 
 @app.post('/set_conf')
 async def save_config(request: Request):

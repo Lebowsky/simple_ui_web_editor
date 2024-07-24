@@ -125,19 +125,18 @@ def send_request(params):
 
 
 async def get_current_file_path():
-    return eel.getCurrentFilePath()()
+    return eel.getCurrentFilePath()() # noqa
 
+async def get_config_project_path():
+    return eel.getConfigProjectPath()() # noqa
 
 async def set_device_host(device_host):
-    return eel.setDeviceHost(device_host)
+    return eel.setDeviceHost(device_host) # noqa
 
 
 async def get_configuration():
-    configuration = eel.getConfiguration()()
-    if configuration:
-        valid_config = utils.validate_configuration_model(configuration)
-        utils.save_base64_data(valid_config)
-        return valid_config
+    configuration = eel.getConfiguration()() # noqa
+    return configuration
 
 
 def start(open_mode):

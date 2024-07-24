@@ -15,6 +15,12 @@ function getConfiguration(){
 	config = main.configGraph.getConfig();
 	return config
 }
+
+eel.expose(getConfigProjectPath);
+function getConfigProjectPath(){
+	return localStorage.configProjectPath
+}
+
 const getQRByteArrayAsBase64 = async () => {
     result = await eel.get_qr_settings()();
     return result

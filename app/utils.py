@@ -178,16 +178,49 @@ def create_project_config_data(files_data: dict, project_path: str):
     return result
 
 
-def save_base64_data(ui_configuration):
-    file_path = ui_configuration['ClientConfiguration'].get('pyHandlersPath')
-    if file_path:
-        ui_configuration['ClientConfiguration']['PyHandlers'] = make_base64_from_file(file_path)
+def save_base64_data(ui_configuration, config_path: str = None):
+    if config_path:
+        try:
+            with open(config_path, encoding='utf-8') as fp:
+                project_config_data = json.load(fp)
+                handlers_path = project_config_data.get('handlers')
+                modules = project_config_data.get('modules', {})
+        except json.JSONDecodeError:
+            return
 
-    py_files = ui_configuration['ClientConfiguration'].get('PyFiles', [])
-    for item in py_files:
-        if item.get('file_path'):
-            item['PyFileData'] = make_base64_from_file(item['file_path'])
+        work_dir = pathlib.Path(config_path).parent
 
+        if handlers_path:
+            file_path = pathlib.Path(work_dir / handlers_path)
+            ui_configuration['ClientConfiguration']['PyHandlers'] = (
+                make_base64_from_file(str(file_path))
+            )
+
+        if modules:
+            py_files = []
+            for key, path in modules.items():
+                file_path = pathlib.Path(work_dir / handlers_path)
+                py_files.append({
+                    'PyFileKey': key,
+                    'PyFileData': make_base64_from_file(str(file_path))
+                })
+            ui_configuration['ClientConfiguration']['PyFiles'] = py_files
+
+    else:
+        file_path = ui_configuration['ClientConfiguration'].get('pyHandlersPath')
+        if file_path:
+            ui_configuration['ClientConfiguration']['PyHandlers'] = make_base64_from_file(file_path)
+
+        py_files = ui_configuration['ClientConfiguration'].get('PyFiles', [])
+        for item in py_files:
+            if item.get('file_path'):
+                item['PyFileData'] = make_base64_from_file(item['file_path'])
+
+def make_ui_config(configuration: dict, config_path: str = None):
+    if configuration:
+        valid_config = validate_configuration_model(configuration)
+        save_base64_data(valid_config, config_path)
+        return valid_config
 
 def validate_configuration_model(ui_configuration: dict) -> dict:
     try:
