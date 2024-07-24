@@ -11,7 +11,6 @@ async function pickFile(file_type) {
 			initReadedConf(conf, result.file_path);
 			localStorage.setItem('file-path', result.file_path);
 		} else if (file_type == 'python') {
-			console.log(result);
 			$("#file_path").val(result.file_path);
 			$("#PyFileKey").val(result.file_name);
 		}
@@ -77,10 +76,14 @@ async function pickWorkingDir(){
 };
 
 async function pickProjectConfigFile(){
-	if (! main.conf)
-		return
+	let result = await askFile('project_config');
 
-	
+	if (checkAskFileResult(result)){
+		let filePath = result.file_path
+		localStorage.setItem('configProjectPath', filePath);
+		main.settings.configProjectPath = filePath
+		$("#ui-config-path").text(filePath);
+	}
 };
 
 const showQRSettings = async (event) => {
@@ -113,7 +116,11 @@ const showAuth = async(event) => {
 }
 
 const showPickFile = async(event) => {
-	modal = new PickFileModal(main.settings.filePath, main.settings.dirPath);
+	modal = new PickFileModal(
+		main.settings.filePath, 
+		main.settings.dirPath,
+		main.settings.configProjectPath
+	);
 	modal.render();
 	modal.show();
 }

@@ -6,6 +6,7 @@ var Main = {
 		modalWidth: [],
 		filePath: '',
 		dirPath: '',
+		configProjectPath: '',
 		reqBodyEditor: {},
 	},
 	initUIConf(conf, filePath = 'New project'){
