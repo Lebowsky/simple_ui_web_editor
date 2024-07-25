@@ -55,12 +55,12 @@ async function getNewConfiguration(){
 	return await eel.get_new_configuration()();
 }
 
-async function saveConf(data, filePath, workingDir){
-	return await eel.save_configuration(data, filePath, workingDir, localStorage.configProjectPath)();
+async function saveConf(data, filePath){
+	return await eel.save_configuration(data, filePath, localStorage.configProjectPath)();
 }
 
-async function savePyHandlers(pyHandlers, workingDir){
-	return await eel.save_handlers_files(pyHandlers, workingDir)();
+async function savePyHandlers(pyHandlers, path){
+	return await eel.save_handlers_files(pyHandlers, path)();
 }
 
 async function getBase64FromFilePath(filePath){

@@ -34,7 +34,6 @@ var Main = {
 
 		$(".file-path").text(filePath);
 		$("#project-config-path").text(filePath);
-		$('#working-dir-path').text(this.settings.dirPath);
 		$('.dir-path').text(this.settings.dirPath);
     	// $('#preview-button').show();
 		

@@ -710,11 +710,6 @@ class PickFileModal extends ModalWindow{
                     <button id="open-project-config" onclick="pickFile('simple_ui')">Open file</button>
                 </li>
                 <li>
-                    <label>Working dir</label>
-                    <span id="working-dir-path" data-param-name="workingDir">${this.dirPath ? this.dirPath : '&lt;Not selected&gt;'}</span>
-                    <button id="open-working-dir" onclick="pickWorkingDir()">Open dir</button>
-                </li>
-                <li>
                     <label>UI Config</label>
                     <span id="ui-config-path" data-param-name="uiConfigDir">${this.configProjectPath ? this.configProjectPath : '&lt;Not selected&gt;'}</span>
                     <button id="open-ui-dir" onclick="pickProjectConfigFile()">Open file</button>

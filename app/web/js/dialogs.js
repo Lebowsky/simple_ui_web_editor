@@ -52,29 +52,6 @@ async function pickHandlersFile(){
 	$('#py-handlers-file-path').text(filePathText);
 };
 
-async function pickWorkingDir(){
-	const resultAsk = await askDir();
-
-	if (resultAsk && resultAsk.path){
-		$('#working-dir-path').text(resultAsk.path);
-		$('.dir-path').text(resultAsk.path);
-		main.settings.dirPath = resultAsk.path;
-		const projectConfigPath = $('#project-config-path').text() || `${resultAsk.path}\sui_config.json`;
-
-		const configData = {
-			workDir: resultAsk.path,
-			filePath: projectConfigPath,
-			PyHandlers : main.conf.ClientConfiguration['PyHandlers'] || '',
-			PyFiles : main.conf.ClientConfiguration['PyFiles'] || [],
-			Mediafile : main.conf.ClientConfiguration['Mediafile'] || []
-		}
-		const projectConfig = getProjectConfig(configData);
-		// if (resultCheck && !resultAsk.error){
-		// 	$('#project-config-path').text(resultAsk.file_path);
-		// }
-	}
-};
-
 async function pickProjectConfigFile(){
 	let result = await askFile('project_config');
 

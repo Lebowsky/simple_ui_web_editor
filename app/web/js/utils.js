@@ -45,26 +45,15 @@ async function saveConfiguration(){
     }
 
     main.conf = main.configGraph.getConfig();
-    const workingDirValue = $('#working-dir-path').text();
-
-    const workingDir = workingDirValue == '<Not selected>' ? '' : workingDirValue
-
 	let handlers = await fillBase64Handlers();
-	if (saveConfFiles(main.conf, filePath, workingDir, handlers)){
-        //main.configGraph = new ClientConfiguration(main.conf.ClientConfiguration);
-    }
+	saveConfFiles(main.conf, filePath, '', handlers)
 }
 async function buildConfiguration(){
     return main.configGraph.getConfig()
 }
-async function saveConfFiles(conf, filePath, workingDir, pyHandlers){
-    let result_save = await saveConf(conf, filePath, workingDir)
+async function saveConfFiles(conf, filePath){
+    let result_save = await saveConf(conf, filePath)
     let result_check = checkSaveFileResult(result_save)
-
-    // if (result_check){
-    //     result_save = await savePyHandlers(pyHandlers, workingDir)
-    //     result_check = checkSaveFileResult(result_save)
-    // }
 
     if (! result_check)
         notificate('Ошибка сохранения файла: ' + result_save.msg, 'danger')
@@ -80,7 +69,6 @@ async function saveAllPyFilesToDisk(){
         return
 
     const dirToSave = result.path;
-    console.debug(dirToSave);
 
     let handlers = await fillBase64Handlers();
 
