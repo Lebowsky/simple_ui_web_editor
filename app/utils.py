@@ -188,6 +188,7 @@ def save_base64_data(ui_configuration: dict, project_config_path: str = None):
                 project_config_data = json.load(fp)
                 handlers_path = project_config_data.get('handlers')
                 modules = project_config_data.get('modules', {})
+                media_files = project_config_data.get('media_files', {})
         except json.JSONDecodeError:
             return
 
@@ -202,12 +203,25 @@ def save_base64_data(ui_configuration: dict, project_config_path: str = None):
         if modules:
             py_files = []
             for key, path in modules.items():
-                file_path = pathlib.Path(work_dir / handlers_path)
+                file_path = pathlib.Path(work_dir / path)
                 py_files.append({
                     'PyFileKey': key,
                     'PyFileData': make_base64_from_file(str(file_path))
                 })
             ui_configuration['ClientConfiguration']['PyFiles'] = py_files
+
+        if media_files:
+            media_files_data = []
+            for key, path in media_files.items():
+                file_path = pathlib.Path(work_dir / path)
+                ext = pathlib.Path(path).suffix[1:]
+
+                media_files_data.append({
+                    'MediafileKey': key,
+                    'MediafileExt': ext,
+                    'MediafileData': make_base64_from_file(str(file_path))
+                })
+            ui_configuration['ClientConfiguration']['Mediafile'] = media_files_data
 
     else:
         file_path = ui_configuration['ClientConfiguration'].get('pyHandlersPath')
