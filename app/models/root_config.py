@@ -63,8 +63,8 @@ class PyTimerTaskModel(BaseConfigModel):
         title = 'PyTimerTask'
 
 
-class StyleTemplate(DimensionElement, TextElement):
-    name: str
+class StyleTemplate(BaseModel):
+    name: str = Field(title='Name')
 
 
 class PyFilesModel(BaseConfigModel):

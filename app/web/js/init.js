@@ -324,6 +324,8 @@ $(document).ready(function(){
 
 		if (modal.element) {
 			element = main.configGraph.getElementById(modal.element.id);
+			if (!element) return
+			
 			fillNode = element.parentConfig['node']+"[data-id="+modal.element.id+"]";
 			main.configGraph.fillListElements(element.parentType, fillNode, element.parentId, modal.element.id)
 		}
@@ -348,19 +350,9 @@ $(document).ready(function(){
 			}
 
 			if (type == "Elements") {
-				/*const childsNode = ModalWindow.getCurrentModal().modal.find(".element-childs");
-				if (childsNode.length) {
-					childsNode.remove();
-				} else {*/
 					main.configGraph.fillListElements(type, ".modal.active .list-param.active .element-childs-wrap", elementId, false, false);
-				//}
 			}
-		}/* else if (ModalWindow.getCurrentModal()) {
-			const childsNode = ModalWindow.getCurrentModal().modal.find(".element-childs");
-			if (childsNode.length) {
-				childsNode.remove();
-			} 
-		}*/
+		}
 	})
 	$(document).on('click', '#processes > .list-item > .item-nav', function(e){
 		const processNode = $(this).parent(".list-item");
@@ -398,19 +390,10 @@ $(document).ready(function(){
 		}
 	})
 	$(document).on('change', 'select.element-type', function(){
-		// let modal = $(this).parents(selectors.modal),
-		// 	type  = $(this).val(),
-		// 	parentType = modal.attr('data-parent-type'),
-		// 	path  = modal.attr("data-path");
-
-		// params = main.getElementParamsByForm(modal);
-		// //main.saveElement(params, type, path);
-		// main.renderModalParams(modal, type, path, parentType);
-		// modal.addClass("edited");
+		
 	})
 	$(document).on('change', '.modal.active :input', function(){
-		// let modal = $(this).parents(selectors.modal);
-		// modal.addClass("edited");
+		
 	})
 	$(document).on('change', '.form :input', function(){
 		const paramName = $(this).attr("data-param-name");

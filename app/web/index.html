@@ -65,8 +65,6 @@
 					<div onclick="selectTab(this)" class="tab active" data-tab-id="main-conf-common">Common</div>
 					<div onclick="selectTab(this)" class="tab" data-tab-id="main-conf-process">Processes</div>
 					<div onclick="selectTab(this)" class="tab" data-tab-id="main-conf-main-menu">Main menu</div>
-					<div onclick="selectTab(this)" class="tab" data-tab-id="main-conf-main-styles">Styles</div>
-					<div onclick="selectTab(this)" class="tab" data-tab-id="main-conf-start-screen">Start screen</div>
 					<div onclick="selectTab(this)" class="tab" data-tab-id="main-conf-properties">Properties</div>
 					<div onclick="selectTab(this)" class="tab" data-tab-id="main-conf-schedulers">Shedulers</div>
 					<!-- <div onclick="selectTab(this)" class="tab" data-tab-id="main-conf-python-files">Python files</div> -->
@@ -90,42 +88,12 @@
 								</div>
 							</li>
 							<li class="param">
-								<label for="ConfigurationDescription">Description</label>
-								<input type="text" name="ConfigurationDescription" id="ConfigurationDescription"
-									data-param-name="ConfigurationDescription">
-							</li>
-							<li class="param">
-								<div>
-									<label for="ForegroundService">Enable event service</label>
-									<input type="checkbox" name="ForegroundService" id="ForegroundService"
-										data-param-name="ForegroundService">
+								<div class="textarea-param-wrapper">
+									<label for="ConfigurationDescription">Description</label>
+									<textarea class="textarea-param id="ConfigurationDescription" name="ConfigurationDescription" data-param-name="ConfigurationDescription" rows="10">
+									</textarea>
 								</div>
-								<div>
-									<label for="StopForegroundServiceOnExit">Stop service on application exit</label>
-									<input type="checkbox" name="StopForegroundServiceOnExit"
-										id="StopForegroundServiceOnExit" data-param-name="StopForegroundServiceOnExit">
-								</div>
-							</li>
-							<li class="param">
-								<div><label for="BroadcastIntent">Intent broadcast (intent name)</label>
-									<input type="text" name="BroadcastIntent" id="BroadcastIntent"
-										data-param-name="BroadcastIntent">
-								</div>
-								<div><label for="BroadcastVariable">Intent broadcast (variable)</label>
-									<input type="text" name="BroadcastVariable" id="BroadcastVariable"
-										data-param-name="BroadcastVariable">
-								</div>
-							</li>
-							<li class="param">
-								<div><label for="FaceRecognitionURL">URL face recognition host</label>
-									<input type="text" name="FaceRecognitionURL" id="FaceRecognitionURL"
-										data-param-name="FaceRecognitionURL">
-								</div>
-								<div><label for="OnKeyboardMain">Keyboard reading in Main menu</label>
-									<input type="checkbox" name="OnKeyboardMain" id="OnKeyboardMain"
-										data-param-name="OnKeyboardMain">
-								</div>
-							</li>
+							</li>							
 						</ul>
 					</div>
 				</section>
@@ -141,47 +109,10 @@
 						<ul class="list" id="main-menu">No Items</ul>
 					</div>
 				</section>
-				<section id="main-conf-main-styles">
-					<div class="section-header">Styles<i class="fa fa-angle-up" aria-hidden="true"></i></div>
-					<div class="list-wrap show">
-						<ul class="list" id="styles">No Items</ul>
-					</div>
-				</section>
-				<section id="main-conf-start-screen">
-					<div class="section-header">Start screen<i class="fa fa-angle-up" aria-hidden="true"></i></div>
-					<div class="list-wrap show">
-						<ul class="list form configuration">
-							<li class="param">
-								<label for="Launch">Menu type</label>
-								<select name="Launch" id="Launch" data-param-name="Launch"></select>
-							</li>
-							<li class="param">
-								<label for="LaunchProcess">(* for tiles): process with layouts</label>
-								<input type="text" name="LaunchProcess" id="LaunchProcess"
-									data-param-name="LaunchProcess">
-							</li>
-							<li class="param">
-								<label for="LaunchVar">(* for tiles): variable of tiles</label>
-								<input type="text" name="LaunchVar" id="LaunchVar" data-param-name="LaunchVar">
-							</li>
-							<li class="param">
-								<label for="MenuWebTemplate">Menu template (web)</label>
-								<input type="text" name="MenuWebTemplate" id="MenuWebTemplate"
-									data-param-name="MenuWebTemplate">
-							</li>
-						</ul>
-					</div>
-				</section>
 				<section id="main-conf-properties">
 					<div class="section-header">Properties<i class="fa fa-angle-up" aria-hidden="true"></i></div>
 					<div class="list-wrap show">
 						<ul class="list form configuration">
-							<li class="param">
-								<div>
-									<label for="test">Split mode</label>
-									<input type="checkbox" name="test" id="test" data-param-name="test">
-								</div>
-							</li>
 							<li class="param">
 								<div>
 									<label for="vendor">Vendor</label>
@@ -206,40 +137,6 @@
 								<label for="vendor_auth">Vendor raw authorization string</label>
 								<input type="text" name="vendor-auth" id="vendor_auth" data-param-name="vendor_auth"
 									readonly>
-							</li>
-							<li class="param">
-							</li>
-							<li class="param">
-								<div>
-									<label for="handler_code">Client code</label>
-									<input type="text" name="handler_code" id="handler_code"
-										data-param-name="handler_code">
-								</div>
-								<div>
-									<label for="handler_url">Handlers URL</label>
-									<input type="text" name="handler_url" id="handler_url"
-										data-param-name="handler_url">
-								</div>
-							</li>
-							<li class="param">
-								<div>
-									<label for="handlers-login">Handlers login (Basic)</label>
-									<input type="text" name="handlers-login" id="handlers-login">
-								</div>
-								<div>
-									<label for="handlers-password">Handlers password (Basic)</label>
-									<input type="password" name="handlers-password" id="handlers-password">
-								</div>
-							</li>
-							<li class="param">
-								<label for="handler_auth">Handlers raw authorization string</label>
-								<input type="text" name="handler_auth" id="handler_auth" data-param-name="handler_auth"
-									readonly>
-							</li>
-							<li class="param">
-								<label for="dictionaries">Dictionaries JSON</label>
-								<input type="text" name="dictionaries" id="dictionaries" data-param-name="dictionaries">
-								`
 							</li>
 						</ul>
 					</div>
