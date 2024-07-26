@@ -404,6 +404,15 @@ $(document).ready(function(){
 			main.configGraph.setConfigValues(1, {[paramName]: value});
 		}
 	})
+	$(document).on('change', '.textarea-param', function () {
+		const paramName = $(this).attr("data-param-name");
+
+		if (paramName){
+			const value = $(this).val()
+			console.log(value);
+			main.configGraph.setConfigValues(1, {[paramName]: value});
+		}
+	})
 	$(window).keydown(function(e) {
 		key = e.keyCode;
 

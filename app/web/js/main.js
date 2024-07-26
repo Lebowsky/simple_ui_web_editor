@@ -166,10 +166,6 @@ class ClientConfiguration {
 				elementValues[key] = value
 		});
 
-		/*if (elementValues.parentType != undefined) {
-			delete elementValues.parentType;
-		}*/
-
 		this.addElement(elementId, parentId, parentType, elementValues)
 
 		return elementId;
@@ -294,23 +290,6 @@ class ClientConfiguration {
 		addElements(clientConfig, elementId);
 		return clientConfig
 	}
-	/*addElements (elementId) {
-		let elementGraph = this.getElementById(elementId);
-		let elementConf = { ...elementGraph.elementValues };
-		let elements = this.elements.filter((el) => el.parentId == elementId);
-		elements.forEach((element) => {
-			let index;
-			if (elementConf[element.parentType]) {
-				index = elementConf[element.parentType].push({ ...element.elementValues }) - 1;
-			} else {
-				elementConf[element.parentType] = [{ ...element.elementValues }];
-				index = 0;
-			}
-			if (index != undefined)
-				this.addElements(element.id);
-		})
-		return elementConf;
-	}*/
 	getElementById(elementId) {
 		return this.elements.find((el) => el.id == elementId)
 	}

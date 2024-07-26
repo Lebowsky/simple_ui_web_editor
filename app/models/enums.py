@@ -93,8 +93,8 @@ class ActionHandlerEnum(str, Enum):
 
 
 class HandlerType(str, Enum):
-    pythonscript: str = 'pythonscript'
     python: str = 'python'
+    pythonscript: str = 'pythonscript'
     python_reload: str = 'pythonreload'
     python_args: str = 'pythonargs'
     python_bytes: str = 'pythonbytes'
