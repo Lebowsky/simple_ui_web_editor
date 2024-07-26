@@ -79,7 +79,7 @@ def get_config_ui_elements():
 @eel.expose
 def get_base64_from_file(file_path):
     if file_path:
-        return utils.make_base64_from_file(file_path)
+        return utils.make_base64_from_file_path(file_path)
 
 
 @eel.expose

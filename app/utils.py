@@ -5,6 +5,8 @@ import socket
 import base64
 import glob
 import pathlib
+from typing import Union
+
 import requests
 import json
 import jsonref
@@ -197,7 +199,7 @@ def save_base64_data(ui_configuration: dict, project_config_path: str = None):
         if handlers_path:
             file_path = pathlib.Path(work_dir / handlers_path)
             ui_configuration['ClientConfiguration']['PyHandlers'] = (
-                make_base64_from_file(str(file_path))
+                make_base64_from_file_path(str(file_path))
             )
 
         if modules:
@@ -206,7 +208,7 @@ def save_base64_data(ui_configuration: dict, project_config_path: str = None):
                 file_path = pathlib.Path(work_dir / path)
                 py_files.append({
                     'PyFileKey': key,
-                    'PyFileData': make_base64_from_file(str(file_path))
+                    'PyFileData': make_base64_from_file_path(str(file_path))
                 })
             ui_configuration['ClientConfiguration']['PyFiles'] = py_files
 
@@ -219,19 +221,19 @@ def save_base64_data(ui_configuration: dict, project_config_path: str = None):
                 media_files_data.append({
                     'MediafileKey': key,
                     'MediafileExt': ext,
-                    'MediafileData': make_base64_from_file(str(file_path))
+                    'MediafileData': make_base64_from_file_path(str(file_path))
                 })
             ui_configuration['ClientConfiguration']['Mediafile'] = media_files_data
 
     else:
         file_path = ui_configuration['ClientConfiguration'].get('pyHandlersPath')
         if file_path:
-            ui_configuration['ClientConfiguration']['PyHandlers'] = make_base64_from_file(file_path)
+            ui_configuration['ClientConfiguration']['PyHandlers'] = make_base64_from_file_path(file_path)
 
         py_files = ui_configuration['ClientConfiguration'].get('PyFiles', [])
         for item in py_files:
             if item.get('file_path'):
-                item['PyFileData'] = make_base64_from_file(item['file_path'])
+                item['PyFileData'] = make_base64_from_file_path(item['file_path'])
 
 def make_ui_config(configuration: dict, config_path: str = None):
     if configuration:
@@ -336,12 +338,12 @@ def _get_elements_items(value):
     return result
 
 
-def make_base64_from_file(file_path: str) -> str:
-    if os.path.exists(file_path):
-        with open(file_path, 'r', encoding='utf-8') as file:
-            data = file.read()
-            base64file = base64.b64encode(data.encode('utf-8')).decode('utf-8')
-            return base64file
+def make_base64_from_file_path(file_path: str) -> Union[str, None]:
+    with open(file_path, 'rb') as file:
+        data = file.read()
+        base64file = base64.b64encode(data).decode('utf-8')
+        return base64file
+
 
 
 def get_content_from_base64(base_64_str: str) -> str:
