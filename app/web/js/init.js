@@ -9,17 +9,14 @@ $(document).ready(function(){
 	} else {
 		readFile(filePath);
 	}
-
 	async function newFile () {
 		conf = await getNewConfiguration()
 		initReadedConf(conf)
 	}
-
 	async function readFile (filePath) {
 		conf = await loadConfiguration(filePath);
 		initReadedConf(conf, filePath);
 	}
-
 	$('#prev').resizable({
 		minWidth: 250,
 		handles: "e,w",
@@ -348,19 +345,9 @@ $(document).ready(function(){
 			}
 
 			if (type == "Elements") {
-				/*const childsNode = ModalWindow.getCurrentModal().modal.find(".element-childs");
-				if (childsNode.length) {
-					childsNode.remove();
-				} else {*/
-					main.configGraph.fillListElements(type, ".modal.active .list-param.active .element-childs-wrap", elementId, false, false);
-				//}
+				main.configGraph.fillListElements(type, ".modal.active .list-param.active .element-childs-wrap", elementId, false, false);
 			}
-		}/* else if (ModalWindow.getCurrentModal()) {
-			const childsNode = ModalWindow.getCurrentModal().modal.find(".element-childs");
-			if (childsNode.length) {
-				childsNode.remove();
-			} 
-		}*/
+		}
 	})
 	$(document).on('click', '#processes > .list-item > .item-nav', function(e){
 		const processNode = $(this).parent(".list-item");
@@ -397,20 +384,9 @@ $(document).ready(function(){
 			}
 		}
 	})
-	$(document).on('change', 'select.element-type', function(){
-		// let modal = $(this).parents(selectors.modal),
-		// 	type  = $(this).val(),
-		// 	parentType = modal.attr('data-parent-type'),
-		// 	path  = modal.attr("data-path");
-
-		// params = main.getElementParamsByForm(modal);
-		// //main.saveElement(params, type, path);
-		// main.renderModalParams(modal, type, path, parentType);
-		// modal.addClass("edited");
+	$(document).on('change', 'select.element-type', function(){		
 	})
-	$(document).on('change', '.modal.active :input', function(){
-		// let modal = $(this).parents(selectors.modal);
-		// modal.addClass("edited");
+	$(document).on('change', '.modal.active :input', function(){		
 	})
 	$(document).on('change', '.form :input', function(){
 		const paramName = $(this).attr("data-param-name");
@@ -432,6 +408,7 @@ $(document).ready(function(){
 			key = "alt+"+key;
 
 		// console.log(e.keyCode);
+		// console.log(key);
 
 		if (keys[key]) {
 			e.preventDefault();
@@ -671,7 +648,7 @@ async function sendSQLQuery(node){
 			if (!main.settings.sqlQuerys.find((el) => el.query == query && el.params == params))
 				main.settings.sqlQuerys.push({query:query, params:params});
 
-			$(".querys-wrap").html(SQLQueryModal.renderSqlQueryHistory(main.settings.sqlQuerys));
+      $(".querys-wrap").html(SQLQueryModal.renderSqlQueryHistory(main.settings.sqlQuerys));
 
 			modal = ModalWindow.getCurrentModal();
 			modal.renderSqlQueryResult(result.data);
