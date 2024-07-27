@@ -143,19 +143,33 @@ var Main = {
         element = main.configGraph.getElementById(elementId);
         main.configGraph.fillListElements(element.parentType, element.parentConfig['node'], element.parentId)
       },
+      startNewProject: () => {
+        pickNewFileProject(main)
+      },
       openFile: () => {
         showPickFile()
       },
       fileLocationSave: () => {
         fileLocationSave();
       },
+      fileLocationSaveAs: () => {
+        fileLocationSaveAs()
+      },
+      exportConfigData: () => {
+        exportConfigData()
+      },
       showQrCode: () => {
         showQRSettings()
+      },
+      togglePreview: () => {
+        togglePrev()
+      },
+      showSqlConsole: () => {
+        showSqlQueries()
       },
       showSearchElements: () => {
         showSearchElements();
       },
-
     }[event];
   }
 }

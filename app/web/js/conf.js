@@ -28,11 +28,17 @@ const selectors = {
 };
 
 var keys = {
-  "27": 'closeModal', // Esc
-  "ctrl+13": 'saveElementModal', // Ctrl+Enter
-  "ctrl+83": 'fileLocationSave', // Ctrl+S
+  '27': 'closeModal', // Esc
+  'ctrl+13': 'saveElementModal', // Ctrl+Enter
+
+  'ctrl+78': 'startNewProject', //Ctrl+N
   'ctrl+79': 'openFile', // Ctrl+O
+  'ctrl+83': 'fileLocationSave', // Ctrl+S
+  'shift+ctrl+83': 'fileLocationSaveAs', // Ctrl+Shift+S
+  'shift+ctrl+69': 'exportConfigData', // Ctrl+Shift+E
   'alt+ctrl+81': 'showQrCode', // Ctrl+Alt+Q
+  'alt+ctrl+80': 'togglePreview', //Ctrk+Shift+P 
+  'alt+ctrl+75': 'showSqlConsole', //Ctrl+Alt+K 
   'shift+ctrl+70': 'showSearchElements', // Ctrl+Shift+F
 }
 

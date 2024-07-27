@@ -35,6 +35,13 @@ const fileLocationSave = async (event) => {
   saveConfiguration();
 };
 
+const fileLocationSaveAs = async () => {
+  console.log('save as')
+}
+const exportConfigData = async () => {
+  console.log('export');
+}
+
 async function pickHandlersFile() {
   if (!main.conf)
     return
