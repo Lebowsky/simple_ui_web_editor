@@ -27,7 +27,7 @@ async function pickNewFileProject() {
   }
 }
 
-const fileLocationSave = async (event) => {
+const fileLocationSave = async () => {
   modals = ModalWindow.getModals();
   $.each(modals, (index, modal) => {
     main.configGraph.setConfigValues(modal.element.id, modal.getValues());
@@ -36,7 +36,19 @@ const fileLocationSave = async (event) => {
 };
 
 const fileLocationSaveAs = async () => {
-  console.log('save as')
+  let result = await askSaveFile()
+  if (checkAskFileResult(result)){
+    modals = ModalWindow.getModals();
+    $.each(modals, (index, modal) => {
+      main.configGraph.setConfigValues(modal.element.id, modal.getValues());
+    })
+
+    const filePath = result.file_path
+    localStorage.setItem('file-path', filePath)
+    $(".file-path").text(filePath);
+    main.settings.filePath = filePath
+    await saveConfiguration(result.file_path);
+  }
 }
 const exportConfigData = async () => {
   console.log('export');

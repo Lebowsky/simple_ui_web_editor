@@ -686,13 +686,13 @@ class PickFileModal extends ModalWindow {
   }
   render() {
     this.html = `
-            <div class='modal pick-file' data-modal-type='start'>
-                <div class='close-modal'>
-                    <i class='fa fa-times' aria-hidden='true'></i>
+            <div class="modal pick-file" data-modal-type="start">
+                <div class="close-modal">
+                    <i class="fa fa-times" aria-hidden="true"></i>
                 </div>
-                <div class='modal-head'>
-                    <h2 class='modal-title'>Pick File</h2>
-                    <button id='' onclick=''>Apply</button>
+                <div class="modal-head">
+                    <h2 class="modal-title">Pick File</h2>
+                    <button id="" onclick=pickFileApply()>Apply</button>
                 </div>
                 <div class='modal-content'></div>
             </div>

@@ -32,11 +32,11 @@ function checkSaveFileResult(answer) {
 
   return result
 }
-async function saveConfiguration() {
+async function saveConfiguration(pathToSave=null) {
   if (typeof main.conf == 'undefined')
     return;
 
-  let filePath = localStorage.getItem('file-path');
+  let filePath = pathToSave || localStorage.getItem('file-path');
 
   if (!filePath) {
     filePath = await pickNewFileProject(main);

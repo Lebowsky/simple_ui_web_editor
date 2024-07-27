@@ -576,7 +576,6 @@ function selectModalTab(tabNode) {
 		const label = $currentTab.find('label');
 		showList(label, 'down');
 	}
-
 }
 function hideMain() {
 	if ($(".main-conf-wrap").hasClass("hide")) {
@@ -739,4 +738,7 @@ async function auth(node){
 function saveAllPyFiles(){
 	saveAllPyFilesToDisk();
 }
-
+function pickFileApply(){
+  modal = ModalWindow.getCurrentModal();
+  modal.close();
+}
