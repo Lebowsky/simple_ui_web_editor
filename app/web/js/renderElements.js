@@ -1,34 +1,34 @@
 class ListElement {
-    constructor(items, elementType) {
-        this.items = items;
-        this.html = "";
-        this.elementType = elementType;
-    }
-    render(addBtn = true) {
+  constructor(items, elementType) {
+    this.items = items;
+    this.html = "";
+    this.elementType = elementType;
+  }
+  render(addBtn = true) {
 
-        if (addBtn) {
-            this.html += `
+    if (addBtn) {
+      this.html += `
                 <div class="btn-group">
                     <button class="btn-add">Add</button>
                     ${`<button class="btn-paste" data-childrens-type="${this.elementType}">Paste</button>`}
                 </div>
             `
-        }
-
-        this.html += `${this.renderRows()}`
-        return this;
     }
-    renderRows() {
-        let html = '';
-        if (!this.items || this.items.length == 0)
-            return "No Items"
 
-        this.items.forEach((item, index) => {
-            html += `
-                <li class="list-item ${item.itemClasses ? item.itemClasses : ''}" ${item.path ? 'title="'+item.path+'"' : ''}" data-id=${item.id} data-type="${this.elementType}">
+    this.html += `${this.renderRows()}`
+    return this;
+  }
+  renderRows() {
+    let html = '';
+    if (!this.items || this.items.length == 0)
+      return "No Items"
+
+    this.items.forEach((item, index) => {
+      html += `
+                <li class="list-item ${item.itemClasses ? item.itemClasses : ''}" ${item.path ? 'title="' + item.path + '"' : ''}" data-id=${item.id} data-type="${this.elementType}">
                     <div class="item-nav">
                         <span class="item-name">${item.name}</span>
-                        ${item.value ?`<div class="item-info"><span title="${item.value}">${item.value}</span></div>`: ''}
+                        ${item.value ? `<div class="item-info"><span title="${item.value}">${item.value}</span></div>` : ''}
                         <div class="item-btn">
                             <span class="json" title="json"><i class="fa-solid fa-code"></i></span>
                             <span class="copy" title="copy"><i class="fa fa-clipboard" aria-hidden="true"></i></span>
@@ -41,180 +41,180 @@ class ListElement {
                     <div class="item-childs list" id="${this.elementType == "Processes" ? "operations" : ""}"></div>
                 </li>
             `
-        });
-        return html;
-    }
-    renderElementChild() {
-        let html = '<ul class="element-childs">';
-        if (!this.items || this.items.length == 0)
-            return "";
+    });
+    return html;
+  }
+  renderElementChild() {
+    let html = '<ul class="element-childs">';
+    if (!this.items || this.items.length == 0)
+      return "";
 
-        this.items.forEach((item, index) => {
-            html += `
+    this.items.forEach((item, index) => {
+      html += `
             <li class="list-item" data-id="${item.id}">
                 <span class="item-name">${item.name}</span>
-                ${item.value ?`<span class="item-value">${item.value}</span>`: ''}
+                ${item.value ? `<span class="item-value">${item.value}</span>` : ''}
             </li>
         `
-        });
-        html += '</ul>';
+    });
+    html += '</ul>';
 
-        return html;
-    }
-    addProcessesButton($node){
-        $node.find('.btn-group').append($('<button class="btn-add cv">Add CVOperation</button>'));
-        $node.find('.btn-group .btn-add').addClass('process');
-        return this;
-    }
+    return html;
+  }
+  addProcessesButton($node) {
+    $node.find('.btn-group').append($('<button class="btn-add cv">Add CVOperation</button>'));
+    $node.find('.btn-group .btn-add').addClass('process');
+    return this;
+  }
 }
 class ModalWindow {
-    constructor(){
-        this.html = '';
-        this.modal = $('');
-        this.modalWidth = 820;
-    }
-    addClass(className) {
-        this.modal.addClass(className);
-        return this;
-    }
-    removeClass(className) {
-        this.modal.removeClass(className);
-        return this;
-    }
-    show() {
-        $("#modals-wrap").addClass("active");
-        $(selectors.modal).removeClass("active");
-        this.modal.appendTo('#modals-wrap').addClass("active")
-        $('.content').addClass("blur");
-        $("body").addClass("no-scroll");
-        const modalType = this.modal.data("modal-type");
-        const modalWidth = localStorage.getItem("modal-"+modalType+"-width") ? localStorage.getItem("modal-"+modalType+"-width") : this.modalWidth;
-        this.modal.css('width', modalWidth);
-        this.modal.resizable({
-            minWidth: 700,
-            handles: "e",
-            stop: function(event, ui) {
-                if (modalType != undefined) {
-                    const lsItem = "modal-"+modalType+"-width";
-                    localStorage.setItem(lsItem, ui.size.width);
-                }
-
-                main.settings.modalWidth = ui.size.width;
-            }
-        });
-
-        sortableInit(selectors.list);
-    }
-    close(){
-        if (this.modal.siblings(selectors.modal).length) {
-            const prevModal = this.modal.prev();
-            prevModal.addClass("active");
-        } else {
-            this.modal.parents("#modals-wrap").removeClass("active");
-            $("body").removeClass("no-scroll");
-            $('.content').removeClass("blur");
+  constructor() {
+    this.html = '';
+    this.modal = $('');
+    this.modalWidth = 820;
+  }
+  addClass(className) {
+    this.modal.addClass(className);
+    return this;
+  }
+  removeClass(className) {
+    this.modal.removeClass(className);
+    return this;
+  }
+  show() {
+    $("#modals-wrap").addClass("active");
+    $(selectors.modal).removeClass("active");
+    this.modal.appendTo('#modals-wrap').addClass("active")
+    $('.content').addClass("blur");
+    $("body").addClass("no-scroll");
+    const modalType = this.modal.data("modal-type");
+    const modalWidth = localStorage.getItem("modal-" + modalType + "-width") ? localStorage.getItem("modal-" + modalType + "-width") : this.modalWidth;
+    this.modal.css('width', modalWidth);
+    this.modal.resizable({
+      minWidth: 700,
+      handles: "e",
+      stop: function (event, ui) {
+        if (modalType != undefined) {
+          const lsItem = "modal-" + modalType + "-width";
+          localStorage.setItem(lsItem, ui.size.width);
         }
-        this.modal.remove();    
+
+        main.settings.modalWidth = ui.size.width;
+      }
+    });
+
+    sortableInit(selectors.list);
+  }
+  close() {
+    if (this.modal.siblings(selectors.modal).length) {
+      const prevModal = this.modal.prev();
+      prevModal.addClass("active");
+    } else {
+      this.modal.parents("#modals-wrap").removeClass("active");
+      $("body").removeClass("no-scroll");
+      $('.content').removeClass("blur");
     }
-    static getCurrentModal() {
-        const modalDiv = $('#modals-wrap.active').find('.modal.active');
-        if (modalDiv.length == 0)
-            return
+    this.modal.remove();
+  }
+  static getCurrentModal() {
+    const modalDiv = $('#modals-wrap.active').find('.modal.active');
+    if (modalDiv.length == 0)
+      return
 
-        let modalWindow;
-        const elementId = modalDiv.find('.params').attr('data-id');
+    let modalWindow;
+    const elementId = modalDiv.find('.params').attr('data-id');
 
-        if (modalDiv.hasClass('type-select-modal')) {
-            const types = main.configGraph.getElementChildrensTypes(elementId)
-            modalWindow = new SelectTypeModal(types);
-        } else if (modalDiv.hasClass('qr')) { 
-            modalWindow = new ImageModal();
-        } else if (modalDiv.hasClass('sql-query')){
-            modalWindow = new SQLQueryModal();
-            modalWindow.modal = modalDiv;
-        } else if (modalDiv.hasClass('auth')){
-            modalWindow = new AuthModal();
-            modalWindow.modal = modalDiv;
-        } else if (modalDiv.hasClass('pick-file')){
-            modalWindow = new PickFileModal();
-            modalWindow.modal = modalDiv;
-        } else if (modalDiv.hasClass('start')){
-            modalWindow = new StartModal();
-            modalWindow.modal = modalDiv;
-        } else if (modalDiv.hasClass('send-req')){
-            modalWindow = new SendReqModal();
-            modalWindow.modal = modalDiv;
-        } else if (modalDiv.hasClass('json')){
-            modalWindow = new JsonModal();
-            modalWindow.modal = modalDiv;
-        } else if (modalDiv.hasClass('search')){
-            modalWindow = new SearchElementsModal();
-            modalWindow.modal = modalDiv;
-        } else {
-            const element = main.configGraph.getElementById(elementId);
-            modalWindow = new ElementModal(element);
-        }
+    if (modalDiv.hasClass('type-select-modal')) {
+      const types = main.configGraph.getElementChildrensTypes(elementId)
+      modalWindow = new SelectTypeModal(types);
+    } else if (modalDiv.hasClass('qr')) {
+      modalWindow = new ImageModal();
+    } else if (modalDiv.hasClass('sql-query')) {
+      modalWindow = new SQLQueryModal();
+      modalWindow.modal = modalDiv;
+    } else if (modalDiv.hasClass('auth')) {
+      modalWindow = new AuthModal();
+      modalWindow.modal = modalDiv;
+    } else if (modalDiv.hasClass('pick-file')) {
+      modalWindow = new PickFileModal();
+      modalWindow.modal = modalDiv;
+    } else if (modalDiv.hasClass('start')) {
+      modalWindow = new StartModal();
+      modalWindow.modal = modalDiv;
+    } else if (modalDiv.hasClass('send-req')) {
+      modalWindow = new SendReqModal();
+      modalWindow.modal = modalDiv;
+    } else if (modalDiv.hasClass('json')) {
+      modalWindow = new JsonModal();
+      modalWindow.modal = modalDiv;
+    } else if (modalDiv.hasClass('search')) {
+      modalWindow = new SearchElementsModal();
+      modalWindow.modal = modalDiv;
+    } else {
+      const element = main.configGraph.getElementById(elementId);
+      modalWindow = new ElementModal(element);
+    }
+    modalWindow.modal = modalDiv;
+    return modalWindow;
+  }
+  static getModals(modalSelector) {
+    const modalsDiv = $('#modals-wrap.active').find(`.modal${modalSelector}`);
+    if (modalsDiv.length == 0)
+      return
+
+    let modalWindow = '';
+    let modalsWindow = [];
+
+    for (var i = modalsDiv.length - 1; i >= 0; i--) {
+      let modalDiv = $(modalsDiv[i]);
+      let elementId = modalDiv.find('.params').attr('data-id');
+
+      if (modalDiv.hasClass('type-select-modal')) {
+        let types = main.configGraph.getElementChildrensTypes(elementId)
+        modalWindow = new SelectTypeModal(types);
+      } else if (modalDiv.hasClass('qr')) {
+        modalWindow = new ImageModal();
+      } else if (modalDiv.hasClass('sql-query')) {
+        modalWindow = new SQLQueryModal();
         modalWindow.modal = modalDiv;
-        return modalWindow;
+      } else if (modalDiv.hasClass('auth')) {
+        modalWindow = new AuthModal();
+        modalWindow.modal = modalDiv;
+      } else if (modalDiv.hasClass('pick-file')) {
+        modalWindow = new PickFileModal();
+        modalWindow.modal = modalDiv;
+      } else if (modalDiv.hasClass('start')) {
+        modalWindow = new StartModal();
+        modalWindow.modal = modalDiv;
+      } else if (modalDiv.hasClass('json')) {
+        modalWindow = new JsonModal();
+        modalWindow.modal = modalDiv;
+      } else if (modalDiv.hasClass('search')) {
+        modalWindow = new SearchElementsModal();
+        modalWindow.modal = modalDiv;
+      } else {
+        let element = main.configGraph.getElementById(elementId);
+        modalWindow = new ElementModal(element);
+      }
+      modalWindow.modal = modalDiv;
+      modalsWindow.push(modalWindow);
     }
-    static getModals(modalSelector) {
-        const modalsDiv = $('#modals-wrap.active').find(`.modal${modalSelector}`);
-        if (modalsDiv.length == 0)
-            return
 
-        let modalWindow = '';
-        let modalsWindow = [];
-
-        for (var i = modalsDiv.length - 1; i >= 0; i--) {
-            let modalDiv = $(modalsDiv[i]);
-            let elementId = modalDiv.find('.params').attr('data-id');
-
-            if (modalDiv.hasClass('type-select-modal')) {
-                let types = main.configGraph.getElementChildrensTypes(elementId)
-                modalWindow = new SelectTypeModal(types);
-            } else if (modalDiv.hasClass('qr')) { 
-                modalWindow = new ImageModal();
-            } else if (modalDiv.hasClass('sql-query')){
-                modalWindow = new SQLQueryModal();
-                modalWindow.modal = modalDiv;
-            } else if (modalDiv.hasClass('auth')){
-                modalWindow = new AuthModal();
-                modalWindow.modal = modalDiv;
-            } else if (modalDiv.hasClass('pick-file')){
-                modalWindow = new PickFileModal();
-                modalWindow.modal = modalDiv;
-            } else if (modalDiv.hasClass('start')){
-                modalWindow = new StartModal();
-                modalWindow.modal = modalDiv;
-            } else if (modalDiv.hasClass('json')){
-                modalWindow = new JsonModal();
-                modalWindow.modal = modalDiv;
-            } else if (modalDiv.hasClass('search')){
-                modalWindow = new SearchElementsModal();
-                modalWindow.modal = modalDiv;
-            } else {
-                let element = main.configGraph.getElementById(elementId);
-                modalWindow = new ElementModal(element);
-            }
-            modalWindow.modal = modalDiv;
-            modalsWindow.push(modalWindow);
-        }
-
-        return modalsWindow;
-    }
+    return modalsWindow;
+  }
 }
-class ElementModal extends ModalWindow{
-    constructor(element) {
-        super();
-        this.element = element;
-        this.title = element.title;
-        this.tabs = element.elementConfig.tabs;
-        this.params = element.elementConfig;
-        this.values = element.elementValues;
-        this.path = main.configGraph.getElementPath(element.id);
-    }
-    render(){
-        this.html = `
+class ElementModal extends ModalWindow {
+  constructor(element) {
+    super();
+    this.element = element;
+    this.title = element.title;
+    this.tabs = element.elementConfig.tabs;
+    this.params = element.elementConfig;
+    this.values = element.elementValues;
+    this.path = main.configGraph.getElementPath(element.id);
+  }
+  render() {
+    this.html = `
             <div class='modal' data-modal-type='element'>
                 <div class='close-modal'>
                     <i class='fa fa-times' aria-hidden='true'></i>
@@ -229,65 +229,66 @@ class ElementModal extends ModalWindow{
                 <div class='modal-content'></div>
             </div>
             `
-        this.modal = $(this.html)
-        this.modal.find(selectors.modalContent).html(this.renderParams())
+    this.modal = $(this.html)
+    this.modal.find(selectors.modalContent).html(this.renderParams())
 
-        this.modal.resizable({
-            minWidth: 450,
-            handles: "e",
-        });
+    this.modal.resizable({
+      minWidth: 450,
+      handles: "e",
+    });
 
-        return this;
-    }
-    renderParams() {
-        const html = `
+    return this;
+  }
+  renderParams() {
+    const html = `
             <div class="params" data-id="${this.element.id}">
             ${this.renderItems()}
             ${this.renderButtons()}
             </div>
             `
-        return html;
-    }
-    renderTabs() {
-        let html = ''
-        const arrTabs = Object.entries(this.tabs).map((el) => {
-            return {[el[0]]: el[1]}}).sort((a, b) => {
-                return (Object.values(a)[0].ordering) -(Object.values(b)[0].ordering)
-            })
+    return html;
+  }
+  renderTabs() {
+    let html = ''
+    const arrTabs = Object.entries(this.tabs).map((el) => {
+      return { [el[0]]: el[1] }
+    }).sort((a, b) => {
+      return (Object.values(a)[0].ordering) - (Object.values(b)[0].ordering)
+    })
 
-        if (arrTabs && (arrTabs).length > 1) {
-            html = `<div class='tabs'>`;
-            arrTabs.forEach((el) => {
-                let [name, value] = Object.entries(el)[0]
-                html += `<div onclick="selectModalTab(this)" class="tab" data-tab="${name}">${value.title}</div>`
-            })
-            html += `<div class='tab' id='save-project'>Save Project</div>`
-            html += '</div>'
-        }
-        return html;
+    if (arrTabs && (arrTabs).length > 1) {
+      html = `<div class='tabs'>`;
+      arrTabs.forEach((el) => {
+        let [name, value] = Object.entries(el)[0]
+        html += `<div onclick="selectModalTab(this)" class="tab" data-tab="${name}">${value.title}</div>`
+      })
+      html += `<div class='tab' id='save-project'>Save Project</div>`
+      html += '</div>'
     }
-    renderItems() {
-        let html = '';
+    return html;
+  }
+  renderItems() {
+    let html = '';
 
-        $.each(this.params, (name, fields) => {
-            if (fields['type'] && fields["type"] != "operations") {
-                html += this.renderElementFields(name, fields["type"], fields);
-            } else if (name == 'type') {
-                // html += this.renderElementFields(name, 'text', {type: 'type', text: 'type'});
-            };
-        })
-        return html;
-    }
-    renderElementFields(name, type, fields) {
-        let html = '';
+    $.each(this.params, (name, fields) => {
+      if (fields['type'] && fields["type"] != "operations") {
+        html += this.renderElementFields(name, fields["type"], fields);
+      } else if (name == 'type') {
+        // html += this.renderElementFields(name, 'text', {type: 'type', text: 'type'});
+      };
+    })
+    return html;
+  }
+  renderElementFields(name, type, fields) {
+    let html = '';
 
-        if (['elements', 'handlers'].includes(type)) {
-            const elementsList = main.configGraph.elements.filter(
-                (el) => el.parentId == this.element.id && el.parentType == name);
-    
-            html += `
+    if (['elements', 'handlers'].includes(type)) {
+      const elementsList = main.configGraph.elements.filter(
+        (el) => el.parentId == this.element.id && el.parentType == name);
+
+      html += `
                 <div class="param active list-param" data-tab="${fields["tab_name"]}">
-                    <label onclick="showList(this)">${name} ${elementsList.length ? `(<span class='count'>${elementsList.length}</span>)`: ''}
+                    <label onclick="showList(this)">${name} ${elementsList.length ? `(<span class='count'>${elementsList.length}</span>)` : ''}
                         <i class="fa fa-angle-down" aria-hidden="true"></i>
                     </label>
                     <div class="list-wrap" style="display: none;">
@@ -296,75 +297,75 @@ class ElementModal extends ModalWindow{
                     </div>
                 </div>
             `
-        } else {
-            if (fields.hidden)
-                return ''
-            
-            const renderParams = {
-                ...fields,
-                name: name,
-                value: this.values[name],
-            };
+    } else {
+      if (fields.hidden)
+        return ''
 
-            html += `
+      const renderParams = {
+        ...fields,
+        name: name,
+        value: this.values[name],
+      };
+
+      html += `
                 <div class="param active" data-tab="${fields["tab_name"]}">
                 ${this.renderModalElement(renderParams)}
                 </div>
             `
-        }
-        return html;
     }
-    renderListElement(elementsList, type) {
-        
-        const listItems = [];
+    return html;
+  }
+  renderListElement(elementsList, type) {
 
-        elementsList.forEach((item) => {
-            const name = item.elementValues[item.parentConfig.rowKeys.filter(key => item.elementValues[key])[0]];
-            const itemValues = {
-                name: name,
-                id: item.id
-            }
-            const value = Object.keys(item.elementValues).find((el) => ['Value', 'method'].includes(el))
-            if (value){
-                itemValues['value'] = item.elementValues[[value]]
-            }
-            listItems.push(itemValues)
-        })
-        const listElement = new ListElement(listItems, type);
-        return listElement.render().html;
-    }
-    renderButtons() {
-        const html = `
+    const listItems = [];
+
+    elementsList.forEach((item) => {
+      const name = item.elementValues[item.parentConfig.rowKeys.filter(key => item.elementValues[key])[0]];
+      const itemValues = {
+        name: name,
+        id: item.id
+      }
+      const value = Object.keys(item.elementValues).find((el) => ['Value', 'method'].includes(el))
+      if (value) {
+        itemValues['value'] = item.elementValues[[value]]
+      }
+      listItems.push(itemValues)
+    })
+    const listElement = new ListElement(listItems, type);
+    return listElement.render().html;
+  }
+  renderButtons() {
+    const html = `
         <div class="btn-group modal-btn">
             <button class="save-element">Save</button>
         </div>`;
-        return html;
-    }
-    renderModalElement(params) {
-        const value = this.getParamsValue(params);
-        const { type, name, text, description } = params;
+    return html;
+  }
+  renderModalElement(params) {
+    const value = this.getParamsValue(params);
+    const { type, name, text, description } = params;
 
-        const renderElements = {
-            text: `
+    const renderElements = {
+      text: `
                 <label for="${name}">${text}</label>
                 <input type="${type}" name="${name}" id="${name}" data-param-name="${name}" value="${value}" title="${description}">
                 `,
 
-            checkbox: `
+      checkbox: `
                 <div>
                     <label for="${name}">${text}</label>
                     <input type="${type}" name="${name}" id="${name}" data-param-name="${name}" ${value} title="${description}">
                 </div>
                 `,
 
-            select: `
+      select: `
                 <label>${text}</label>
                 <select data-param-name="${name}">
                 ${this.getSelectOptions(params)}
                 </select>
                 `,
 
-            elements: `
+      elements: `
                 <label onclick="showList(this)">${text}
                     <i class="fa fa-angle-down" aria-hidden="true"></i>
                 </label>
@@ -373,7 +374,7 @@ class ElementModal extends ModalWindow{
                 </div>
                 `,
 
-            handlers: `
+      handlers: `
                 <label onclick="showList(this)">${text}
                     <i class="fa fa-angle-down" aria-hidden="true"></i>
                 </label>
@@ -382,101 +383,101 @@ class ElementModal extends ModalWindow{
                 </div>
                 `,
 
-            type: `
+      type: `
                 <label for="${name}">${text}</label>
                 <input type="text" name="${name}" id="${name}" data-param-name="${name}" value="${value}" readonly>
                 `,
 
-            file: `
+      file: `
                 <label for="${name}">${text}</label>
                 <div class="input-wrap">
                     <input type="text" name="${name}" id="${name}" data-param-name="${name}" value="${value}">
                     <button id="open-py" onclick="pickFile('python')">Open</button>
                 </div>
                 `,
-        }
-
-        return renderElements[type]
     }
-    getParamsValue(params) {
-        return {
-            text: params.value ? params.value : '',
-            type: params.value ? params.value : '',
-            file: params.value ? params.value : '',
-            select: params.value ? params.value : '',
-            checkbox: params.value == true ? 'checked' : ''
-        }[params.type]
+
+    return renderElements[type]
+  }
+  getParamsValue(params) {
+    return {
+      text: params.value ? params.value : '',
+      type: params.value ? params.value : '',
+      file: params.value ? params.value : '',
+      select: params.value ? params.value : '',
+      checkbox: params.value == true ? 'checked' : ''
+    }[params.type]
+  }
+  getSelectOptions(params) {
+    const { options, value } = params;
+    if (options)
+      return `${options.map(option => `<option value="${option}" ${option == value ? 'selected' : ''}>${option}</option>`).join('')}`
+  }
+  close() {
+    let resultConfirm = !this.modal.hasClass('edited') || (this.modal.hasClass('edited') && confirm('Закрыть без сохранения?'));
+
+    if (!resultConfirm)
+      return
+
+    if (this.modal.siblings(selectors.modal).length) {
+      const prevModal = this.modal.prev();
+      prevModal.addClass("active");
+
+      const dataTab = prevModal.find('.param.active').attr('data-tab');
+      if (dataTab)
+        prevModal.find(`.tab[data-tab=${dataTab}]`).addClass('active')
+
+    } else {
+      this.modal.parents("#modals-wrap").removeClass("active");
+      $("body").removeClass("no-scroll");
+      $('.content').removeClass("blur");
     }
-    getSelectOptions(params) {
-        const { options, value } = params;
-        if (options)
-            return `${options.map(option => `<option value="${option}" ${option == value ? 'selected' : ''}>${option}</option>`).join('')}`
+
+    if (this.modal.hasClass('edited') && this.modal.hasClass('new-element')) {
+      main.configGraph.removeElement(this.element);
     }
-    close() {
-        let resultConfirm = !this.modal.hasClass('edited') || (this.modal.hasClass('edited') && confirm('Закрыть без сохранения?'));
 
-        if (!resultConfirm)
-            return
+    this.modal.remove();
+  }
+  getValues() {
+    const values = {};
+    let inputNode, selectNode;
 
-        if (this.modal.siblings(selectors.modal).length) {
-            const prevModal = this.modal.prev();
-            prevModal.addClass("active");
+    this.modal.find('.params').children('.param').each((index, paramNode) => {
+      inputNode = $(paramNode).find('input');
+      if (inputNode.length) {
+        const paramName = inputNode.attr('data-param-name')
+        const value = inputNode.prop('type') == 'checkbox' ? inputNode.is(':checked') : inputNode.val();
+        //if (value)
+        values[paramName] = value
+      }
 
-            const dataTab = prevModal.find('.param.active').attr('data-tab');
-            if (dataTab)
-                prevModal.find(`.tab[data-tab=${dataTab}]`).addClass('active')
-
-        } else {
-            this.modal.parents("#modals-wrap").removeClass("active");
-            $("body").removeClass("no-scroll");
-            $('.content').removeClass("blur");
-        }
-
-        if (this.modal.hasClass('edited') && this.modal.hasClass('new-element')) {
-            main.configGraph.removeElement(this.element);
-        }
-
-        this.modal.remove();
-    }
-    getValues() {
-        const values = {};
-        let inputNode, selectNode;
-
-        this.modal.find('.params').children('.param').each((index, paramNode) => {
-            inputNode = $(paramNode).find('input');
-            if (inputNode.length) {
-                const paramName = inputNode.attr('data-param-name')
-                const value = inputNode.prop('type') == 'checkbox' ? inputNode.is(':checked') : inputNode.val();
-                //if (value)
-                    values[paramName] = value
-            }
-
-            selectNode = $(paramNode).find('select');
-            if (selectNode.length){
-                const paramName = selectNode.attr('data-param-name');
-                values[paramName] = $(selectNode.find('option:selected')).val();
-            } 
-        });
-        return values;
-    }
-    show(){
-        super.show();
-        const tabs = $(this.modal).find('.tab');
-        if (tabs.length > 1)
-            selectModalTab(tabs[0])
-    }
+      selectNode = $(paramNode).find('select');
+      if (selectNode.length) {
+        const paramName = selectNode.attr('data-param-name');
+        values[paramName] = $(selectNode.find('option:selected')).val();
+      }
+    });
+    return values;
+  }
+  show() {
+    super.show();
+    const tabs = $(this.modal).find('.tab');
+    if (tabs.length > 1)
+      selectModalTab(tabs[0])
+  }
 }
 class SelectTypeModal extends ModalWindow {
-    constructor(types, parentId) {
-        super();
-        this.types = types;
-        this.parentId = parentId;
-        this.modal = $('');
-        this.html = '';
-        this.selectedValue;
-    }
-    render() {
-        this.html = `
+  constructor(types, parentId) {
+    super();
+    this.types = types;
+    this.parentId = parentId;
+    this.modal = $('');
+    this.html = '';
+    this.selectedValue;
+  }
+  render() {
+    this.html = `
             <div class='modal type-select-modal' data-modal-type='element'>
                 <div class='close-modal'>
                     <i class='fa fa-times' aria-hidden='true'></i>
@@ -486,7 +487,8 @@ class SelectTypeModal extends ModalWindow {
                 </div>
                 <div class='modal-content'>
                     <div class="params" data-id="${this.parentId}">
-                    ${this.types.map(type => {return `
+                    ${this.types.map(type => {
+      return `
                         <div class="param active">
                             <input type="radio" name="type" id="${type}" value="${type}">    
                             <label for="${type}">${type}</label>
@@ -498,21 +500,21 @@ class SelectTypeModal extends ModalWindow {
                 </div>
             </div>
             `
-        this.modal = $(this.html)
-        return this;
-    }
-    setSelectedValue(value){
-        this.selectedValue = value;
-    }
+    this.modal = $(this.html)
+    return this;
+  }
+  setSelectedValue(value) {
+    this.selectedValue = value;
+  }
 }
-class ImageModal extends ModalWindow{
-    constructor() {
-        super();
-        this.modal = $('');
-        this.html = '';
-    }
-    render(){
-        this.html = `
+class ImageModal extends ModalWindow {
+  constructor() {
+    super();
+    this.modal = $('');
+    this.html = '';
+  }
+  render() {
+    this.html = `
             <div class='modal qr' data-modal-type='qr'>
                 <div class='close-modal'>
                     <i class='fa fa-times' aria-hidden='true'></i>
@@ -523,23 +525,23 @@ class ImageModal extends ModalWindow{
                 <div class='modal-content'></div>
             </div>
             `
-        this.modal = $(this.html)
-        
-        return this;
-    }
+    this.modal = $(this.html)
+
+    return this;
+  }
 }
-class SQLQueryModal extends ModalWindow{
-    constructor(ipAddress) {
-        super();
-        this.modal = $('');
-        this.html = '';
-        this.ipAddress = ipAddress;
-        this.dbName = 'SimpleKeep';
-        this.params = '';
-        this.query = 'SELECT * from RS_docs';
-    }
-    render(){
-        this.html = `
+class SQLQueryModal extends ModalWindow {
+  constructor(ipAddress) {
+    super();
+    this.modal = $('');
+    this.html = '';
+    this.ipAddress = ipAddress;
+    this.dbName = 'SimpleKeep';
+    this.params = '';
+    this.query = 'SELECT * from RS_docs';
+  }
+  render() {
+    this.html = `
             <div class='modal sql-query' data-modal-type='sql-query'>
                 <div class='close-modal'>
                     <i class='fa fa-times' aria-hidden='true'></i>
@@ -550,13 +552,13 @@ class SQLQueryModal extends ModalWindow{
                 <div class='modal-content'></div>
             </div>
             `
-        this.modal = $(this.html)
-        this.modal.find(selectors.modalContent).html(this.renderContent())
+    this.modal = $(this.html)
+    this.modal.find(selectors.modalContent).html(this.renderContent())
 
-        return this;
-    } 
-    renderContent(){
-        const html = `
+    return this;
+  }
+  renderContent() {
+    const html = `
         <div>
             <div id="sql-query-content">
                 <div id="query-params-wrap">
@@ -584,61 +586,61 @@ class SQLQueryModal extends ModalWindow{
         <div class="querys-wrap">${SQLQueryModal.renderSqlQueryHistory(main.settings.sqlQuerys)}</div>
         <div id="sql-table-wrap"> </div>
         `
-        return html;    
-    }  
-    static renderSqlQueryHistory(querys){
-        let html = "";
+    return html;
+  }
+  static renderSqlQueryHistory(querys) {
+    let html = "";
 
-        if (querys && querys.length) {
-            html += `
+    if (querys && querys.length) {
+      html += `
             <div class="section-header" onclick="showList(this)">Query history<i class="fa fa-angle-down" aria-hidden="true"></i></div>
             <ul class="list-wrap querys">
                 ${querys.map((el, index) => `<li data-params="${el.params}">${el.query}<i class="fa fa-times" aria-hidden="true"></i></li>`).join('\n')}
             </ul>
             `
-        }
-        return html;
     }
-    renderSqlQueryResult(data){
-        let html = ``;
-        
-        if (data) {
-            html = `
+    return html;
+  }
+  renderSqlQueryResult(data) {
+    let html = ``;
+
+    if (data) {
+      html = `
             <span class="show-sql-table-json"><i class="fa-solid fa-code"></i></span>
             <table class="sql-table display nowrap dataTable no-footer dtr-inline collapsed">
                 <thead>
                     ${data.header.split('|').map((el) => `<th>${el}</th>`).join('\n')}
                 </thead>
                 <tbody>
-                ${data.data.map((el) => `<tr>${el.split('|').map((el)=>`<td>${el}</td>`).join('\n')}</tr>`).join('\n')}
+                ${data.data.map((el) => `<tr>${el.split('|').map((el) => `<td>${el}</td>`).join('\n')}</tr>`).join('\n')}
                 </tbody>
             </table>
             `
-        } else if (data == null) {
-            html = `Нет записей`
-        }
-        this.modal.find('#sql-table-wrap').html(html)
-        this.modal.find('.sql-table').DataTable({
-            responsive: true,
-            pageLength: localStorage.getItem('lengthTable') ? localStorage.getItem('lengthTable') : 10,
-            language: {
-                "lengthMenu": "_MENU_",
-                "url": "https://cdn.datatables.net/plug-ins/1.13.4/i18n/ru.json"
-            }
-        });
-        this.modal.find('.sql-table').on('length.dt', function (e, settings, len){
-            localStorage.setItem('lengthTable', len);
-        });
+    } else if (data == null) {
+      html = `Нет записей`
     }
+    this.modal.find('#sql-table-wrap').html(html)
+    this.modal.find('.sql-table').DataTable({
+      responsive: true,
+      pageLength: localStorage.getItem('lengthTable') ? localStorage.getItem('lengthTable') : 10,
+      language: {
+        "lengthMenu": "_MENU_",
+        "url": "https://cdn.datatables.net/plug-ins/1.13.4/i18n/ru.json"
+      }
+    });
+    this.modal.find('.sql-table').on('length.dt', function (e, settings, len) {
+      localStorage.setItem('lengthTable', len);
+    });
+  }
 }
-class AuthModal extends ModalWindow{
-    constructor() {
-        super();
-        this.modal = $('');
-        this.html = '';
-    }
-    render(){
-        this.html = `
+class AuthModal extends ModalWindow {
+  constructor() {
+    super();
+    this.modal = $('');
+    this.html = '';
+  }
+  render() {
+    this.html = `
             <div class='modal auth' data-modal-type='auth'>
                 <div class='close-modal'>
                     <i class='fa fa-times' aria-hidden='true'></i>
@@ -649,13 +651,13 @@ class AuthModal extends ModalWindow{
                 <div class='modal-content'></div>
             </div>
             `
-        this.modal = $(this.html)
-        this.modal.find(selectors.modalContent).html(this.renderContent())
+    this.modal = $(this.html)
+    this.modal.find(selectors.modalContent).html(this.renderContent())
 
-        return this;
-    } 
-    renderContent(){
-        const html = `
+    return this;
+  }
+  renderContent() {
+    const html = `
         <div class='auth-params'>
             <div class="param">
                 <label for="login">Login</label>
@@ -670,8 +672,8 @@ class AuthModal extends ModalWindow{
             <button onclick="auth(this)">Login</button>
         </div>
         `
-        return html;    
-    }
+    return html;
+  }
 }
 class PickFileModal extends ModalWindow{
     constructor(filePath='', dirPath='', configProjectPath='') {
@@ -695,13 +697,13 @@ class PickFileModal extends ModalWindow{
                 <div class='modal-content'></div>
             </div>
             `
-        this.modal = $(this.html)
-        this.modal.find(selectors.modalContent).html(this.renderContent())
+    this.modal = $(this.html)
+    this.modal.find(selectors.modalContent).html(this.renderContent())
 
-        return this;
-    } 
-    renderContent(){
-        const html = `
+    return this;
+  }
+  renderContent() {
+    const html = `
         <div class="list-wrap show">
             <ul class="list">
                 <li>
@@ -717,18 +719,18 @@ class PickFileModal extends ModalWindow{
             </ul>
         </div>
         `
-        return html;    
-    }
+    return html;
+  }
 }
-class SendReqModal extends ModalWindow{
-    constructor(ipAddress) {
-        super();
-        this.modal = $('');
-        this.html = '';
-        this.ipAddress = ipAddress;
-    }
-    render(){
-        this.html = `
+class SendReqModal extends ModalWindow {
+  constructor(ipAddress) {
+    super();
+    this.modal = $('');
+    this.html = '';
+    this.ipAddress = ipAddress;
+  }
+  render() {
+    this.html = `
             <div class='modal send-req' data-modal-type='send-req'>
                 <div class='close-modal'>
                     <i class='fa fa-times' aria-hidden='true'></i>
@@ -739,16 +741,16 @@ class SendReqModal extends ModalWindow{
                 <div class='modal-content'> </div>
             </div>
             `
-        this.modal = $(this.html)
-        this.modal.find(selectors.modalContent).html(this.renderContent())
-        const data = {};
-        
-        main.settings.reqBodyEditor = renderEditor(this.modal.find("#req-body")[0], '');
+    this.modal = $(this.html)
+    this.modal.find(selectors.modalContent).html(this.renderContent())
+    const data = {};
 
-        return this;
-    }
-    renderContent(){
-        const html = `
+    main.settings.reqBodyEditor = renderEditor(this.modal.find("#req-body")[0], '');
+
+    return this;
+  }
+  renderContent() {
+    const html = `
         <div>
             <div id="send-req-content">
                 <div id="req-params-wrap">
@@ -779,30 +781,30 @@ class SendReqModal extends ModalWindow{
         </div>
         <div id="req-result-wrap"></div>
         `
-        return html;
-    }
-    renderRequestResult(data){
-        this.modal.find("#req-result-wrap").html("");
-        renderEditor(this.modal.find("#req-result-wrap")[0], data);
-    }
-    renderEditor(node, data = ''){
-        const editor = new JSONEditor(node, {
-            mode: 'code'
-        });
+    return html;
+  }
+  renderRequestResult(data) {
+    this.modal.find("#req-result-wrap").html("");
+    renderEditor(this.modal.find("#req-result-wrap")[0], data);
+  }
+  renderEditor(node, data = '') {
+    const editor = new JSONEditor(node, {
+      mode: 'code'
+    });
 
-        editor.set(data);
+    editor.set(data);
 
-        return editor;
-    }
+    return editor;
+  }
 }
-class StartModal extends ModalWindow{
-    constructor() {
-        super();
-        this.modal = $('');
-        this.html = '';
-    }
-    render(){
-        this.html = `
+class StartModal extends ModalWindow {
+  constructor() {
+    super();
+    this.modal = $('');
+    this.html = '';
+  }
+  render() {
+    this.html = `
             <div class='modal start' data-modal-type='start'>
                 <div class='modal-head'>
                     <h2 class='modal-title'>Start</h2>
@@ -810,28 +812,28 @@ class StartModal extends ModalWindow{
                 <div class='modal-content'></div>
             </div>
             `
-        this.modal = $(this.html)
-        this.modal.find(selectors.modalContent).html(this.renderContent())
+    this.modal = $(this.html)
+    this.modal.find(selectors.modalContent).html(this.renderContent())
 
-        return this;
-    } 
-    renderContent(){
-        const html = `
+    return this;
+  }
+  renderContent() {
+    const html = `
             <button id="new-project" onclick="pickNewFileProject(main)">New Project</button>
             <button id="open-project" onclick="showPickFile()">Open Project</button>
         `
-        return html;    
-    }
+    return html;
+  }
 }
-class JsonModal extends ModalWindow{
-    constructor(json) {
-        super();
-        this.modal = $('');
-        this.html = '';
-        this.json = json;
-    }
-    render(){
-        this.html = `
+class JsonModal extends ModalWindow {
+  constructor(json) {
+    super();
+    this.modal = $('');
+    this.html = '';
+    this.json = json;
+  }
+  render() {
+    this.html = `
             <div class='modal json' data-modal-type='json'>
                 <div class='close-modal'>
                     <i class='fa fa-times' aria-hidden='true'></i>
@@ -842,26 +844,26 @@ class JsonModal extends ModalWindow{
                 <div class='modal-content'></div>
             </div>
             `
-        this.modal = $(this.html)
-        this.modal.find(selectors.modalContent).html(this.renderContent())
-        renderEditor(this.modal.find("#json-editor")[0], this.json);
+    this.modal = $(this.html)
+    this.modal.find(selectors.modalContent).html(this.renderContent())
+    renderEditor(this.modal.find("#json-editor")[0], this.json);
 
-        return this;
-    } 
-    renderContent(){
-        const html = `<div id="json-editor"></div>`
+    return this;
+  }
+  renderContent() {
+    const html = `<div id="json-editor"></div>`
 
-        return html;    
-    }
+    return html;
+  }
 }
-class SearchElementsModal extends ModalWindow{
-    constructor(json) {
-        super();
-        this.modal = $('');
-        this.html = '';
-    }
-    render(){
-        this.html = `
+class SearchElementsModal extends ModalWindow {
+  constructor(json) {
+    super();
+    this.modal = $('');
+    this.html = '';
+  }
+  render() {
+    this.html = `
             <div class='modal search' data-modal-type='element'>
                 <div class='close-modal'>
                     <i class='fa fa-times' aria-hidden='true'></i>
@@ -872,25 +874,25 @@ class SearchElementsModal extends ModalWindow{
                 <div class='modal-content'></div>
             </div>
             `
-        this.modal = $(this.html)
-        this.modal.find(selectors.modalContent).html(this.renderContent())
+    this.modal = $(this.html)
+    this.modal.find(selectors.modalContent).html(this.renderContent())
 
-        return this;
-    } 
-    renderContent(){
-        const html = `
+    return this;
+  }
+  renderContent() {
+    const html = `
         <div>
             <div id="search-content">
                 <div id="search-params-wrap">
                     <div class="param active">
                         <label for="ip-address">Search</label>
-                        <input type="text" name="search" value="" id="search">
+                        <input type="text" name="search" value="" id="search" autofocus>
                     </div>
                 </div>
             </div>
         </div>
         <div id="search-result-wrap" class="list ui-sortable"></div>
         `
-        return html;    
-    }
+    return html;
+  }
 }

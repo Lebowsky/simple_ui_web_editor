@@ -9,17 +9,14 @@ $(document).ready(function(){
 	} else {
 		readFile(filePath);
 	}
-
 	async function newFile () {
 		conf = await getNewConfiguration()
 		initReadedConf(conf)
 	}
-
 	async function readFile (filePath) {
 		conf = await loadConfiguration(filePath);
 		initReadedConf(conf, filePath);
 	}
-
 	$('#prev').resizable({
 		minWidth: 250,
 		handles: "e,w",
@@ -325,7 +322,7 @@ $(document).ready(function(){
 		if (modal.element) {
 			element = main.configGraph.getElementById(modal.element.id);
 			if (!element) return
-			
+
 			fillNode = element.parentConfig['node']+"[data-id="+modal.element.id+"]";
 			main.configGraph.fillListElements(element.parentType, fillNode, element.parentId, modal.element.id)
 		}
@@ -390,10 +387,10 @@ $(document).ready(function(){
 		}
 	})
 	$(document).on('change', 'select.element-type', function(){
-		
+
 	})
 	$(document).on('change', '.modal.active :input', function(){
-		
+
 	})
 	$(document).on('change', '.form :input', function(){
 		const paramName = $(this).attr("data-param-name");
@@ -424,6 +421,7 @@ $(document).ready(function(){
 			key = "alt+"+key;
 
 		// console.log(e.keyCode);
+		// console.log(key);
 
 		if (keys[key]) {
 			e.preventDefault();
@@ -663,7 +661,7 @@ async function sendSQLQuery(node){
 			if (!main.settings.sqlQuerys.find((el) => el.query == query && el.params == params))
 				main.settings.sqlQuerys.push({query:query, params:params});
 
-			$(".querys-wrap").html(SQLQueryModal.renderSqlQueryHistory(main.settings.sqlQuerys));
+      $(".querys-wrap").html(SQLQueryModal.renderSqlQueryHistory(main.settings.sqlQuerys));
 
 			modal = ModalWindow.getCurrentModal();
 			modal.renderSqlQueryResult(result.data);
