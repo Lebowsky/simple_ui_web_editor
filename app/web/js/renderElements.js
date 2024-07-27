@@ -127,7 +127,7 @@ class ModalWindow {
       const types = main.configGraph.getElementChildrensTypes(elementId)
       modalWindow = new SelectTypeModal(types);
     } else if (modalDiv.hasClass('qr')) {
-      modalWindow = new ImageModal();
+      modalWindow = new QRImageModal({});
     } else if (modalDiv.hasClass('sql-query')) {
       modalWindow = new SQLQueryModal();
       modalWindow.modal = modalDiv;
@@ -172,7 +172,7 @@ class ModalWindow {
         let types = main.configGraph.getElementChildrensTypes(elementId)
         modalWindow = new SelectTypeModal(types);
       } else if (modalDiv.hasClass('qr')) {
-        modalWindow = new ImageModal();
+        modalWindow = new QRImageModal();
       } else if (modalDiv.hasClass('sql-query')) {
         modalWindow = new SQLQueryModal();
         modalWindow.modal = modalDiv;
@@ -506,14 +506,14 @@ class SelectTypeModal extends ModalWindow {
     this.selectedValue = value;
   }
 }
-class ImageModal extends ModalWindow {
-  constructor(imgSrc) {
+class QRImageModal extends ModalWindow {
+  constructor({hostsOptions, uploadModesOptions}) {
     super();
     this.modal = $('');
     this.html = '';
-    this.imgSrc = imgSrc
-    this.uploadModesList = {config: 'Config', files: 'Files'}
-    this.hostsList = {host1: '192.168.0.1', host2: '10.24.24.20'}
+    this.currentHost = hostsOptions?.[0]?.value
+    this.uploadModesOptions = uploadModesOptions
+    this.hostsOptions = hostsOptions
   }
   render() {
     this.html = `
@@ -528,17 +528,17 @@ class ImageModal extends ModalWindow {
           <div class="qr-settings-wrapper">
             <div class="qr-params-wrapper">
               ${this.renderOptions({
-                values: this.uploadModesList, 
-                label: 'Upload handlers from:', 
-                name: 'upload-mode' 
-              })}
-              ${this.renderOptions({
-                values: this.hostsList, 
-                label: 'Host:', 
+                values: this.hostsOptions, 
+                label: 'Host:',
                 name: 'qr-host' 
               })}
+              ${this.renderOptions({
+                values: this.uploadModesOptions, 
+                label: 'Get handlers from:', 
+                name: 'upload-mode'
+              })}
             </div>
-            <img id="qr-code" src="${this.imgSrc}">
+            <img id="qr-code" src="${this._getImageByHost()}">
           </div>
         </div>
       </div>
@@ -547,18 +547,27 @@ class ImageModal extends ModalWindow {
     return this;
   }
   renderOptions({values, label, name}){
-    if (Object.keys(values).length > 1) {
-      return `
-        <div class="qr-params">
-          <label for="${name}">${label}</label>
-          <select name="${name}" id="${name}">
-          ${Object.entries(values).map(([value, option]) => (
-            `<option value="${value}">${option}</option>`
-          ))}
-          </select>
-        </div>
-      `
-    }
+    return `
+      <div class="qr-params">
+        <label for="${name}">${label}</label>
+        <select name="${name}" id="${name}">
+        ${values.map(({value, option}) => (
+          `<option value="${value}">${option}</option>`
+        ))}
+        </select>
+      </div>
+    `
+  }
+  show(){
+    super.show()
+    $('#qr-host').on('change', QRImageModal.hostOnChange)
+  }
+  static hostOnChange(evt){
+    modal.currentHost = evt.target.value
+    $('#qr-code').attr("src", modal._getImageByHost())
+  }
+  _getImageByHost(){
+    return this.hostsOptions.filter(el => el.value === this.currentHost)?.[0]?.imgSrc
   }
 }
 class SQLQueryModal extends ModalWindow {

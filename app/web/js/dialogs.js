@@ -83,11 +83,22 @@ async function pickProjectConfigFile() {
 };
 
 const showQRSettings = async (event) => {
-  let img = $("#qr-preview"),
-    imgBase64 = await getQRByteArrayAsBase64(),
-    imgSrc = "data:image/png;base64, " + imgBase64;
+  settings = await getQrConfigs()
+  if (!settings) return
 
-  modal = new ImageModal(imgSrc);
+  const hostsOptions = settings.map((el, idx) => ({
+      value: `host${idx}`,
+      option: el.host,
+      imgSrc: `data:image/png;base64, ${el.image}`
+    })
+  )
+
+  let = uploadModesOptions = [
+    { value: 'src', option: 'Sources' },
+    { value: 'base64', option: 'Base64' }
+  ]
+
+  modal = new QRImageModal({hostsOptions, uploadModesOptions});
   modal.render();
   modal.show();
 }

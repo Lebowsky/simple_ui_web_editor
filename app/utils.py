@@ -277,8 +277,22 @@ def convert_config_version(file_path):
         return result
 
 
-def get_qr_code_config():
-    host = socket.gethostbyname(socket.gethostname())
+def get_qr_configs():
+    interfaces = get_socket_interfaces()
+    return [{'host': host, 'image': get_qr_code_config(host)}
+            for host in interfaces]
+
+
+def get_socket_interfaces():
+    return [
+        ip[0] for af, _, __, ___, ip
+        in socket.getaddrinfo(socket.gethostname(), None)
+        if af == socket.AF_INET
+    ]
+
+
+def get_qr_code_config(host=None):
+    host = host or socket.gethostbyname(socket.gethostname())
     port = app_server_port
     url = f'http://{host}:{port}/get_conf'
     online_url = f'http://{host}:2076'

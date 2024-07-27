@@ -72,6 +72,11 @@ def get_qr_settings():
 
 
 @eel.expose
+def get_qr_configs():
+    return utils.get_qr_configs()
+
+
+@eel.expose
 def get_config_ui_elements():
     return utils.get_config_ui_elements()
 
