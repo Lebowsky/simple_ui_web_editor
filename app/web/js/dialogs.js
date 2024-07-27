@@ -77,6 +77,7 @@ async function pickProjectConfigFile() {
   if (checkAskFileResult(result)) {
     let filePath = result.file_path
     localStorage.setItem('configProjectPath', filePath);
+    localStorage.currentUploadHandlersMode = 'src'
     main.settings.configProjectPath = filePath
     $("#project-config-path").text(filePath);
   }
@@ -93,10 +94,13 @@ const showQRSettings = async (event) => {
     })
   )
 
-  let = uploadModesOptions = [
-    { value: 'src', option: 'Sources' },
-    { value: 'base64', option: 'Base64' }
-  ]
+  let uploadModesOptions = [{ value: 'base64', option: 'Base64' }]
+  if (localStorage.configProjectPath){
+    uploadModesOptions = [
+      { value: 'src', option: 'Sources' },
+      ...uploadModesOptions
+    ]
+  }
 
   modal = new QRImageModal({hostsOptions, uploadModesOptions});
   modal.render();

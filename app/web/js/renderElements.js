@@ -507,11 +507,12 @@ class SelectTypeModal extends ModalWindow {
   }
 }
 class QRImageModal extends ModalWindow {
-  constructor({hostsOptions, uploadModesOptions}) {
+  constructor({ hostsOptions, uploadModesOptions }) {
     super();
     this.modal = $('');
     this.html = '';
     this.currentHost = hostsOptions?.[0]?.value
+    this.currentUploadMode = localStorage.currentUploadHandlersMode
     this.uploadModesOptions = uploadModesOptions
     this.hostsOptions = hostsOptions
   }
@@ -528,14 +529,16 @@ class QRImageModal extends ModalWindow {
           <div class="qr-settings-wrapper">
             <div class="qr-params-wrapper">
               ${this.renderOptions({
-                values: this.hostsOptions, 
+                values: this.hostsOptions,
                 label: 'Host:',
-                name: 'qr-host' 
+                name: 'qr-host',
+                selectedItem: this.currentHost
               })}
               ${this.renderOptions({
-                values: this.uploadModesOptions, 
-                label: 'Get handlers from:', 
-                name: 'upload-mode'
+                values: this.uploadModesOptions,
+                label: 'Get handlers from:',
+                name: 'upload-mode',
+                selectedItem: this.currentUploadMode
               })}
             </div>
             <img id="qr-code" src="${this._getImageByHost()}">
@@ -546,27 +549,30 @@ class QRImageModal extends ModalWindow {
     this.modal = $(this.html)
     return this;
   }
-  renderOptions({values, label, name}){
+  renderOptions({ values, label, name, selectedItem }) {
     return `
       <div class="qr-params">
         <label for="${name}">${label}</label>
         <select name="${name}" id="${name}">
-        ${values.map(({value, option}) => (
-          `<option value="${value}">${option}</option>`
+        ${values.map(({ value, option }) => (
+          `<option value="${value}" ${value === selectedItem ? 'selected' : '' }>${option}</option>`
         ))}
         </select>
       </div>
     `
   }
-  show(){
+  show() {
     super.show()
     $('#qr-host').on('change', QRImageModal.hostOnChange)
+    $('#upload-mode').on('change', evt => { 
+      localStorage.currentUploadHandlersMode = evt.target.value 
+    })
   }
-  static hostOnChange(evt){
+  static hostOnChange(evt) {
     modal.currentHost = evt.target.value
     $('#qr-code').attr("src", modal._getImageByHost())
   }
-  _getImageByHost(){
+  _getImageByHost() {
     return this.hostsOptions.filter(el => el.value === this.currentHost)?.[0]?.imgSrc
   }
 }
@@ -743,21 +749,21 @@ class PickFileModal extends ModalWindow {
   }
   renderContent() {
     const html = `
-        <div class="list-wrap show">
-            <ul class="list">
-                <li>
-                    <label>UI Config</label>
-                    <span id="ui-config-path">${this.filePath ? this.filePath : '&lt;Not selected&gt;'}</span>
-                    <button id="open-project-config" onclick="pickFile('simple_ui')">Open file</button>
-                </li>
-                <li>
-                    <label>Project config file</label>
-                    <span id="project-config-path">${this.configProjectPath ? this.configProjectPath : '&lt;Not selected&gt;'}</span>
-                    <button id="open-ui-dir" onclick="pickProjectConfigFile()">Open file</button>
-                </li>
-            </ul>
-        </div>
-        `
+      <div class="list-wrap show">
+        <ul class="list">
+          <li>
+            <label>UI Config</label>
+            <span id="ui-config-path">${this.filePath ? this.filePath : '&lt;Not selected&gt;'}</span>
+            <button id="open-project-config" onclick="pickFile('simple_ui')">Open file</button>
+          </li>
+          <li>
+            <label>Project config file</label>
+            <span id="project-config-path">${this.configProjectPath ? this.configProjectPath : '&lt;Not selected&gt;'}</span>
+            <button id="open-ui-dir" onclick="pickProjectConfigFile()">Open file</button>
+          </li>
+        </ul>
+      </div>
+      `
     return html;
   }
 }

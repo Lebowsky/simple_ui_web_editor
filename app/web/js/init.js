@@ -4,6 +4,8 @@ $(document).ready(function(){
 
 	filePath = localStorage.getItem('file-path');
 
+	localStorage.currentUploadHandlersMode = localStorage.currentUploadHandlersMode || 'base64'
+
 	if (!filePath) {
 		newFile();
 	} else {
