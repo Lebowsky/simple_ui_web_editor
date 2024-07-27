@@ -85,11 +85,10 @@ async function pickProjectConfigFile() {
 const showQRSettings = async (event) => {
   let img = $("#qr-preview"),
     imgBase64 = await getQRByteArrayAsBase64(),
-    img_src = "data:image/png;base64, " + imgBase64;
+    imgSrc = "data:image/png;base64, " + imgBase64;
 
-  modal = new ImageModal();
+  modal = new ImageModal(imgSrc);
   modal.render();
-  modal.modal.append(`<img id="qr-code" src="${img_src}">`);
   modal.show();
 }
 

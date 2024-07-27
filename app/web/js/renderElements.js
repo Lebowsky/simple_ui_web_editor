@@ -98,7 +98,6 @@ class ModalWindow {
           const lsItem = "modal-" + modalType + "-width";
           localStorage.setItem(lsItem, ui.size.width);
         }
-
         main.settings.modalWidth = ui.size.width;
       }
     });
@@ -508,26 +507,58 @@ class SelectTypeModal extends ModalWindow {
   }
 }
 class ImageModal extends ModalWindow {
-  constructor() {
+  constructor(imgSrc) {
     super();
     this.modal = $('');
     this.html = '';
+    this.imgSrc = imgSrc
+    this.uploadModesList = {config: 'Config', files: 'Files'}
+    this.hostsList = {host1: '192.168.0.1', host2: '10.24.24.20'}
   }
   render() {
     this.html = `
-            <div class='modal qr' data-modal-type='qr'>
-                <div class='close-modal'>
-                    <i class='fa fa-times' aria-hidden='true'></i>
-                </div>
-                <div class='modal-head'>
-                    <h2 class='modal-title'>QR Settings<span class='edited'>*</span></h2>
-                </div>
-                <div class='modal-content'></div>
+      <div class='modal qr' data-modal-type='qr'>
+        <div class='close-modal'>
+          <i class='fa fa-times' aria-hidden='true'></i>
+        </div>
+        <div class='modal-head'>
+          <h2 class='modal-title'>QR Settings<span class='edited'>*</span></h2>
+        </div>
+        <div class='modal-content'>
+          <div class="qr-settings-wrapper">
+            <div class="qr-params-wrapper">
+              ${this.renderOptions({
+                values: this.uploadModesList, 
+                label: 'Upload handlers from:', 
+                name: 'upload-mode' 
+              })}
+              ${this.renderOptions({
+                values: this.hostsList, 
+                label: 'Host:', 
+                name: 'qr-host' 
+              })}
             </div>
-            `
+            <img id="qr-code" src="${this.imgSrc}">
+          </div>
+        </div>
+      </div>
+      `
     this.modal = $(this.html)
-
     return this;
+  }
+  renderOptions({values, label, name}){
+    if (Object.keys(values).length > 1) {
+      return `
+        <div class="qr-params">
+          <label for="${name}">${label}</label>
+          <select name="${name}" id="${name}">
+          ${Object.entries(values).map(([value, option]) => (
+            `<option value="${value}">${option}</option>`
+          ))}
+          </select>
+        </div>
+      `
+    }
   }
 }
 class SQLQueryModal extends ModalWindow {

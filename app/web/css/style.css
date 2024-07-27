@@ -122,6 +122,20 @@ a.btn {
   max-width: 400px;
 }
 
+.qr-settings-wrapper {
+  display: flex;
+}
+
+.qr-params {
+  padding: 15px;
+  text-align: left;
+}
+
+.qr-params label {
+  font-weight: 600;
+  
+}
+
 .btn-group button:last-child {
   margin-right: 0;
 }
