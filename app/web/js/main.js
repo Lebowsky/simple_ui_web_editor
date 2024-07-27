@@ -5,11 +5,10 @@ var Main = {
     clipboard: [],
     modalWidth: [],
     filePath: '',
-    dirPath: '',
     configProjectPath: '',
     reqBodyEditor: {},
   },
-  initUIConf(conf, filePath = 'New project') {
+  initUIConf(conf, filePath = 'New project', configProjectPath = '') {
     this.conf = conf;
     this.configGraph = new ClientConfiguration(conf.ClientConfiguration);
 
@@ -27,15 +26,10 @@ var Main = {
 
     this.configGraph.fillConfigListElements();
     this.settings.filePath = filePath;
-
-    if (!this.settings.dirPath) {
-      this.settings.dirPath = filePath.substring(0, filePath.lastIndexOf("/"));
-    }
+    this.settings.configProjectPath = configProjectPath
 
     $(".file-path").text(filePath);
-    $("#project-config-path").text(filePath);
-    $('.dir-path').text(this.settings.dirPath);
-    // $('#preview-button').show();
+    $("#ui-config-path").text(filePath);
 
     const pyHandlersPath = getConfParamValue('pyHandlersPath')
     this.conf.ClientConfiguration['pyHandlersPath']
@@ -159,7 +153,7 @@ var Main = {
         exportConfigData()
       },
       showQrCode: () => {
-        if (!!ModalWindow.getCurrentModal()) return 
+        if (!!ModalWindow.getCurrentModal()) return
         showQRSettings()
       },
       togglePreview: () => {

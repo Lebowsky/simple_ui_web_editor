@@ -129,7 +129,7 @@ function getHandlers() {
   return handlers;
 }
 function initReadedConf(conf, filePath) {
-  main.initUIConf(conf, filePath);
+  main.initUIConf(conf, filePath, localStorage.configProjectPath || '');
 }
 
 function getSaveParamValueById(id, valueParamName) {

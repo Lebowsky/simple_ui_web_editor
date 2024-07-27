@@ -716,12 +716,11 @@ class AuthModal extends ModalWindow {
   }
 }
 class PickFileModal extends ModalWindow {
-  constructor(filePath = '', dirPath = '', configProjectPath = '') {
+  constructor(filePath = '', configProjectPath = '') {
     super();
     this.modal = $('');
     this.html = '';
     this.filePath = filePath;
-    this.dirPath = dirPath;
     this.configProjectPath = configProjectPath;
   }
   render() {
@@ -747,13 +746,13 @@ class PickFileModal extends ModalWindow {
         <div class="list-wrap show">
             <ul class="list">
                 <li>
-                    <label>Project config file</label>
-                    <span id="project-config-path" data-param-name="projectConfig">${this.filePath ? this.filePath : '&lt;Not selected&gt;'}</span>
+                    <label>UI Config</label>
+                    <span id="ui-config-path">${this.filePath ? this.filePath : '&lt;Not selected&gt;'}</span>
                     <button id="open-project-config" onclick="pickFile('simple_ui')">Open file</button>
                 </li>
                 <li>
-                    <label>UI Config</label>
-                    <span id="ui-config-path" data-param-name="uiConfigDir">${this.configProjectPath ? this.configProjectPath : '&lt;Not selected&gt;'}</span>
+                    <label>Project config file</label>
+                    <span id="project-config-path">${this.configProjectPath ? this.configProjectPath : '&lt;Not selected&gt;'}</span>
                     <button id="open-ui-dir" onclick="pickProjectConfigFile()">Open file</button>
                 </li>
             </ul>

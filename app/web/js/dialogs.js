@@ -78,7 +78,7 @@ async function pickProjectConfigFile() {
     let filePath = result.file_path
     localStorage.setItem('configProjectPath', filePath);
     main.settings.configProjectPath = filePath
-    $("#ui-config-path").text(filePath);
+    $("#project-config-path").text(filePath);
   }
 };
 
@@ -124,7 +124,6 @@ const showAuth = async (event) => {
 const showPickFile = async (event) => {
   modal = new PickFileModal(
     main.settings.filePath,
-    main.settings.dirPath,
     main.settings.configProjectPath
   );
   modal.render();
