@@ -159,15 +159,18 @@ var Main = {
         exportConfigData()
       },
       showQrCode: () => {
+        if (!!ModalWindow.getCurrentModal()) return 
         showQRSettings()
       },
       togglePreview: () => {
         togglePrev()
       },
       showSqlConsole: () => {
+        if (!!ModalWindow.getCurrentModal()) return
         showSqlQueries()
       },
       showSearchElements: () => {
+        if (!!ModalWindow.getCurrentModal()) return
         showSearchElements();
       },
     }[event];
