@@ -648,7 +648,7 @@ async function sendSQLQuery(node){
 		params: params
 	};
 	
-	$(node).html(`<i class="fa-solid fa-spinner preloader" aria-hidden="true"></i>`)
+  $(node).html(`<i class="fa-solid fa-spinner preloader" aria-hidden="true"></i>`)
 
 	const result = await sendSqlQueryToDevice(query_params);
 	

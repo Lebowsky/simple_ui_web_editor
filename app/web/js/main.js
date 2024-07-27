@@ -1,17 +1,17 @@
 var Main = {
-	settings: {
-		deviceHost: '',
-		sqlQuerys: [],
-		clipboard: [],
-		modalWidth: [],
-		filePath: '',
-		dirPath: '',
-		configProjectPath: '',
-		reqBodyEditor: {},
-	},
-	initUIConf(conf, filePath = 'New project'){
-		this.conf = conf;
-		this.configGraph = new ClientConfiguration(conf.ClientConfiguration);
+  settings: {
+    deviceHost: '',
+    sqlQuerys: [],
+    clipboard: [],
+    modalWidth: [],
+    filePath: '',
+    dirPath: '',
+    configProjectPath: '',
+    reqBodyEditor: {},
+  },
+  initUIConf(conf, filePath = 'New project') {
+    this.conf = conf;
+    this.configGraph = new ClientConfiguration(conf.ClientConfiguration);
 
     this.clearMainSection();
     this.fillSelectElementsOptions();
@@ -32,19 +32,19 @@ var Main = {
       this.settings.dirPath = filePath.substring(0, filePath.lastIndexOf("/"));
     }
 
-		$(".file-path").text(filePath);
-		$("#project-config-path").text(filePath);
-		$('.dir-path').text(this.settings.dirPath);
-    	// $('#preview-button').show();
-		
-		const pyHandlersPath = getConfParamValue('pyHandlersPath')
-		this.conf.ClientConfiguration['pyHandlersPath']
-		if (pyHandlersPath){
-			$('#py-handlers-file-path').text(pyHandlersPath)
-		}else{
-			$('#py-handlers-file-path').text(constants.pyHandlersEmptyPath)
-		}
-		$('#py-handlers-file-path').attr('data-path', pyHandlersPath)
+    $(".file-path").text(filePath);
+    $("#project-config-path").text(filePath);
+    $('.dir-path').text(this.settings.dirPath);
+    // $('#preview-button').show();
+
+    const pyHandlersPath = getConfParamValue('pyHandlersPath')
+    this.conf.ClientConfiguration['pyHandlersPath']
+    if (pyHandlersPath) {
+      $('#py-handlers-file-path').text(pyHandlersPath)
+    } else {
+      $('#py-handlers-file-path').text(constants.pyHandlersEmptyPath)
+    }
+    $('#py-handlers-file-path').attr('data-path', pyHandlersPath)
 
     this.loadPrev();
     this.postInit();
@@ -176,7 +176,7 @@ class ClientConfiguration {
         elementValues[key] = value
     });
 
-		this.addElement(elementId, parentId, parentType, elementValues)
+    this.addElement(elementId, parentId, parentType, elementValues)
 
     return elementId;
   }
@@ -283,41 +283,41 @@ class ClientConfiguration {
       ...firstElement.elementValues
     };
 
-		let addElements = (configLevel, id) => {
-			let elements = structuredClone(this.elements.filter((el) => el.parentId == id));
-			elements.forEach((element) => {
-				let index;
-				if (configLevel[element.parentType]) {
-					index = configLevel[element.parentType].push({ ...element.elementValues }) - 1;
-				} else {
-					configLevel[element.parentType] = [{ ...element.elementValues }];
-					index = 0;
-				}
-				if (index != undefined)
-					addElements(configLevel[element.parentType][index], element.id);
-			})
-		}
-		addElements(clientConfig, elementId);
-		return clientConfig
-	}
-	getElementById(elementId) {
-		return this.elements.find((el) => el.id == elementId)
-	}
-	getElementPath(elementId, path=[]){
-		let element = this.getElementById(elementId);
-		if (element.title){
-			path.unshift(`<a class='element-path' data-id='${element.id}'>${element.title}</a>`);
-			this.getElementPath(element.parentId, path);
-		}
-		return path.join(' / ');
-	}
-	getElementChildrensTypes(elementId) {
-		const element = this.getElementById(elementId);
-		const elementType = element.parentConfig.type;
-		const types = Object.entries(main.elementParams)
-			.filter((el) => el[1]['type_'].find((el) => el['parent'] && el['parent'] == elementType))
-			.map((el) => el[0])
-			//test
+    let addElements = (configLevel, id) => {
+      let elements = structuredClone(this.elements.filter((el) => el.parentId == id));
+      elements.forEach((element) => {
+        let index;
+        if (configLevel[element.parentType]) {
+          index = configLevel[element.parentType].push({ ...element.elementValues }) - 1;
+        } else {
+          configLevel[element.parentType] = [{ ...element.elementValues }];
+          index = 0;
+        }
+        if (index != undefined)
+          addElements(configLevel[element.parentType][index], element.id);
+      })
+    }
+    addElements(clientConfig, elementId);
+    return clientConfig
+  }
+  getElementById(elementId) {
+    return this.elements.find((el) => el.id == elementId)
+  }
+  getElementPath(elementId, path = []) {
+    let element = this.getElementById(elementId);
+    if (element.title) {
+      path.unshift(`<a class='element-path' data-id='${element.id}'>${element.title}</a>`);
+      this.getElementPath(element.parentId, path);
+    }
+    return path.join(' / ');
+  }
+  getElementChildrensTypes(elementId) {
+    const element = this.getElementById(elementId);
+    const elementType = element.parentConfig.type;
+    const types = Object.entries(main.elementParams)
+      .filter((el) => el[1]['type_'].find((el) => el['parent'] && el['parent'] == elementType))
+      .map((el) => el[0])
+    //test
 
     return types;
   }

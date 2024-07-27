@@ -44,22 +44,22 @@ async function saveConfiguration() {
       return;
   }
 
-    main.conf = main.configGraph.getConfig();
-	let handlers = await fillBase64Handlers();
-	saveConfFiles(main.conf, filePath, '', handlers)
+  main.conf = main.configGraph.getConfig();
+  let handlers = await fillBase64Handlers();
+  saveConfFiles(main.conf, filePath, '', handlers)
 }
 async function buildConfiguration() {
   return main.configGraph.getConfig()
 }
-async function saveConfFiles(conf, filePath){
-    let result_save = await saveConf(conf, filePath)
-    let result_check = checkSaveFileResult(result_save)
+async function saveConfFiles(conf, filePath) {
+  let result_save = await saveConf(conf, filePath)
+  let result_check = checkSaveFileResult(result_save)
 
-    if (! result_check)
-        notificate('Ошибка сохранения файла: ' + result_save.msg, 'danger')
-    else
-        notificate('Файл успешно сохранен', 'success')
-        main.loadPrev();
+  if (!result_check)
+    notificate('Ошибка сохранения файла: ' + result_save.msg, 'danger')
+  else
+    notificate('Файл успешно сохранен', 'success')
+  main.loadPrev();
 
   return result_check
 }
@@ -68,7 +68,7 @@ async function saveAllPyFilesToDisk() {
   if (!result)
     return
 
-    const dirToSave = result.path;
+  const dirToSave = result.path;
 
   let handlers = await fillBase64Handlers();
 

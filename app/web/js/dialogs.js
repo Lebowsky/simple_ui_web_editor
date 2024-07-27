@@ -13,8 +13,8 @@ async function pickFile(file_type) {
     } else if (file_type == 'python') {
       $("#file_path").val(result.file_path);
       $("#PyFileKey").val(result.file_name);
-		}
-	};
+    }
+  };
 };
 
 async function pickNewFileProject() {
@@ -52,15 +52,15 @@ async function pickHandlersFile() {
   $('#py-handlers-file-path').text(filePathText);
 };
 
-async function pickProjectConfigFile(){
-	let result = await askFile('project_config');
+async function pickProjectConfigFile() {
+  let result = await askFile('project_config');
 
-	if (checkAskFileResult(result)){
-		let filePath = result.file_path
-		localStorage.setItem('configProjectPath', filePath);
-		main.settings.configProjectPath = filePath
-		$("#ui-config-path").text(filePath);
-	}
+  if (checkAskFileResult(result)) {
+    let filePath = result.file_path
+    localStorage.setItem('configProjectPath', filePath);
+    main.settings.configProjectPath = filePath
+    $("#ui-config-path").text(filePath);
+  }
 };
 
 const showQRSettings = async (event) => {
@@ -92,14 +92,14 @@ const showAuth = async (event) => {
   modal.show();
 }
 
-const showPickFile = async(event) => {
-	modal = new PickFileModal(
-		main.settings.filePath,
-		main.settings.dirPath,
-		main.settings.configProjectPath
-	);
-	modal.render();
-	modal.show();
+const showPickFile = async (event) => {
+  modal = new PickFileModal(
+    main.settings.filePath,
+    main.settings.dirPath,
+    main.settings.configProjectPath
+  );
+  modal.render();
+  modal.show();
 }
 
 const showSearchElements = async (event) => {

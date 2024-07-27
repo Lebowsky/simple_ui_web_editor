@@ -675,17 +675,17 @@ class AuthModal extends ModalWindow {
     return html;
   }
 }
-class PickFileModal extends ModalWindow{
-    constructor(filePath='', dirPath='', configProjectPath='') {
-        super();
-        this.modal = $('');
-        this.html = '';
-        this.filePath = filePath;
-        this.dirPath = dirPath;
-        this.configProjectPath = configProjectPath;
-    }
-    render(){
-        this.html = `
+class PickFileModal extends ModalWindow {
+  constructor(filePath = '', dirPath = '', configProjectPath = '') {
+    super();
+    this.modal = $('');
+    this.html = '';
+    this.filePath = filePath;
+    this.dirPath = dirPath;
+    this.configProjectPath = configProjectPath;
+  }
+  render() {
+    this.html = `
             <div class='modal pick-file' data-modal-type='start'>
                 <div class='close-modal'>
                     <i class='fa fa-times' aria-hidden='true'></i>
