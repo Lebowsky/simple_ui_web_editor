@@ -128,8 +128,8 @@ function getHandlers() {
   };
   return handlers;
 }
-function initReadedConf(conf, filePath) {
-  main.initUIConf(conf, filePath, localStorage.configProjectPath || '');
+function initReadedConf(conf, filePath, configProjectPath = '') {
+  main.initUIConf(conf, filePath, configProjectPath);
 }
 
 function getSaveParamValueById(id, valueParamName) {

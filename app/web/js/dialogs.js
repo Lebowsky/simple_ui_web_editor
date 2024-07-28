@@ -3,20 +3,6 @@ function notificate(text, type) {
   console.log(text)
 };
 
-async function pickFile(file_type) {
-  let result = await askFile(file_type);
-  if (checkAskFileResult(result)) {
-    if (file_type == 'simple_ui') {
-      conf = await loadConfiguration(result.file_path);
-      initReadedConf(conf, result.file_path);
-      localStorage.setItem('file-path', result.file_path);
-    } else if (file_type == 'python') {
-      $("#file_path").val(result.file_path);
-      $("#PyFileKey").val(result.file_name);
-    }
-  };
-};
-
 async function pickNewFileProject() {
   let result = await askSaveFile()
   if (checkAskFileResult(result)) {
@@ -69,18 +55,6 @@ async function pickHandlersFile() {
   }
 
   $('#py-handlers-file-path').text(filePathText);
-};
-
-async function pickProjectConfigFile() {
-  let result = await askFile('project_config');
-
-  if (checkAskFileResult(result)) {
-    let filePath = result.file_path
-    localStorage.setItem('configProjectPath', filePath);
-    localStorage.currentUploadHandlersMode = 'src'
-    main.settings.configProjectPath = filePath
-    $("#project-config-path").text(filePath);
-  }
 };
 
 const showQRSettings = async (event) => {

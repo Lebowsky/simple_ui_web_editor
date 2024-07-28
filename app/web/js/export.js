@@ -36,8 +36,8 @@ async function setConfigUIElements() {
   main.elementParams = result
 };
 
-async function askFile(file_type) {
-  return eel.ask_file(file_type)();
+async function askFile(fileType) {
+  return eel.ask_file(fileType)();
 };
 
 async function askDir() {

@@ -8,7 +8,7 @@ var Main = {
     configProjectPath: '',
     reqBodyEditor: {},
   },
-  initUIConf(conf, filePath = 'New project', configProjectPath = '') {
+  initUIConf(conf, filePath = '', configProjectPath = '') {
     this.conf = conf;
     this.configGraph = new ClientConfiguration(conf.ClientConfiguration);
 
@@ -29,7 +29,7 @@ var Main = {
     this.settings.configProjectPath = configProjectPath
 
     $(".file-path").text(filePath);
-    $("#ui-config-path").text(filePath);
+    
 
     const pyHandlersPath = getConfParamValue('pyHandlersPath')
     this.conf.ClientConfiguration['pyHandlersPath']

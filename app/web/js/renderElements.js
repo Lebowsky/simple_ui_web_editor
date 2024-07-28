@@ -391,7 +391,7 @@ class ElementModal extends ModalWindow {
                 <label for="${name}">${text}</label>
                 <div class="input-wrap">
                     <input type="text" name="${name}" id="${name}" data-param-name="${name}" value="${value}">
-                    <button id="open-py" onclick="pickFile('python')">Open</button>
+                    <button id="open-py" onclick="ElementModal.pickFilePython()">Open</button>
                 </div>
                 `,
     }
@@ -464,6 +464,14 @@ class ElementModal extends ModalWindow {
     const tabs = $(this.modal).find('.tab');
     if (tabs.length > 1)
       selectModalTab(tabs[0])
+  }
+  static async pickFilePython(){
+    const result = await askFile('python');
+
+    if (checkAskFileResult(result)) {
+      $("#file_path").val(result.file_path);
+      $("#PyFileKey").val(result.file_name);
+    };
   }
 }
 class SelectTypeModal extends ModalWindow {
@@ -722,26 +730,28 @@ class AuthModal extends ModalWindow {
   }
 }
 class PickFileModal extends ModalWindow {
-  constructor(filePath = '', configProjectPath = '') {
+  static notSelectedFileTitle = '&lt;Not selected&gt;'
+
+  constructor(filePath = '', projectConfigPath = '') {
     super();
     this.modal = $('');
     this.html = '';
     this.filePath = filePath;
-    this.configProjectPath = configProjectPath;
+    this.projectConfigPath = projectConfigPath;
   }
   render() {
     this.html = `
-            <div class="modal pick-file" data-modal-type="start">
-                <div class="close-modal">
-                    <i class="fa fa-times" aria-hidden="true"></i>
-                </div>
-                <div class="modal-head">
-                    <h2 class="modal-title">Pick File</h2>
-                    <button id="" onclick=pickFileApply()>Apply</button>
-                </div>
-                <div class='modal-content'></div>
-            </div>
-            `
+      <div class="modal pick-file" data-modal-type="start">
+        <div class="close-modal">
+          <i class="fa fa-times" aria-hidden="true"></i>
+        </div>
+        <div class="modal-head">
+          <h2 class="modal-title">Pick File</h2>
+          <button onclick=PickFileModal.pickFileApply()>Apply</button>
+        </div>
+        <div class="modal-content"></div>
+      </div>
+      `
     this.modal = $(this.html)
     this.modal.find(selectors.modalContent).html(this.renderContent())
 
@@ -754,17 +764,55 @@ class PickFileModal extends ModalWindow {
           <li>
             <label>UI Config</label>
             <span id="ui-config-path">${this.filePath ? this.filePath : '&lt;Not selected&gt;'}</span>
-            <button id="open-project-config" onclick="pickFile('simple_ui')">Open file</button>
+            <button id="open-project-config" onclick="PickFileModal.pickFile('simple_ui', '#ui-config-path')">Open file</button>
           </li>
           <li>
             <label>Project config file</label>
-            <span id="project-config-path">${this.configProjectPath ? this.configProjectPath : '&lt;Not selected&gt;'}</span>
-            <button id="open-ui-dir" onclick="pickProjectConfigFile()">Open file</button>
+            <span id="project-config-path">${this.projectConfigPath ? this.projectConfigPath : PickFileModal.notSelectedFileTitle}</span>
+            <button id="open-ui-dir" onclick="PickFileModal.pickFile('project_config', '#project-config-path')">Open file</button>
           </li>
         </ul>
       </div>
       `
     return html;
+  }
+
+  static async pickFile(fileType, nodeId) {
+    const result = await askFile(fileType)
+    if (checkAskFileResult(result)) {
+      $(nodeId).text(result.file_path);
+    }
+  }
+
+  static async pickFileApply(){
+    const notSelectedValue = '<Not selected>'
+    const uiPath = $("#ui-config-path").text() === notSelectedValue 
+      ? null 
+      :  $("#ui-config-path").text()
+    const confPath = $("#project-config-path").text() === notSelectedValue 
+      ? null 
+      :  $("#project-config-path").text();
+
+    if (!uiPath) return
+
+    try{
+      const conf = await loadConfiguration(uiPath);
+      initReadedConf(conf, uiPath, confPath);
+
+      localStorage.setItem('file-path', uiPath);
+      if (confPath){
+        localStorage.configProjectPath = confPath;
+        localStorage.currentUploadHandlersMode = 'src'
+      } else {
+        localStorage.configProjectPath = ''
+        localStorage.currentUploadHandlersMode = 'base64'
+      }
+
+      modal = ModalWindow.getCurrentModal();
+      modal.close();
+    } catch (error){
+      notificate (error)
+    }
   }
 }
 class SendReqModal extends ModalWindow {
