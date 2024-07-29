@@ -383,19 +383,16 @@ def export_configuration_data(file_path: str, dir_to_save: str):
         data_to_save[dir_to_save / 'handlers.py'] = base64.b64decode(py_handlers)
         project_config_data['handlers'] = './handlers.py'
         for item in py_files:
-            data_to_save[dir_to_save / 'handlers' / f'{item.py_file_key}.py'] = (
-                base64.b64decode(item.py_file_data)
-            )
-            project_config_data.setdefault(
-                'modules', {})[item.py_file_key] = f'./{item.py_file_key}.py'
+            relative_path = f'./handlers/{item.py_file_key}.py'
+            item_path = dir_to_save / relative_path
+            data_to_save[item_path] = (base64.b64decode(item.py_file_data))
+            project_config_data.setdefault('modules', {})[item.py_file_key] = relative_path
 
         for item in media_files:
-            file_name = f'{item.media_file_key}.{item.media_file_ext}'
-            data_to_save[dir_to_save / 'media_files' / file_name] = (
-                base64.b64decode(item.media_file_data)
-            )
-            project_config_data.setdefault(
-                'media_files', {})[item.media_file_key] = f'./{item.media_file_key}.{item.media_file_ext}'
+            relative_path = f'./media_files/{item.media_file_key}.{item.media_file_ext}'
+            item_path = dir_to_save / relative_path
+            data_to_save[item_path] = (base64.b64decode(item.media_file_data))
+            project_config_data.setdefault('media_files', {})[item.media_file_key] = relative_path
 
         for path, data in data_to_save.items():
             if not path.parent.exists():
@@ -403,14 +400,14 @@ def export_configuration_data(file_path: str, dir_to_save: str):
             with path.open('wb') as fp:
                 fp.write(data)
 
-        with path_to_config.open('w') as fp:
+        with path_to_config.open('w', encoding='utf-8') as fp:
             json.dump(raw_conf_data, fp, ensure_ascii=False, indent=2)
 
-        with path_to_project_config.open('w') as fp:
+        with path_to_project_config.open('w', encoding='utf-8') as fp:
             json.dump(project_config_data, fp, ensure_ascii=False, indent=2)
 
     else:
-        raise ValueError('Error: configuration file  or dir to export not exists')
+        raise ValueError('Error: configuration file or dir to export not exists')
 
 
 class SQLQueryManager:
