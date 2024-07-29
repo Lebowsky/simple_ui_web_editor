@@ -130,7 +130,11 @@ var Main = {
         modal = ModalWindow.getCurrentModal();
         if (!modal)
           return
-
+        
+        if (modal instanceof PickFileModal){
+          PickFileModal.pickFileApply()
+          return
+        }
         this.configGraph.setConfigValues(modal.element.id, modal.getValues());
         modal.removeClass('edited');
         modal.close();
@@ -143,7 +147,10 @@ var Main = {
         pickNewFileProject(main)
       },
       openFile: () => {
-        showPickFile()
+        const currentModal = ModalWindow.getCurrentModal()
+
+        if (!currentModal) showPickFileModal()
+        if (currentModal instanceof PickFileModal) PickFileModal.pickFile('simple_ui', '#ui-config-path')
       },
       fileLocationSave: () => {
         fileLocationSave();

@@ -123,7 +123,7 @@ const showAuth = async (event) => {
   modal.show();
 }
 
-const showPickFile = async (event) => {
+const showPickFileModal = async (event) => {
   modal = new PickFileModal(
     main.settings.filePath,
     main.settings.configProjectPath

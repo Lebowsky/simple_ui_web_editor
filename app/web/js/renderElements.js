@@ -939,7 +939,7 @@ class StartModal extends ModalWindow {
   renderContent() {
     const html = `
             <button id="new-project" onclick="pickNewFileProject(main)">New Project</button>
-            <button id="open-project" onclick="showPickFile()">Open Project</button>
+            <button id="open-project" onclick="showPickFileModal()">Open Project</button>
         `
     return html;
   }
