@@ -469,8 +469,9 @@ class ElementModal extends ModalWindow {
     const result = await askFile('python');
 
     if (checkAskFileResult(result)) {
+      const fileKey = result.file_name?.split('.')?.[0] || ''
       $("#file_path").val(result.file_path);
-      $("#PyFileKey").val(result.file_name);
+      $("#PyFileKey").val(fileKey);
     };
   }
 }

@@ -1,4 +1,5 @@
 import platform
+import pathlib
 
 from tkinter import Tk
 from tkinter.filedialog import askopenfilename, asksaveasfilename, askdirectory
@@ -29,7 +30,7 @@ def ask_file(file_type):
     root.update()
 
     if file_path:
-        result = {'file_path': file_path}
+        result = {'file_path': file_path, 'file_name': pathlib.Path(file_path).name}
         if file_type == 'simple_ui':
             result = check_config_file(file_path)
         return result

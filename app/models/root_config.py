@@ -70,7 +70,7 @@ class StyleTemplate(BaseModel):
 class PyFilesModel(BaseConfigModel):
     file_path: str = Field(default='', alias='file_path', title='File Path')
     py_file_key: str = Field(alias='PyFileKey', title='Module name')
-    py_file_data: Optional[str] = Field(alias='PyFileData', title='Base64Data')
+    py_file_data: Optional[str] = Field(default='', alias='PyFileData', title='Base64Data')
 
     class Config:
         title = 'PyFile'
