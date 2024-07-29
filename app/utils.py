@@ -225,15 +225,15 @@ def save_base64_data(ui_configuration: dict, project_config_path: str = None):
                 })
             ui_configuration['ClientConfiguration']['Mediafile'] = media_files_data
 
-    else:
-        file_path = ui_configuration['ClientConfiguration'].get('pyHandlersPath')
-        if file_path:
-            ui_configuration['ClientConfiguration']['PyHandlers'] = make_base64_from_file_path(file_path)
-
-        py_files = ui_configuration['ClientConfiguration'].get('PyFiles', [])
-        for item in py_files:
-            if item.get('file_path'):
-                item['PyFileData'] = make_base64_from_file_path(item['file_path'])
+    # else:
+    #     file_path = ui_configuration['ClientConfiguration'].get('pyHandlersPath')
+    #     if file_path:
+    #         ui_configuration['ClientConfiguration']['PyHandlers'] = make_base64_from_file_path(file_path)
+    #
+    #     py_files = ui_configuration['ClientConfiguration'].get('PyFiles', [])
+    #     for item in py_files:
+    #         if item.get('file_path'):
+    #             item['PyFileData'] = make_base64_from_file_path(item['file_path'])
 
 def make_ui_config(configuration: dict, config_path: str = None):
     if configuration:

@@ -18,7 +18,7 @@ function getConfiguration() {
 
 eel.expose(getConfigProjectPath);
 function getConfigProjectPath() {
-  return localStorage.configProjectPath
+  return localStorage.currentUploadHandlersMode === 'src' ? localStorage.configProjectPath : ''
 }
 
 const getQRByteArrayAsBase64 = async () => {
@@ -61,7 +61,11 @@ async function getNewConfiguration() {
 }
 
 async function saveConf(data, filePath) {
-  return await eel.save_configuration(data, filePath, localStorage.configProjectPath)();
+  return await eel.save_configuration(
+    data, 
+    filePath, 
+    localStorage.currentUploadHandlersMode === 'src' ? localStorage.configProjectPath : ''
+  )();
 }
 
 async function savePyHandlers(pyHandlers, path) {

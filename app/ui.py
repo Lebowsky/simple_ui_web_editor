@@ -26,8 +26,8 @@ def save_configuration(
     try:
         dir_path, file_name = os.path.split(file_path)
         utils.save_config_to_file(data, file_path, project_config_path)
-        if not project_config_path:
-            utils.save_project_config_to_file(data, dir_path)
+        # if not project_config_path:
+        #     utils.save_project_config_to_file(data, dir_path)
         return {'result': 'success'}
     except Exception as e:
         return {'result': 'error', 'msg': str(e)}
