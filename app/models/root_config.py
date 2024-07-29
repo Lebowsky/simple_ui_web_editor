@@ -30,9 +30,10 @@ class MainMenuModel(BaseConfigModel):
 
 
 class MediaFileModel(BaseConfigModel):
-    media_file_data: str = Field(default='', alias='MediafileData')
-    media_file_ext: str = Field(default='', alias='MediafileExt')
-    media_file_key: str = Field(default='', alias='MediafileKey')  # media
+    file_path: str = Field(default='', alias='file_path', title='File Path')
+    media_file_data: str = Field(default='', alias='MediafileData', title='Data')
+    media_file_key: str = Field(default='', alias='MediafileKey', title='Key')
+    media_file_ext: str = Field(default='', alias='MediafileExt', title='Extention')
 
     class Config:
         title = 'Mediafile'

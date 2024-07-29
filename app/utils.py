@@ -323,7 +323,7 @@ def get_config_ui_elements(model=RootConfigModel) -> dict:
         for key, value in el['properties'].items():
             props = value.copy()
             props['required'] = key in (el.get('required') or [])
-            props['hidden'] = key in ['type', 'PyFileData']
+            props['hidden'] = key in ['type', 'PyFileData', 'MediafileData']
 
             fields[key] = ui_config.BaseField(text=value.get('title') or key, **props)
             if key == 'Elements':
