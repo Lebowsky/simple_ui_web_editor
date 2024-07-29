@@ -45,8 +45,8 @@ async function saveConfiguration(pathToSave=null) {
   }
 
   main.conf = main.configGraph.getConfig();
-  let handlers = await fillBase64Handlers();
-  saveConfFiles(main.conf, filePath, '', handlers)
+  await fillBase64Handlers();
+  saveConfFiles(main.conf, filePath)
 }
 async function buildConfiguration() {
   return main.configGraph.getConfig()
@@ -104,25 +104,8 @@ async function fillBase64Handlers() {
 
     conf.PyFiles = conf.PyFiles.map((el) => ({...el, ...{PyFileData: filesData[[el.file_path]]}}))
   }
-  return getHandlers()
 }
-function getHandlers() {
-  let handlers = {};
-  const conf = main.conf.ClientConfiguration;
 
-  if (conf.PyHandlers?.length > 0) {
-    handlers['current_handlers'] = conf.PyHandlers;
-  };
-
-  if (conf.PyFiles) {
-    $.each(conf.PyFiles, async function (index, row) {
-      if (row.PyFileData.length > 0) {
-        handlers[row.PyFileKey] = row.PyFileData;
-      };
-    });
-  };
-  return handlers;
-}
 function initReadedConf(conf, filePath, configProjectPath = '') {
   main.initUIConf(conf, filePath, configProjectPath);
 }
