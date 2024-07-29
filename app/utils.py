@@ -46,7 +46,7 @@ def save_config_to_file(config_data, file_path, project_config_path=None):
     if project_config_path:
         save_base64_data(data_to_save, project_config_path)
     with open(file_path, 'w', encoding="utf-8") as f:
-        json.dump(data_to_save, f, ensure_ascii=False, indent=4,
+        json.dump(data_to_save, f, ensure_ascii=False, indent=2,
                   separators=(',', ': '))
 
 def clear_local_paths_data(config_model: RootConfigModel):
@@ -385,12 +385,16 @@ def export_configuration_data(file_path: str, dir_to_save: str):
             project_config_data['handlers'] = './handlers.py'
 
         for item in py_files:
+            if not item.py_file_data:
+                continue
             relative_path = f'./handlers/{item.py_file_key}.py'
             item_path = dir_to_save / relative_path
             data_to_save[item_path] = (base64.b64decode(item.py_file_data))
             project_config_data.setdefault('modules', {})[item.py_file_key] = relative_path
 
         for item in media_files:
+            if not item.media_file_data:
+                continue
             relative_path = f'./media_files/{item.media_file_key}.{item.media_file_ext}'
             item_path = dir_to_save / relative_path
             data_to_save[item_path] = (base64.b64decode(item.media_file_data))
