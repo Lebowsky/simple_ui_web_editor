@@ -105,6 +105,15 @@ def save_handlers_files(handlers: dict, path: str) -> dict:
 
     return result
 
+@eel.expose
+def export_data(file_path: str, dir_path: str):
+    try:
+        utils.export_configuration_data(file_path, dir_path)
+        return {'result': True}
+    except Exception as e:
+        return {'error': str(e)}
+
+
 
 @eel.expose
 def send_sql_query(query_params):

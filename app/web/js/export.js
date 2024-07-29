@@ -83,3 +83,7 @@ async function sendSqlQueryToDevice(query_params) {
 async function sendRequestToDevice(req_params) {
   return await eel.send_request(req_params)()
 }
+
+async function exportData(uiPath, dirToSave){
+  return await eel.export_data(uiPath, dirToSave)()
+}

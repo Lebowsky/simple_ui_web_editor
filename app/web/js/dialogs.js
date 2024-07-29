@@ -37,7 +37,21 @@ const fileLocationSaveAs = async () => {
   }
 }
 const exportConfigData = async () => {
-  console.log('export');
+  const result = await askDir();
+  if (!result)
+    return
+
+  const dirToSave = result.path;
+  const uiPath = localStorage.getItem('file-path')
+
+  resultExport = await exportData(uiPath, dirToSave)
+
+  console.log(resultExport)
+
+  if (resultExport?.result === true)
+    notificate('Export success', 'success')
+  else
+    notificate(`Export failed: ${resultExport?.error ? resultExport?.error : 'unknown error'}`, 'danger')
 }
 
 async function pickHandlersFile() {
