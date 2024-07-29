@@ -46,6 +46,7 @@ async function saveConfiguration(pathToSave=null) {
 
   main.conf = main.configGraph.getConfig();
   await fillBase64Handlers();
+  await fillBase64Mediafiles()
   saveConfFiles(main.conf, filePath)
 }
 async function buildConfiguration() {
@@ -103,6 +104,16 @@ async function fillBase64Handlers() {
     const filesData = await getBase64FromFilePathsList(filesList)
 
     conf.PyFiles = conf.PyFiles.map((el) => ({...el, ...{PyFileData: filesData[[el.file_path]]}}))
+  }
+}
+
+async function fillBase64Mediafiles() {
+  const conf = main.conf.ClientConfiguration;
+  if (conf.Mediafile) {
+    const filesList = conf.Mediafile.map(el => (el.file_path))
+    const filesData = await getBase64FromFilePathsList(filesList)
+
+    conf.Mediafile = conf.Mediafile.map((el) => ({...el, ...{MediafileData: filesData[[el.file_path]]}}))
   }
 }
 

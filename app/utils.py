@@ -54,6 +54,9 @@ def clear_local_paths_data(config_model: RootConfigModel):
     for py_file in config_model.client_configuration.py_files:
         py_file.file_path = None
 
+    for item in config_model.client_configuration.media_file:
+        item.file_path = None
+
 
 def get_config_from_file(file_path):
     if file_path:
