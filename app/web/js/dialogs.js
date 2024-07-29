@@ -37,12 +37,18 @@ const fileLocationSaveAs = async () => {
   }
 }
 const exportConfigData = async () => {
+  const uiPath = localStorage.getItem('file-path')
+
+  if (!uiPath) {
+    notificate('Export failed: UI configuration must be saved', 'danger')
+    return
+  }
+
   const result = await askDir();
   if (!result)
     return
 
   const dirToSave = result.path;
-  const uiPath = localStorage.getItem('file-path')
 
   resultExport = await exportData(uiPath, dirToSave)
 

@@ -380,8 +380,10 @@ def export_configuration_data(file_path: str, dir_to_save: str):
         py_files = conf_data.client_configuration.py_files
         media_files = conf_data.client_configuration.media_file
 
-        data_to_save[dir_to_save / 'handlers.py'] = base64.b64decode(py_handlers)
-        project_config_data['handlers'] = './handlers.py'
+        if py_handlers:
+            data_to_save[dir_to_save / 'handlers.py'] = base64.b64decode(py_handlers)
+            project_config_data['handlers'] = './handlers.py'
+
         for item in py_files:
             relative_path = f'./handlers/{item.py_file_key}.py'
             item_path = dir_to_save / relative_path
@@ -403,8 +405,9 @@ def export_configuration_data(file_path: str, dir_to_save: str):
         with path_to_config.open('w', encoding='utf-8') as fp:
             json.dump(raw_conf_data, fp, ensure_ascii=False, indent=2)
 
-        with path_to_project_config.open('w', encoding='utf-8') as fp:
-            json.dump(project_config_data, fp, ensure_ascii=False, indent=2)
+        if project_config_data:
+            with path_to_project_config.open('w', encoding='utf-8') as fp:
+                json.dump(project_config_data, fp, ensure_ascii=False, indent=2)
 
     else:
         raise ValueError('Error: configuration file or dir to export not exists')
