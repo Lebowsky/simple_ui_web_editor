@@ -91,23 +91,18 @@ async function fillBase64Handlers() {
     result = await getBase64FromFilePath(filePath);
   }
 
-  if (result != null && result.length > 0) {
+  if (result?.length > 0) {
     conf.pyHandlersPath = filePath;
     conf.PyHandlers = result;
-    // main.saveElement(getSaveParamValueById('py-handlers-file-path', 'path'), "Configuration", "");
   } else {
     conf.pyHandlersPath = ''
   };
 
-  if (typeof conf.PyFiles != 'undefined') {
+  if (conf.PyFiles) {
+    const filesList = conf.PyFiles.map(el => (el.file_path))
+    const filesData = await getBase64FromFilePathsList(filesList)
 
-    for (i = 0; i < conf.PyFiles.length; i++) {
-      row = conf.PyFiles[i]
-      result = await getBase64FromFilePath(row.file_path);
-      if (result != null && result.length > 0) {
-        row.PyFileData = result;
-      }
-    }
+    conf.PyFiles = conf.PyFiles.map((el) => ({...el, ...{PyFileData: filesData[[el.file_path]]}}))
   }
   return getHandlers()
 }
@@ -115,11 +110,11 @@ function getHandlers() {
   let handlers = {};
   const conf = main.conf.ClientConfiguration;
 
-  if (typeof conf.PyHandlers != 'undefined' && conf.PyHandlers.length > 0) {
+  if (conf.PyHandlers?.length > 0) {
     handlers['current_handlers'] = conf.PyHandlers;
   };
 
-  if (typeof conf.PyFiles != 'undefined') {
+  if (conf.PyFiles) {
     $.each(conf.PyFiles, async function (index, row) {
       if (row.PyFileData.length > 0) {
         handlers[row.PyFileKey] = row.PyFileData;

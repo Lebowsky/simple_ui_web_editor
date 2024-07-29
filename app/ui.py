@@ -1,4 +1,5 @@
 import os
+from typing import List
 
 import eel
 
@@ -85,6 +86,15 @@ def get_config_ui_elements():
 def get_base64_from_file(file_path):
     if file_path:
         return utils.make_base64_from_file_path(file_path)
+
+
+@eel.expose
+def get_base64_from_files_list(files_list: List[str]):
+    result = {}
+    for file_path in files_list:
+        result[file_path] = utils.make_base64_from_file_path(file_path)
+    return result
+
 
 
 @eel.expose

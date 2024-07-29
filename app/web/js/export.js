@@ -76,6 +76,10 @@ async function getBase64FromFilePath(filePath) {
   return await eel.get_base64_from_file(filePath)()
 }
 
+async function getBase64FromFilePathsList(filesList) {
+  return await eel.get_base64_from_files_list(filesList)()
+}
+
 async function sendSqlQueryToDevice(query_params) {
   return await eel.send_sql_query(query_params)()
 }
