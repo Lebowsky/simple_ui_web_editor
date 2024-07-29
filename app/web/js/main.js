@@ -83,8 +83,10 @@ var Main = {
     });
   },
   fillConfigSettings() {
-    const settings = main.conf.ClientConfiguration.ConfigurationSettings,
-      { vendor_auth: vendorAuth = '', handler_auth: handlerAuth = '' } = settings;
+    const settings = main.conf.ClientConfiguration?.ConfigurationSettings
+    if (!settings) return
+
+    const { vendor_auth: vendorAuth = '', handler_auth: handlerAuth = '' } = settings;
 
     let vendorLogin = '',
       vendorPassword = '',

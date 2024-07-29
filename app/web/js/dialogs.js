@@ -1,4 +1,7 @@
 function notificate(text, type) {
+  /*
+  type: [danger, info, success]
+  */
   $.toast(text, { sticky: false, type: type });
   console.log(text)
 };
@@ -9,6 +12,7 @@ async function pickNewFileProject() {
     conf = await getNewConfiguration()
     initReadedConf(conf, result.file_path)
     localStorage.setItem('file-path', result.file_path);
+    saveConfiguration()
     return result.file_path;
   }
 }

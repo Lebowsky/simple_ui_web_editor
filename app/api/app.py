@@ -17,7 +17,13 @@ from fastapi_socketio import SocketManager
 from ..config import resource_path, app_server_port, app_server_host
 from ..utils import make_ui_config, save_config_to_file
 from ..preview.preview import listen_for_updates
-from ..ui import get_current_file_path, set_device_host, get_configuration, get_config_project_path
+from ..ui import (
+    get_current_file_path,
+    set_device_host,
+    get_configuration,
+    get_config_project_path,
+    send_notify
+)
 
 
 app = FastAPI()
@@ -97,6 +103,7 @@ async def get_config(request: Request):
     configuration = await get_configuration()
     config_path = await get_config_project_path()
     await set_device_host(request.client.host)
+    await send_notify(f'{request.client.host} - "{request.method} {request.url}"')
     return make_ui_config(configuration, config_path)
 
 @app.post('/set_conf')

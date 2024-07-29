@@ -824,8 +824,8 @@ class PickFileModal extends ModalWindow {
     try{
       const conf = await loadConfiguration(uiPath);
       initReadedConf(conf, uiPath, confPath);
-
       localStorage.setItem('file-path', uiPath);
+      
       if (confPath){
         localStorage.configProjectPath = confPath;
         localStorage.currentUploadHandlersMode = 'src'
@@ -837,7 +837,7 @@ class PickFileModal extends ModalWindow {
       modal = ModalWindow.getCurrentModal();
       modal.close();
     } catch (error){
-      notificate (error)
+      notificate (error, 'danger')
     }
   }
 }

@@ -1,5 +1,5 @@
 import os
-from typing import List
+from typing import List, Literal
 
 import eel
 
@@ -92,7 +92,8 @@ def get_base64_from_file(file_path):
 def get_base64_from_files_list(files_list: List[str]):
     result = {}
     for file_path in files_list:
-        result[file_path] = utils.make_base64_from_file_path(file_path)
+        if file_path:
+            result[file_path] = utils.make_base64_from_file_path(file_path)
     return result
 
 
@@ -147,6 +148,9 @@ async def get_current_file_path():
 
 async def get_config_project_path():
     return eel.getConfigProjectPath()() # noqa
+
+async def send_notify(text: str, _type: Literal['danger', 'info', 'success'] = 'info'):
+    eel.sendNotify(text, _type) # noqa
 
 async def set_device_host(device_host):
     return eel.setDeviceHost(device_host) # noqa

@@ -1,4 +1,4 @@
-$(document).ready(function(){
+$(document).ready(function () {
 	sortableInit(selectors.list);
 	main.settings.modalWidth = 820;
 
@@ -11,30 +11,30 @@ $(document).ready(function(){
 	} else {
 		readFile(filePath);
 	}
-	async function newFile () {
+	async function newFile() {
 		conf = await getNewConfiguration()
 		initReadedConf(conf)
 	}
-	async function readFile (filePath) {
+	async function readFile(filePath) {
 		conf = await loadConfiguration(filePath);
 		initReadedConf(conf, filePath);
 	}
 	$('#prev').resizable({
 		minWidth: 250,
 		handles: "e,w",
-		start: function(event, ui) {
-			$('iframe').css('pointer-events','none');
+		start: function (event, ui) {
+			$('iframe').css('pointer-events', 'none');
 		},
-		stop: function(event, ui) {
-			$('iframe').css('pointer-events','auto');
+		stop: function (event, ui) {
+			$('iframe').css('pointer-events', 'auto');
 		}
 	});
-	$(document).on('keyup', "#search", function(e){
+	$(document).on('keyup', "#search", function (e) {
 		const q = $(this).val();
 		let elements = [];
 		let listItems = [];
 		const node = $("#search-result-wrap");
-		
+
 		if (q != "") {
 			elements = main.configGraph.elements.filter(element =>
 				String(element.elementValues.Value).toLowerCase().includes(q.toLowerCase()) ||
@@ -52,11 +52,11 @@ $(document).ready(function(){
 				let path = main.configGraph.getElementPath(item.id);
 				name = name || item.elementValues['type'];
 
-	            if (value)
-	                value = item.elementValues[[value]]
+				if (value)
+					value = item.elementValues[[value]]
 
-	            if (item.elementValues.type == "CVOperation")
-	            	itemClasses = "cv";
+				if (item.elementValues.type == "CVOperation")
+					itemClasses = "cv";
 
 				listItems.push({
 					name: name,
@@ -75,30 +75,34 @@ $(document).ready(function(){
 		$(node).siblings('.element-childs-wrap').html('');
 		$(node).html(listElement.html);
 	})
-	$(document).on('click', selectors.btnEdit, function(){
+	$(document).on('click', selectors.btnEdit, function () {
 		const elementId = $(this).parents(selectors.listItem).attr('data-id');
 		editElement(elementId);
 	})
-	$(document).on('dblclick', selectors.itemNav, function(e){
+	$(document).on('dblclick', selectors.itemNav, function (e) {
 		if (e.target === this) {
 			const elementId = $(this).parent(selectors.listItem).attr('data-id');
+
+			const element = main.configGraph.getElementById(elementId);
+			if (element?.parentType === 'Processes') return
+
 			editElement(elementId);
 		}
 	})
-	$(document).on('dblclick', selectors.listItem, function(e){
+	$(document).on('dblclick', selectors.listItem, function (e) {
 		if (e.target === this) {
 			const elementId = $(this).attr('data-id');
 			editElement(elementId);
 		}
 	})
-	$(document).on('click', '.path .element-path:not(:last-child)', function(e){
+	$(document).on('click', '.path .element-path:not(:last-child)', function (e) {
 		const elementId = $(this).attr('data-id');
 		editElement(elementId);
 	})
-	$(document).on('change', "#ip-address", function(){
+	$(document).on('change', "#ip-address", function () {
 		main.settings.deviceHost = $(this).val();
 	})
-	$(document).on('click', selectors.btnDelete, function(){
+	$(document).on('click', selectors.btnDelete, function () {
 		if (confirm('Вы уверены?')) {
 			const elementId = $(this).parents(selectors.listItem).attr('data-id');
 			const element = main.configGraph.getElementById(elementId);
@@ -110,129 +114,129 @@ $(document).ready(function(){
 			main.configGraph.fillListElements(type, node, parentId);
 
 			if (element.parentType == "Operations" || element.parentType == "CVFrames") {
-				const operationListNode = $(selectors.processList).find("#operations[data-id='"+parentId+"']")
+				const operationListNode = $(selectors.processList).find("#operations[data-id='" + parentId + "']")
 				main.configGraph.fillListElements(element.parentType, operationListNode, parentId);
 			}
 		}
 	})
-	$(document).on('click', selectors.btnCopy, function(e){
+	$(document).on('click', selectors.btnCopy, function (e) {
 		const elementId = $(this).parents(selectors.listItem).attr('data-id');
 		elementConf = main.configGraph.getConfigElement(elementId);
 		copyTextToClipboard(JSON.stringify(elementConf));
 	})
-	$(document).on('click', selectors.btnJson, function(e){
+	$(document).on('click', selectors.btnJson, function (e) {
 		const elementId = $(this).parents(selectors.listItem).attr('data-id');
 		elementConf = main.configGraph.getConfigElement(elementId);
-		
+
 		modal = new JsonModal(elementConf);
 		modal.render();
 		modal.show();
 	})
-	$(document).on('dblclick', ".sql-table tr", function(e){
+	$(document).on('dblclick', ".sql-table tr", function (e) {
 		modal = ModalWindow.getCurrentModal();
 		table = modal.modal.find('.sql-table').DataTable();
 		rowData = table.row(this).data();
-	    data = {};
+		data = {};
 
-	    table.columns().every(function (index) {
-	        var columnName = table.column(Number(index)).header().textContent;
-	        data[columnName] = rowData[index];
-	    });
+		table.columns().every(function (index) {
+			var columnName = table.column(Number(index)).header().textContent;
+			data[columnName] = rowData[index];
+		});
 
 		modal = new JsonModal(data);
 		modal.render();
 		modal.show();
-	} );
-	$(document).on('click', ".show-sql-table-json", function(e){
+	});
+	$(document).on('click', ".show-sql-table-json", function (e) {
 		modal = ModalWindow.getCurrentModal();
 		table = modal.modal.find('.sql-table').DataTable();
 		data = table.rows().data();
 		jsonData = [];
 
 		data.each(function (valueArray) {
-		    var rowData = {};
+			var rowData = {};
 
-		    table.columns().every(function (index) {
-		        var columnName = table.column(Number(index)).header().textContent;
-		        rowData[columnName] = valueArray[index];
-		    });
+			table.columns().every(function (index) {
+				var columnName = table.column(Number(index)).header().textContent;
+				rowData[columnName] = valueArray[index];
+			});
 
-		    jsonData.push(rowData);
+			jsonData.push(rowData);
 		});
 
 		modal = new JsonModal(jsonData);
 		modal.render();
 		modal.show();
 	})
-	$(document).on('click', selectors.btnPaste, function(e){
+	$(document).on('click', selectors.btnPaste, function (e) {
 		const parentId = $(this).parents('.list').attr('data-id');
 		const childrensType = $(this).attr('data-childrens-type');
 
-        navigator.clipboard.readText().then(function(text) {
-		    try {
-		    	text = text.replace(/:[ ]*False/g,':false').replace(/:[ ]*True/g,':true');
-        		elementConf = JSON.parse(text);
-		    } catch (error) {
-        		notificate('Элемент не найден в буфере');
-		    }
+		navigator.clipboard.readText().then(function (text) {
+			try {
+				text = text.replace(/:[ ]*False/g, ':false').replace(/:[ ]*True/g, ':true');
+				elementConf = JSON.parse(text);
+			} catch (error) {
+				notificate('Элемент не найден в буфере');
+			}
 
-		    if (elementConf.type == "Process")
-		    	parentType = "Processes";
-		    else if (elementConf.type == "Operation")
-		    	parentType = "Operations";
-		    else if (elementConf.type == "CVFrame")
-		    	parentType = "CVFrames";
-		    else
-		    	parentType = "Elements";
+			if (elementConf.type == "Process")
+				parentType = "Processes";
+			else if (elementConf.type == "Operation")
+				parentType = "Operations";
+			else if (elementConf.type == "CVFrame")
+				parentType = "CVFrames";
+			else
+				parentType = "Elements";
 
-    		if (childrensType.toLowerCase() == parentType.toLowerCase()) {
-    			elementId = main.configGraph.addElementFromDict(elementConf, parentId, parentType);
+			if (childrensType.toLowerCase() == parentType.toLowerCase()) {
+				elementId = main.configGraph.addElementFromDict(elementConf, parentId, parentType);
 
 				const element = main.configGraph.getElementById(elementId);
 				const type = element.parentType;
 
 				if (element.parentType == "Operations" || element.parentType == "CVFrames") {
-					node = $(selectors.processList).find("#operations[data-id='"+parentId+"']")
+					node = $(selectors.processList).find("#operations[data-id='" + parentId + "']")
 				} else {
 					node = element.parentConfig['node'];
 				}
 
 				main.configGraph.fillListElements(type, node, parentId);
-    		} else {
-        		notificate('Неверный тип элемента');
-    		}
+			} else {
+				notificate('Неверный тип элемента');
+			}
 
-        }, function(err) {
-            console.error('Async: Could not copy text: ', err);
-        });
+		}, function (err) {
+			console.error('Async: Could not copy text: ', err);
+		});
 	})
-	$(document).on('click', selectors.btnDuplicate, function(e){
+	$(document).on('click', selectors.btnDuplicate, function (e) {
 		const parentId = $(this).parents('.list').attr('data-id');
 		const elementId = $(this).parents(selectors.listItem).attr('data-id');
 		const elementConf = main.configGraph.getConfigElement(elementId);
 
 		if (elementConf.type == "Process")
-	    	parentType = "Processes";
-	    else if (elementConf.type == "Operation")
-	    	parentType = "Operations";
-	    else if (elementConf.type == "CVFrame")
-	    	parentType = "CVFrames";
-	    else
-	    	parentType = "Elements";
+			parentType = "Processes";
+		else if (elementConf.type == "Operation")
+			parentType = "Operations";
+		else if (elementConf.type == "CVFrame")
+			parentType = "CVFrames";
+		else
+			parentType = "Elements";
 
-    	const newElementId = main.configGraph.addElementFromDict(elementConf, parentId, parentType);
+		const newElementId = main.configGraph.addElementFromDict(elementConf, parentId, parentType);
 		const element = main.configGraph.getElementById(newElementId);
 		const type = element.parentType;
 
 		if (element.parentType == "Operations" || element.parentType == "CVFrames") {
-			node = $(selectors.processList).find("#operations[data-id='"+parentId+"']")
+			node = $(selectors.processList).find("#operations[data-id='" + parentId + "']")
 		} else {
 			node = element.parentConfig['node'];
 		}
 
 		main.configGraph.fillListElements(type, node, parentId);
 	})
-	$(document).on('click', selectors.btnAdd, function(e){
+	$(document).on('click', selectors.btnAdd, function (e) {
 		const listId = $($(this).parents('.list')[0]).attr('id');
 		const parentId = $($(this).parents('.list')[0]).attr('data-id');
 
@@ -245,22 +249,22 @@ $(document).ready(function(){
 			listConfig = listElements['CVFrames'];
 		} else {
 			listConfig = Object.values(listElements).find(
-				(el) => el.node=="#" + listId || el.node=='.modal.active #' + listId);
+				(el) => el.node == "#" + listId || el.node == '.modal.active #' + listId);
 		}
 
-		if (!listConfig){
+		if (!listConfig) {
 			return
-		}else if (listConfig['parentType'] == 'Elements'){
+		} else if (listConfig['parentType'] == 'Elements') {
 			const types = main.configGraph.getElementChildrensTypes(parentId);
 			modal = new SelectTypeModal(types, parentId);
 			modal.render().show();
-		}else{
+		} else {
 			element = main.configGraph.newElement(parentId, listConfig);
 			modal = new ElementModal(element);
 			modal.render().addClass('edited').addClass('new-element').show();
 		}
 	})
-	$(document).on('click', selectors.btnSave, function(){
+	$(document).on('click', selectors.btnSave, function () {
 		modal = ModalWindow.getCurrentModal();
 		main.configGraph.setConfigValues(modal.element.id, modal.getValues());
 		modal.removeClass('edited');
@@ -270,24 +274,24 @@ $(document).ready(function(){
 		element = main.configGraph.getElementById(elementId);
 
 		if (element.parentType == "Operations" || element.parentType == "CVFrames") {
-			node = $(selectors.processList).find("#operations[data-id='"+element.parentId+"']")
+			node = $(selectors.processList).find("#operations[data-id='" + element.parentId + "']")
 		} else {
 			node = element.parentConfig['node']
 		}
-		
+
 		main.configGraph.fillListElements(element.parentType, node, element.parentId, elementId)
 	})
-	$(document).on('click', ".tab#save-project", function(){
+	$(document).on('click', ".tab#save-project", function () {
 		modal = ModalWindow.getCurrentModal();
 		main.configGraph.setConfigValues(modal.element.id, modal.getValues());
 
 		main.events("fileLocationSave")();
 	})
-	$(document).on('click', '.btn-type-select', function(){
+	$(document).on('click', '.btn-type-select', function () {
 		const checked = $(this).parents('.params').find('input[name=type]:checked');
 		let selectedType, modal;
 
-		if (checked.length){
+		if (checked.length) {
 			selectedType = checked.val();
 			modal = ModalWindow.getCurrentModal();
 			modal.close();
@@ -298,11 +302,11 @@ $(document).ready(function(){
 				Object.entries(
 					main.elementParams[[selectedType]])
 					.filter(([k, v]) => v.type)
-					.map(([k, v]) => [k, v.default_value==undefined ? '': v.default_value])
-				)
+					.map(([k, v]) => [k, v.default_value == undefined ? '' : v.default_value])
+			)
 
 			elementValues['type'] = selectedType;
-			
+
 			let parentConfig = {
 				node: '.modal.active #elements',
 				parentType: 'Elements',
@@ -313,11 +317,11 @@ $(document).ready(function(){
 			element = main.configGraph.newElement(modal.element.id, parentConfig, elementValues);
 			modal = new ElementModal(element);
 			modal.render().addClass('edited').addClass('new-element').show();
-		}else{
+		} else {
 			alert('Не выбран тип элемента.')
 		}
 	})
-	$(document).on('click', selectors.btnCloseModal, function(){
+	$(document).on('click', selectors.btnCloseModal, function () {
 		modal = ModalWindow.getCurrentModal();
 		modal.close();
 
@@ -325,11 +329,11 @@ $(document).ready(function(){
 			element = main.configGraph.getElementById(modal.element.id);
 			if (!element) return
 
-			fillNode = element.parentConfig['node']+"[data-id="+modal.element.id+"]";
+			fillNode = element.parentConfig['node'] + "[data-id=" + modal.element.id + "]";
 			main.configGraph.fillListElements(element.parentType, fillNode, element.parentId, modal.element.id)
 		}
 	});
-	$(document).on('click', selectors.listItem, function(e){
+	$(document).on('click', selectors.listItem, function (e) {
 		e.stopPropagation();
 
 		if ($(this).attr("data-type") != "process") {
@@ -341,7 +345,7 @@ $(document).ready(function(){
 		if ($(e.target).is(".list .item-name")) {
 			const elementId = $(this).attr("data-id");
 			const element = main.configGraph.getElementById(elementId);
-			const type = element.parentType; 
+			const type = element.parentType;
 
 			if (element.type != "Process") {
 				elementConf = main.configGraph.getConfigElement(elementId);
@@ -349,11 +353,11 @@ $(document).ready(function(){
 			}
 
 			if (type == "Elements") {
-					main.configGraph.fillListElements(type, ".modal.active .list-param.active .element-childs-wrap", elementId, false, false);
+				main.configGraph.fillListElements(type, ".modal.active .list-param.active .element-childs-wrap", elementId, false, false);
 			}
 		}
 	})
-	$(document).on('click', '#processes > .list-item > .item-nav', function(e){
+	$(document).on('click', '#processes > .list-item > .item-nav', function (e) {
 		const processNode = $(this).parent(".list-item");
 
 		if ($(e.target).is(this) || $(e.target).is($(this).children("span"))) {
@@ -368,10 +372,10 @@ $(document).ready(function(){
 			childsNode.stop().slideToggle();
 		}
 	})
-	$(document).on('click', '.main-conf-wrap .section-header', function(e){
+	$(document).on('click', '.main-conf-wrap .section-header', function (e) {
 		hideMain();
 	})
-	$(document).on('click', '.querys > li', function(e){
+	$(document).on('click', '.querys > li', function (e) {
 		if (e.target === this) {
 			$("#sql-query").val($(this).text());
 			$("#query-params").val($(this).attr("data-params"));
@@ -388,39 +392,39 @@ $(document).ready(function(){
 			}
 		}
 	})
-	$(document).on('change', 'select.element-type', function(){
+	$(document).on('change', 'select.element-type', function () {
 
 	})
-	$(document).on('change', '.modal.active :input', function(){
+	$(document).on('change', '.modal.active :input', function () {
 
 	})
-	$(document).on('change', '.form :input', function(){
+	$(document).on('change', '.form :input', function () {
 		const paramName = $(this).attr("data-param-name");
-		
-		if (paramName){
+
+		if (paramName) {
 			$(this).attr('data-id', 1);
-			const value = $(this).prop('type') == 'checkbox'? $(this).prop('checked'): $(this).val()
-			main.configGraph.setConfigValues(1, {[paramName]: value});
+			const value = $(this).prop('type') == 'checkbox' ? $(this).prop('checked') : $(this).val()
+			main.configGraph.setConfigValues(1, { [paramName]: value });
 		}
 	})
 	$(document).on('change', '.textarea-param', function () {
 		const paramName = $(this).attr("data-param-name");
 
-		if (paramName){
+		if (paramName) {
 			const value = $(this).val()
 			console.log(value);
-			main.configGraph.setConfigValues(1, {[paramName]: value});
+			main.configGraph.setConfigValues(1, { [paramName]: value });
 		}
 	})
-	$(window).keydown(function(e) {
+	$(window).keydown(function (e) {
 		key = e.keyCode;
 
 		if (e.ctrlKey)
-			key = "ctrl+"+key;
+			key = "ctrl+" + key;
 		if (e.shiftKey)
-			key = "shift+"+key;
+			key = "shift+" + key;
 		if (e.altKey)
-			key = "alt+"+key;
+			key = "alt+" + key;
 
 		// console.log(e.keyCode);
 		// console.log(key);
@@ -431,7 +435,7 @@ $(document).ready(function(){
 			return false;
 		};
 	});
-	$(document).on('change', '#vendor-login, #vendor-password', function(){
+	$(document).on('change', '#vendor-login, #vendor-password', function () {
 		let login = $('#vendor-login').val()
 		let password = $('#vendor-password').val()
 		let authString = 'Basic ' + btoa(encodeURIComponent(login + ':' + password));
@@ -444,7 +448,7 @@ $(document).ready(function(){
 
 		main.saveElement(params, "ConfigurationSettings", '');
 	});
-	$(document).on('change', '#handlers-login, #handlers-password', function(){
+	$(document).on('change', '#handlers-login, #handlers-password', function () {
 		let login = $('#handlers-login').val();
 		let password = $('#handlers-password').val();
 		let authString = 'Basic ' + btoa(encodeURIComponent(login + ':' + password));
@@ -457,40 +461,40 @@ $(document).ready(function(){
 
 		main.saveElement(params, "ConfigurationSettings", '');
 	});
-    window.onbeforeunload = function (e) {
-        return e
-    };
-	$(document).on('click', '.toggle-mnu', function(e){
+	window.onbeforeunload = function (e) {
+		return e
+	};
+	$(document).on('click', '.toggle-mnu', function (e) {
 		toggleMainMenu();
-	    e.stopPropagation();
+		e.stopPropagation();
 	})
-	$(document).on('click', '.btn-group.main button', function(){
+	$(document).on('click', '.btn-group.main button', function () {
 		toggleMainMenu();
 	})
-	$(document).on('click', function(e){
+	$(document).on('click', function (e) {
 		if ($(".btn-group.main").hasClass('active') && !$(e.target).hasClass('toggle-mnu')) {
 			toggleMainMenu();
 		}
 	})
-	$(document).on('click', '.btn-group.main', function(e) {
-	    e.stopPropagation();
+	$(document).on('click', '.btn-group.main', function (e) {
+		e.stopPropagation();
 	});
 });
 
-function toggleMainMenu () {
+function toggleMainMenu() {
 	$('.toggle-mnu').toggleClass("on");
 	$('.btn-group.main').toggleClass("active");
 }
 function copyTextToClipboard(text) {
-    if (!navigator.clipboard) {
-        return;
-    }
-    navigator.clipboard.writeText(text).then(function() {
-        console.log('Async: Copying to clipboard was successful!');
-    	notificate('Скопировано в буфер', 'success') 
-    }, function(err) {
-        console.error('Async: Could not copy text: ', err);
-    });
+	if (!navigator.clipboard) {
+		return;
+	}
+	navigator.clipboard.writeText(text).then(function () {
+		console.log('Async: Copying to clipboard was successful!');
+		notificate('Скопировано в буфер', 'success')
+	}, function (err) {
+		console.error('Async: Could not copy text: ', err);
+	});
 }
 function editElement(elementId) {
 	const element = main.configGraph.getElementById(elementId);
@@ -506,61 +510,59 @@ function togglePrev() {
 	$(".prev-wrap").toggleClass("show");
 }
 function selectTab(tabNode) {
-    $(".tabs .tab").removeClass("active");
-    $(tabNode).addClass("active");
+	$(".tabs .tab").removeClass("active");
+	$(tabNode).addClass("active");
 
-    var tabID = $(tabNode).attr("data-tab-id");
+	var tabID = $(tabNode).attr("data-tab-id");
 
-    $(".main-conf-wrap section").removeClass("active");
-    $(".main-conf-wrap #" + tabID).addClass("active");
+	$(".main-conf-wrap section").removeClass("active");
+	$(".main-conf-wrap #" + tabID).addClass("active");
 
-    if ($(tabNode).data('tab-id') === 'main-conf-process') {
-
-        sendDataToUpdatePreview(); 
-		
-        $("#main-conf-screen").addClass('active');
-        $("#main-conf-cvframes").addClass('active');
-    } else {
-        $("#main-conf-screen").removeClass('active');
-        $("#main-conf-cvframes").removeClass('active');
-    }
+	if ($(tabNode).data('tab-id') === 'main-conf-process') {
+		sendDataToUpdatePreview();
+		$("#main-conf-screen").addClass('active');
+		$("#main-conf-cvframes").addClass('active');
+	} else {
+		$("#main-conf-screen").removeClass('active');
+		$("#main-conf-cvframes").removeClass('active');
+	}
 }
 async function sendDataToUpdatePreview(dataToSend) {
-	let data; 
-    if (dataToSend) {
+	let data;
+	if (dataToSend) {
 		data = {
 			"action": "screen_items",
 			"data": dataToSend
 		};
-    } else {
+	} else {
 		//берем заголовки только у не скрытых процессов
-        const processesList = main.configGraph.elements
+		const processesList = main.configGraph.elements
 			.filter((el) => el.parentType == 'Processes' && el.elementValues['hidden'] == false)
 			.map((item) => item.title);
-			
-        data = {
-            "action": "processes_list",
-            "data": processesList
-        };
-    }
-    try {
-        const response = await fetch('http://localhost:5000/ws_editor', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(data),
-        });
 
-        if (!response.ok) {
-            throw new Error(`Ошибка: ${response.statusText}`);
-        }
+		data = {
+			"action": "processes_list",
+			"data": processesList
+		};
+	}
+	try {
+		const response = await fetch('http://localhost:5000/ws_editor', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify(data),
+		});
 
-        const responseData = await response.json();
-        console.log("Ответ сервера:", responseData);
-    } catch (error) {
-        console.error("Ошибка при обмене данными с сервером:", error);
-    }
+		if (!response.ok) {
+			throw new Error(`Ошибка: ${response.statusText}`);
+		}
+
+		const responseData = await response.json();
+		console.log("Ответ сервера:", responseData);
+	} catch (error) {
+		console.error("Ошибка при обмене данными с сервером:", error);
+	}
 }
 function selectModalTab(tabNode) {
 	// $(".tabs .tab").removeClass("active");
@@ -573,8 +575,8 @@ function selectModalTab(tabNode) {
 	modal.find(".params").find(".param").removeClass("active");
 	const $currentTab = modal.find(".params").find(".param[data-tab=" + tabID + "]")
 	$currentTab.addClass("active");
-	
-	if (['elements', 'handlers'].includes(tabID)){
+
+	if (['elements', 'handlers'].includes(tabID)) {
 		const label = $currentTab.find('label');
 		showList(label, 'down');
 	}
@@ -588,14 +590,14 @@ function hideMain() {
 
 	$(".main-conf-wrap").toggleClass("hide");
 }
-function renderEditor(node, data = ''){
-    const editor = new JSONEditor(node, {
-        mode: 'code'
-    });
+function renderEditor(node, data = '') {
+	const editor = new JSONEditor(node, {
+		mode: 'code'
+	});
 
-    editor.set(data);
+	editor.set(data);
 
-    return editor;
+	return editor;
 }
 function showList(node, direction = "toggle") {
 	if (direction == "up") {
@@ -615,14 +617,14 @@ function showList(node, direction = "toggle") {
 	}
 }
 function sortableInit(node) {
-    $(node).sortable({
-    	items: "> li",
-    	containment: "parent",
-    	cursor: "grabbing",
-    	handle: ".move",
-		update: function(event, ui) {
+	$(node).sortable({
+		items: "> li",
+		containment: "parent",
+		cursor: "grabbing",
+		handle: ".move",
+		update: function (event, ui) {
 			let element1Id = ui.item.attr("data-id");
-			
+
 			if (ui.originalPosition.top < ui.position.top)
 				element2Id = ui.item.prev().attr("data-id");
 			else
@@ -632,12 +634,12 @@ function sortableInit(node) {
 		}
 	});
 }
-async function sendSQLQuery(node){
+async function sendSQLQuery(node) {
 	let query = $('#sql-query').val();
 	let params = $('#query-params').val();
 	let nodeText = $(node).text();
 
-	if (!main.settings.deviceHost){
+	if (!main.settings.deviceHost) {
 		notificate('Device connection error');
 		return
 	}
@@ -648,28 +650,28 @@ async function sendSQLQuery(node){
 		query: query,
 		params: params
 	};
-	
-  $(node).html(`<i class="fa-solid fa-spinner preloader" aria-hidden="true"></i>`)
+
+	$(node).html(`<i class="fa-solid fa-spinner preloader" aria-hidden="true"></i>`)
 
 	const result = await sendSqlQueryToDevice(query_params);
-	
+
 	$(node).html(nodeText)
 
-	if (result){
-		if (result.error){
+	if (result) {
+		if (result.error) {
 			notificate(result.content);
 		} else {
 			if (!main.settings.sqlQuerys.find((el) => el.query == query && el.params == params))
-				main.settings.sqlQuerys.push({query:query, params:params});
+				main.settings.sqlQuerys.push({ query: query, params: params });
 
-      $(".querys-wrap").html(SQLQueryModal.renderSqlQueryHistory(main.settings.sqlQuerys));
+			$(".querys-wrap").html(SQLQueryModal.renderSqlQueryHistory(main.settings.sqlQuerys));
 
 			modal = ModalWindow.getCurrentModal();
 			modal.renderSqlQueryResult(result.data);
 		}
 	}
 }
-async function sendRequest(node){
+async function sendRequest(node) {
 	let mode = $('#req-mode').val();
 	let params = $('#req-params').val();
 	let body = ''
@@ -679,10 +681,10 @@ async function sendRequest(node){
 	catch {
 		console.debug(main.settings.reqBodyEditor)
 	}
-	
+
 	let nodeText = $(node).text();
 
-	if (!main.settings.deviceHost){
+	if (!main.settings.deviceHost) {
 		notificate('Device connection error');
 		return
 	}
@@ -701,15 +703,15 @@ async function sendRequest(node){
 		method: params,
 		body: body
 	};
-	
+
 	$(node).html(`<img style="width: 70px;height: 13px;transform: scale(2.5);" src="/js/pre.svg">`)
 
 	const result = await sendRequestToDevice(req_params);
-	
+
 	$(node).html(nodeText)
 
-	if (result){
-		if (result.error){
+	if (result) {
+		if (result.error) {
 			notificate(result.content);
 		} else {
 			modal = ModalWindow.getCurrentModal();
@@ -718,7 +720,7 @@ async function sendRequest(node){
 		}
 	}
 }
-async function auth(node){
+async function auth(node) {
 	let login = $('#login').val();
 	let pass = $('#password').val();
 
@@ -729,18 +731,18 @@ async function auth(node){
 
 	const result = await authFunc(data);
 
-	if (result){
-		if (result.error){
+	if (result) {
+		if (result.error) {
 			notificate(result.content);
 		} else {
 			/**/
 		}
 	}
 }
-function saveAllPyFiles(){
+function saveAllPyFiles() {
 	saveAllPyFilesToDisk();
 }
-function pickFileApply(){
-  modal = ModalWindow.getCurrentModal();
-  modal.close();
+function pickFileApply() {
+	modal = ModalWindow.getCurrentModal();
+	modal.close();
 }

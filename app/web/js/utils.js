@@ -100,20 +100,30 @@ async function fillBase64Handlers() {
   };
 
   if (conf.PyFiles) {
-    const filesList = conf.PyFiles.map(el => (el.file_path))
+    const filesList = conf.PyFiles.filter(el => el.file_path).map(el => (el.file_path))
     const filesData = await getBase64FromFilePathsList(filesList)
 
-    conf.PyFiles = conf.PyFiles.map((el) => ({...el, ...{PyFileData: filesData[[el.file_path]]}}))
+    conf.PyFiles = conf.PyFiles.map(
+      el => ({
+        ...el, 
+        ...{PyFileData: filesData[[el.file_path]] || el.PyFileData}
+      })
+    )
   }
 }
 
 async function fillBase64Mediafiles() {
   const conf = main.conf.ClientConfiguration;
   if (conf.Mediafile) {
-    const filesList = conf.Mediafile.map(el => (el.file_path))
+    const filesList = conf.Mediafile.filter(el => el.file_path).map(el => (el.file_path))
     const filesData = await getBase64FromFilePathsList(filesList)
 
-    conf.Mediafile = conf.Mediafile.map((el) => ({...el, ...{MediafileData: filesData[[el.file_path]]}}))
+    conf.Mediafile = conf.Mediafile.map(
+      el => ({
+        ...el, 
+        ...{MediafileData: filesData[[el.file_path]] || el.MediafileData}
+      })
+    )
   }
 }
 

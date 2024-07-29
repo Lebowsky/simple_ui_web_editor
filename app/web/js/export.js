@@ -21,6 +21,11 @@ function getConfigProjectPath() {
   return localStorage.currentUploadHandlersMode === 'src' ? localStorage.configProjectPath : ''
 }
 
+eel.expose(sendNotify)
+function sendNotify(text, type) {
+  notificate(text, type)
+}
+
 const getQRByteArrayAsBase64 = async () => {
   result = await eel.get_qr_settings()();
   return result
