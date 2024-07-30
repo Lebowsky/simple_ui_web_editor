@@ -104,7 +104,10 @@ async def get_config(request: Request):
     config_path = await get_config_project_path()
     await set_device_host(request.client.host)
     await send_notify(f'{request.client.host} - "{request.method} {request.url}"')
-    return make_ui_config(configuration, config_path)
+    try:
+        return make_ui_config(configuration, config_path)
+    except Exception as e:
+        await send_notify(f'Make ui config failed with error: {e}', 'danger')
 
 @app.post('/set_conf')
 async def save_config(request: Request):
