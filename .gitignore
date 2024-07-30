@@ -4,3 +4,5 @@ venv
 *.vscode
 __pycache__
 _ui_files
+node_modules
+build

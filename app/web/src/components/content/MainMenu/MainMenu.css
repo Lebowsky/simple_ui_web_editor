@@ -1,0 +1,89 @@
+.content-wrapper {
+  display: flex;
+  justify-content: center;
+}
+
+.content {
+  transition: filter .3s;
+  width: 49%;
+  margin-right: 1%;
+  padding: 0 0 0 130px;
+}
+
+.content.blur {
+  filter: blur(5px);
+}
+
+.main-conf-wrap .param {
+  border: none;
+}
+
+.main-conf-wrap {
+  position: relative;
+  box-shadow: 2px 2px 2px rgba(0, 0, 0, .5);
+}
+
+.main-conf-wrap section .list-wrap {
+  overflow-y: auto;
+  min-height: 450px;
+  padding: 0 20px;
+}
+
+.main-conf-wrap section {
+  display: none;
+  padding: 0;
+}
+
+.main-conf-wrap section.active {
+  display: block;
+}
+
+.main-conf-wrap.hide>section .list-wrap {
+  height: 0;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.main-conf-wrap.hide .tabs {
+  display: none;
+}
+
+.tabs {
+  position: absolute;
+  right: 100%;
+  display: flex;
+  flex-direction: column;
+  margin-top: 1px;
+  z-index: 999;
+  top: 0;
+}
+
+.tab.active {
+  border-right-color: #fff;
+  background: linear-gradient(-45deg, #21B9E1, #E71F53, #FBAF2E) !important;
+  color: #fff;
+}
+
+.tab {
+  min-width: 130px;
+  text-align: center;
+  margin-top: -1px;
+  margin-bottom: -1px;
+  margin-right: -1px;
+  cursor: pointer;
+  padding: 11px;
+  transition: margin .1s ease, box-shadow .3s;
+  border-radius: 300px 0 0 300px;
+  margin-bottom: 10px;
+  padding: 10px 20px;
+  font-size: 13.3px;
+  font-weight: 500;
+}
+
+.list-wrap {
+  display: none;
+}
+
+.list-wrap.show {
+  display: block;
+}
