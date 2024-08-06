@@ -32,6 +32,8 @@ class TextView(ContainerElement):
 
 class Button(ContainerElement):
     type: Literal['Button']
+    background_color: str = Field(default=None, alias='BackgroundColor', title='BackgroundColor')
+    radius: str = Field(default=None, alias='Radius', title='Radius')
 
 
 class EditTextText(ContainerElement):
