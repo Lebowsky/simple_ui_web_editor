@@ -162,7 +162,19 @@ async def get_configuration():
 
 
 def start(open_mode):
+    directory = 'src'
+    app = None
+    page = {'port': 3000}
+    eel.init(directory, ['.tsx', '.ts', '.jsx', '.js', '.html'])
+    eel_kwargs = dict(
+        host='localhost',
+        port=8080,
+        size=(1280, 800),
+    )
     try:
+        eel.start(page, mode=app, **eel_kwargs)
+        return
+
         chrome_available = utils.can_use_chrome()
         if open_mode == UIOpenMode.CHROME and chrome_available:
             eel.start('index.html', size=(1080, 780), port=0)
