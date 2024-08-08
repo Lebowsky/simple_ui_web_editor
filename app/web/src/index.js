@@ -1,10 +1,11 @@
 import './main'
 import './init'
 import './style.css'
-import {getQRByteArrayAsBase64} from './export'
+import App from './components/app'
 
-console.log(await getQRByteArrayAsBase64());
- 
+const root = document.getElementById('root')
+root.innerHTML = App()
 
-export const eel = window.eel
-eel.set_host( 'ws://localhost:8080' )
+
+// export const eel = window.eel
+// eel.set_host( 'ws://localhost:8080' )
