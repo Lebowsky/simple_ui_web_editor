@@ -1,5 +1,5 @@
-import { notificate } from "./dialogs"
-import { getBase64FromFilePathsList, saveConf } from "./export"
+import { notificate, pickNewFileProject } from "./dialogs"
+import { askDir, getBase64FromFilePath, getBase64FromFilePathsList, saveConf, savePyHandlers } from "./export"
 
 export function checkAskFileResult(answer) {
   let result = false
@@ -76,11 +76,11 @@ export async function saveAllPyFilesToDisk() {
 
   let handlers = await fillBase64Handlers();
 
-  result_save = await savePyHandlers(handlers, dirToSave)
-  result_check = checkSaveFileResult(result_save)
+  const saveResult = await savePyHandlers(handlers, dirToSave)
+  const checkResult = checkSaveFileResult(saveResult)
 
-  if (!result_check)
-    notificate('Ошибка сохранения файла: ' + result_save.msg, 'danger')
+  if (!checkResult)
+    notificate('Ошибка сохранения файла: ' + saveResult.msg, 'danger')
   else
     notificate('Файл успешно сохранен', 'success')
   document.main.loadPrev();

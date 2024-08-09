@@ -1,7 +1,8 @@
-import { askDir, askSaveFile, exportData, getQrConfigs } from './export'
+import { askDir, askFile, askSaveFile, exportData, getQrConfigs } from './export'
 import { AuthModal, ModalWindow, PickFileModal, QRImageModal, SearchElementsModal, SendReqModal, SQLQueryModal } from './renderElements';
 import { checkAskFileResult, initReadedConf, saveConfiguration } from './utils';
 import { getNewConfiguration } from './export';
+import { constants } from './conf';
 
 export function notificate(text, type) {
   /*
@@ -67,12 +68,12 @@ export const exportConfigData = async () => {
     notificate(`Export failed: ${resultExport?.error ? resultExport?.error : 'unknown error'}`, 'danger')
 }
 
-async function pickHandlersFile() {
+export async function pickHandlersFile() {
   if (!document.main.conf)
     return
 
   let filePathText = constants.pyHandlersEmptyPath;
-  resultAsk = await askFile('python');
+  const resultAsk = await askFile('python');
 
   if (checkAskFileResult(resultAsk)) {
     filePathText = resultAsk.file_path;

@@ -11,13 +11,13 @@ export function sortableInit(node) {
     handle: ".move",
     update: function (event, ui) {
       let element1Id = ui.item.attr("data-id");
-
+      let element2Id
       if (ui.originalPosition.top < ui.position.top)
         element2Id = ui.item.prev().attr("data-id");
       else
         element2Id = ui.item.next().attr("data-id");
 
-      main.configGraph.moveElement(element1Id, element2Id);
+      document.main.configGraph.moveElement(element1Id, element2Id);
     }
   });
 }
@@ -70,7 +70,9 @@ export function selectModalTab(tabNode) {
   $(tabNode).addClass("active");
 
   const tabID = $(tabNode).attr("data-tab");
-  const modal = ModalWindow.getCurrentModal().modal;
+  const modal = ModalWindow.getCurrentModal()?.modal;
+
+  if (!modal) return
 
   modal.find(".params").find(".param").removeClass("active");
   const $currentTab = modal.find(".params").find(".param[data-tab=" + tabID + "]")
@@ -97,4 +99,14 @@ function showList(node, direction = "toggle") {
       $(node).find("i").removeClass("fa-angle-up").addClass("fa-angle-down");
     }
   }
+}
+
+export function renderEditor(node, data = '') {
+  // const editor = new JSONEditor(node, {
+  //   mode: 'code'
+  // });
+
+  // editor.set(data);
+
+  // return editor;
 }

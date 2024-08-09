@@ -1,10 +1,12 @@
 import {selectors} from './conf'
-import { sortableInit } from './handlers';
+import { renderEditor, sortableInit } from './handlers';
 import {askFile, loadConfiguration} from './export'
 import {checkAskFileResult, initReadedConf} from './utils'
 import { notificate } from './dialogs';
 import { sendSQLQuery } from './handlers';
 import { selectModalTab } from './handlers';
+import dt from 'datatables.net';
+
 
 export class ListElement {
   constructor(items, elementType) {
@@ -398,7 +400,7 @@ export class ElementModal extends ModalWindow {
         <label for="${name}">${text}</label>
         <div class="input-wrap">
             <input type="text" name="${name}" id="${name}" data-param-name="${name}" value="${value}">
-            <button id="open-py" onclick="ElementModal.pickFile()">Open</button>
+            <button id="open-py">Open</button>
         </div>
       `,
     }
@@ -473,14 +475,16 @@ export class ElementModal extends ModalWindow {
       selectModalTab(tabs[0])
     
 
-    document.querySelectorAll('.tabs.tab').forEach(item => {
+    document.querySelectorAll('.tabs .tab').forEach(item => {
       item.addEventListener('click', () => selectModalTab(item))
     })
+    document.querySelector('#open-py')?.addEventListener('click', ElementModal.pickFile)
+    document.querySelector('#open-py')?.addEventListener('click', ElementModal.pickFile)
     
   }
   static async pickFile(){
+    const modal = ModalWindow.getCurrentModal()
     const modalType = modal?.element?.parentType 
-
     switch (modalType){
       case 'PyFiles':
         ElementModal.pickFilePython()
@@ -714,14 +718,14 @@ export class SQLQueryModal extends ModalWindow {
       html = `Нет записей`
     }
     this.modal.find('#sql-table-wrap').html(html)
-    // this.modal.find('.sql-table').DataTable({
-    //   responsive: true,
-    //   pageLength: localStorage.getItem('lengthTable') ? localStorage.getItem('lengthTable') : 10,
-    //   language: {
-    //     "lengthMenu": "_MENU_",
-    //     "url": "https://cdn.datatables.net/plug-ins/1.13.4/i18n/ru.json"
-    //   }
-    // });
+    this.modal.find('.sql-table').DataTable({
+      responsive: true,
+      pageLength: localStorage.getItem('lengthTable') ? localStorage.getItem('lengthTable') : 10,
+      language: {
+        "lengthMenu": "_MENU_",
+        "url": "https://cdn.datatables.net/plug-ins/1.13.4/i18n/ru.json"
+      }
+    });
     this.modal.find('.sql-table').on('length.dt', function (e, settings, len) {
       localStorage.setItem('lengthTable', len);
     });

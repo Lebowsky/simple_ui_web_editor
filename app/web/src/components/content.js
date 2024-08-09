@@ -98,7 +98,7 @@ const Content = () => {
             <div class="list-wrap show">
               <ul class="list">
                 <li>
-                  <button id="open-py-handlers-file" onclick="pickHandlersFile()">Open file</button>
+                  <button id="open-py-handlers-file">Open file</button>
                   <label>Handlers file (Python)</label>
                 <li>
                 </li class="param">

@@ -13,9 +13,10 @@ import {
   showQRSettings,
   showSqlQueries,
   showSearchElements,
-  notificate
+  notificate,
+  pickHandlersFile
 } from './dialogs'
-import { ElementModal, ListElement, ModalWindow, SelectTypeModal } from './renderElements'
+import { ElementModal, JsonModal, ListElement, ModalWindow, SelectTypeModal } from './renderElements'
 import { Main } from './main'
 
 
@@ -146,22 +147,22 @@ $(document).ready(function () {
   })
   $(document).on('click', selectors.btnCopy, function (e) {
     const elementId = $(this).parents(selectors.listItem).attr('data-id');
-    elementConf = document.main.configGraph.getConfigElement(elementId);
+    const elementConf = document.main.configGraph.getConfigElement(elementId);
     copyTextToClipboard(JSON.stringify(elementConf));
   })
   $(document).on('click', selectors.btnJson, function (e) {
     const elementId = $(this).parents(selectors.listItem).attr('data-id');
-    elementConf = document.main.configGraph.getConfigElement(elementId);
+    const elementConf = document.main.configGraph.getConfigElement(elementId);
 
-    modal = new JsonModal(elementConf);
+    const modal = new JsonModal(elementConf);
     modal.render();
     modal.show();
   })
   $(document).on('dblclick', ".sql-table tr", function (e) {
-    modal = ModalWindow.getCurrentModal();
-    table = modal.modal.find('.sql-table').DataTable();
-    rowData = table.row(this).data();
-    data = {};
+    const modal = ModalWindow.getCurrentModal();
+    const table = modal.modal.find('.sql-table').DataTable();
+    const rowData = table.row(this).data();
+    const data = {};
 
     table.columns().every(function (index) {
       var columnName = table.column(Number(index)).header().textContent;
@@ -173,10 +174,10 @@ $(document).ready(function () {
     modal.show();
   });
   $(document).on('click', ".show-sql-table-json", function (e) {
-    modal = ModalWindow.getCurrentModal();
-    table = modal.modal.find('.sql-table').DataTable();
-    data = table.rows().data();
-    jsonData = [];
+    let modal = ModalWindow.getCurrentModal();
+    const table = modal.modal.find('.sql-table').DataTable();
+    const data = table.rows().data();
+    const jsonData = [];
 
     data.each(function (valueArray) {
       var rowData = {};
@@ -199,9 +200,10 @@ $(document).ready(function () {
     let elementConf
 
     navigator.clipboard.readText().then(function (text) {
+      let parentType
       try {
-        text = text.replace(/:[ ]*False/g, ':false').replace(/:[ ]*True/g, ':true');
-        elementConf = JSON.parse(text);
+        const text = text.replace(/:[ ]*False/g, ':false').replace(/:[ ]*True/g, ':true');
+        const elementConf = JSON.parse(text);
       } catch (error) {
         notificate('Элемент не найден в буфере');
         return
@@ -217,15 +219,15 @@ $(document).ready(function () {
         parentType = "Elements";
 
       if (childrensType.toLowerCase() == parentType.toLowerCase()) {
-        elementId = document.main.configGraph.addElementFromDict(elementConf, parentId, parentType);
+        const elementId = document.main.configGraph.addElementFromDict(elementConf, parentId, parentType);
 
         const element = document.main.configGraph.getElementById(elementId);
         const type = element.parentType;
 
         if (element.parentType == "Operations" || element.parentType == "CVFrames") {
-          node = $(selectors.processList).find("#operations[data-id='" + parentId + "']")
+          const node = $(selectors.processList).find("#operations[data-id='" + parentId + "']")
         } else {
-          node = element.parentConfig['node'];
+          const node = element.parentConfig['node'];
         }
 
         document.main.configGraph.fillListElements(type, node, parentId);
@@ -238,6 +240,7 @@ $(document).ready(function () {
     });
   })
   $(document).on('click', selectors.btnDuplicate, function (e) {
+    let parentType
     const parentId = $(this).parents('.list').attr('data-id');
     const elementId = $(this).parents(selectors.listItem).attr('data-id');
     const elementConf = document.main.configGraph.getConfigElement(elementId);
@@ -254,6 +257,7 @@ $(document).ready(function () {
     const newElementId = document.main.configGraph.addElementFromDict(elementConf, parentId, parentType);
     const element = document.main.configGraph.getElementById(newElementId);
     const type = element.parentType;
+    let node
 
     if (element.parentType == "Operations" || element.parentType == "CVFrames") {
       node = $(selectors.processList).find("#operations[data-id='" + parentId + "']")
@@ -286,11 +290,11 @@ $(document).ready(function () {
       return
     } else if (listConfig['parentType'] == 'Elements') {
       const types = document.main.configGraph.getElementChildrensTypes(parentId);
-      modal = new SelectTypeModal(types, parentId);
+      const modal = new SelectTypeModal(types, parentId);
       modal.render().show();
     } else {
       const element = document.main.configGraph.newElement(parentId, listConfig);
-      modal = new ElementModal(element);
+      const modal = new ElementModal(element);
       modal.render().addClass('edited').addClass('new-element').show();
     }
   })
@@ -477,7 +481,7 @@ $(document).ready(function () {
     let params = {};
     params[paramName] = paramValue;
 
-    document.main.saveElement(params, "ConfigurationSettings", '');
+    // document.main.saveElement(params, "ConfigurationSettings", ''); TODO: потерялся метод?
   });
   $(document).on('change', '#handlers-login, #handlers-password', function () {
     let login = $('#handlers-login').val();
@@ -493,7 +497,7 @@ $(document).ready(function () {
     document.main.saveElement(params, "ConfigurationSettings", '');
   });
   window.onbeforeunload = function (e) {
-    return e
+    // return e TODO: модалка при обновлении страницы
   };
   $(document).on('click', '.toggle-mnu', function (e) {
     toggleMainMenu();
@@ -512,6 +516,7 @@ $(document).ready(function () {
   });
   addTabListeners()
   addSideMenuListeners()
+  document.querySelector('#open-py-handlers-file').addEventListener('click', pickHandlersFile)
 });
 
 const addTabListeners = () => {
@@ -584,6 +589,7 @@ function selectTab(tabNode) {
   }
 }
 async function sendDataToUpdatePreview(dataToSend) {
+  return// TODO проверить работу превью
   let data;
   if (dataToSend) {
     data = {
@@ -630,15 +636,7 @@ function hideMain() {
 
   $(".main-conf-wrap").toggleClass("hide");
 }
-function renderEditor(node, data = '') {
-  const editor = new JSONEditor(node, {
-    mode: 'code'
-  });
 
-  editor.set(data);
-
-  return editor;
-}
 
 
 
@@ -685,7 +683,7 @@ async function sendRequest(node) {
     if (result.error) {
       notificate(result.content);
     } else {
-      modal = ModalWindow.getCurrentModal();
+      const modal = ModalWindow.getCurrentModal();
       // modal.renderRequestResult(JSON.parse(result.data));
       modal.renderRequestResult(result.data);
     }
@@ -712,7 +710,7 @@ async function auth(node) {
 }
 
 function pickFileApply() {
-  modal = ModalWindow.getCurrentModal();
+  const modal = ModalWindow.getCurrentModal();
   modal.close();
 }
 

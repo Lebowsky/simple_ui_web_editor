@@ -217,9 +217,10 @@ class ClientConfiguration {
     let elementConfig;
 
     try {
-      elementConfig = document.main.elementParams[elementValues.type] || main.elementParams[listElements[parentType]['type']]
-    } catch {
+      elementConfig = document.main.elementParams[elementValues.type] || document.main.elementParams[listElements[parentType]['type']]
+    } catch (e){
       console.debug('cant add element in graph:', parentType)
+      console.debug(e)
     }
     
     const parentConfig = { ...listElements[parentType] };
