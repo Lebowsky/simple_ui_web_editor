@@ -1,5 +1,9 @@
 import { elementParams } from "./data/elementParams"
-import {newConfiguration} from './data/newConfig'
+import { newConfiguration } from './data/newConfig'
+import { qrSettings } from "./data/qrSettings"
+import { qrConfigs } from "./data/qrConfigs";
+import { base64data } from "./data/base64data";
+import { data } from "jquery";
 // eel.expose(getCurrentFilePath);
 // function getCurrentFilePath() {
 //   result = $(".file-path").text();
@@ -8,13 +12,13 @@ import {newConfiguration} from './data/newConfig'
 
 // eel.expose(setDeviceHost);
 // function setDeviceHost(deviceHost) {
-//   main.settings.deviceHost = deviceHost;
+//   document.main.settings.deviceHost = deviceHost;
 //   updateDeviceHost();
 // }
 
 // eel.expose(getConfiguration);
 // function getConfiguration() {
-//   config = main.configGraph.getConfig();
+//   config = document.main.configGraph.getConfig();
 //   return config
 // }
 
@@ -28,15 +32,17 @@ import {newConfiguration} from './data/newConfig'
 //   notificate(text, type)
 // }
 
-// const getQRByteArrayAsBase64 = async () => {
-//   result = await eel.get_qr_settings()();
-//   return result
-// };
+export const getQRByteArrayAsBase64 = async () => {
+  return qrSettings
+  //   result = await eel.get_qr_settings()();
+  //   return result
+};
 
-// const getQrConfigs = async () => {
-//   result = await eel.get_qr_configs()();
-//   return result
-// }
+export const getQrConfigs = async () => {
+  return qrConfigs
+  //   result = await eel.get_qr_configs()();
+  //   return result
+}
 
 export async function setConfigUIElements() {
   // result = await eel.get_config_ui_elements()();
@@ -44,58 +50,82 @@ export async function setConfigUIElements() {
 };
 
 export async function askFile(fileType) {
-//   return eel.ask_file(fileType)();
+  return {
+    file_path: 'D:/test/test.ui',
+    file_name: 'test.ui'
+  }
+  //   return eel.ask_file(fileType)();
 };
 
-// async function askDir() {
-//   return eel.ask_dir()();
-// };
+export async function askDir() {
+  return {
+    path: 'D:/projects/simple UI/la-simple-keep'
+  }
+  //   return eel.ask_dir()();
+};
 
 // async function getProjectConfig(configData) {
 //   return eel.get_project_config(configData)();
 // }
 
 export async function askSaveFile() {
-  return eel.ask_save_file('simple_ui')();
+  return {
+    "file_path": "D:/test/test.ui"
+  }
+  // return eel.ask_save_file('simple_ui')();
 };
 
-// async function loadConfiguration(filePath) {
-//   return eel.load_configuration(filePath)();
-// }
+export async function loadConfiguration(filePath) {
+  return newConfiguration
+  //   return eel.load_configuration(filePath)();
+}
 
 export async function getNewConfiguration() {
-//   return await eel.get_new_configuration()();
+  //   return await eel.get_new_configuration()();
   return newConfiguration
 }
 
-// async function saveConf(data, filePath) {
-//   return await eel.save_configuration(
-//     data, 
-//     filePath, 
-//     localStorage.currentUploadHandlersMode === 'src' ? localStorage.configProjectPath : ''
-//   )();
-// }
+export async function saveConf(data, filePath) {
+  return { result: 'success' }
+  //   return await eel.save_configuration(
+  //     data,
+  //     filePath,
+  //     localStorage.currentUploadHandlersMode === 'src' ? localStorage.configProjectPath : ''
+  //   )();
+}
 
-// async function savePyHandlers(pyHandlers, path) {
-//   return await eel.save_handlers_files(pyHandlers, path)();
-// }
+export async function savePyHandlers(pyHandlers, path) {
+  return { result: 'success' }
+  //   return await eel.save_handlers_files(pyHandlers, path)();
+}
 
-// async function getBase64FromFilePath(filePath) {
-//   return await eel.get_base64_from_file(filePath)()
-// }
+export async function getBase64FromFilePath(filePath) {
+  return base64data
+  //   return await eel.get_base64_from_file(filePath)()
+}
 
-// async function getBase64FromFilePathsList(filesList) {
-//   return await eel.get_base64_from_files_list(filesList)()
-// }
+export function getBase64FromFilePathsList(filesList) {
+  return base64data
+  // return await eel.get_base64_from_files_list(filesList)()
+}
 
-// async function sendSqlQueryToDevice(query_params) {
-//   return await eel.send_sql_query(query_params)()
-// }
+export async function sendSqlQueryToDevice(query_params) {
+  return {
+    data: {
+      header: '1|2|3',
+      data: ['1|2|3']
+    }
+  }
 
-// async function sendRequestToDevice(req_params) {
-//   return await eel.send_request(req_params)()
-// }
+  //   return await eel.send_sql_query(query_params)()
+}
 
-// async function exportData(uiPath, dirToSave){
-//   return await eel.export_data(uiPath, dirToSave)()
-// }
+export async function sendRequestToDevice(req_params) {
+  return { data: {} }
+  // return await eel.send_request(req_params)()
+}
+
+export async function exportData(uiPath, dirToSave) {
+  return { 'result': true }
+  // return await eel.export_data(uiPath, dirToSave)()
+}

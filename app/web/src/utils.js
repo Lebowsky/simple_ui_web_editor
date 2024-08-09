@@ -1,4 +1,5 @@
-const main = document.main
+import { notificate } from "./dialogs"
+import { getBase64FromFilePathsList, saveConf } from "./export"
 
 export function checkAskFileResult(answer) {
   let result = false
@@ -34,25 +35,25 @@ function checkSaveFileResult(answer) {
 
   return result
 }
-async function saveConfiguration(pathToSave=null) {
-  if (typeof main.conf == 'undefined')
+export async function saveConfiguration(pathToSave=null) {
+  if (typeof document.main.conf == 'undefined')
     return;
 
   let filePath = pathToSave || localStorage.getItem('file-path');
 
   if (!filePath) {
-    filePath = await pickNewFileProject(main);
+    filePath = await pickNewFileProject(document.main);
     if (!filePath)
       return;
   }
 
-  main.conf = main.configGraph.getConfig();
+  document.main.conf = document.main.configGraph.getConfig();
   await fillBase64Handlers();
   await fillBase64Mediafiles()
-  saveConfFiles(main.conf, filePath)
+  saveConfFiles(document.main.conf, filePath)
 }
 async function buildConfiguration() {
-  return main.configGraph.getConfig()
+  return document.main.configGraph.getConfig()
 }
 async function saveConfFiles(conf, filePath) {
   let result_save = await saveConf(conf, filePath)
@@ -62,7 +63,7 @@ async function saveConfFiles(conf, filePath) {
     notificate('Ошибка сохранения файла: ' + result_save.msg, 'danger')
   else
     notificate('Файл успешно сохранен', 'success')
-  main.loadPrev();
+  document.main.loadPrev();
 
   return result_check
 }
@@ -82,13 +83,13 @@ export async function saveAllPyFilesToDisk() {
     notificate('Ошибка сохранения файла: ' + result_save.msg, 'danger')
   else
     notificate('Файл успешно сохранен', 'success')
-  main.loadPrev();
+  document.main.loadPrev();
 }
 
 async function fillBase64Handlers() {
   let result = null;
   const filePath = $('#py-handlers-file-path').attr('data-path');
-  const conf = main.conf.ClientConfiguration;
+  const conf = document.main.conf.ClientConfiguration;
 
   if (filePath.length > 0) {
     result = await getBase64FromFilePath(filePath);
@@ -115,7 +116,7 @@ async function fillBase64Handlers() {
 }
 
 async function fillBase64Mediafiles() {
-  const conf = main.conf.ClientConfiguration;
+  const conf = document.main.conf.ClientConfiguration;
   if (conf.Mediafile) {
     const filesList = conf.Mediafile.filter(el => el.file_path).map(el => (el.file_path))
     const filesData = await getBase64FromFilePathsList(filesList)
@@ -152,7 +153,7 @@ export function getConfParamValue(paramName, def = '') {
 }
 
 function debug(msg) {
-  if (main.debug) {
+  if (document.main.debug) {
     console.debug(msg);
   }
 }
@@ -160,8 +161,8 @@ function debug(msg) {
 function updateDeviceHost() {
   const query_modal = $('.modal.sql-query.active')
   const req_modal = $('modal.send-req active')
-  if (main.settings.deviceHost && (query_modal.length || req_modal.length)) {
-    query_modal.find('#ip-address').val(main.settings.deviceHost)
-    req_modal.find('#ip-address').val(main.settings.deviceHost)
+  if (document.main.settings.deviceHost && (query_modal.length || req_modal.length)) {
+    query_modal.find('#ip-address').val(document.main.settings.deviceHost)
+    req_modal.find('#ip-address').val(document.main.settings.deviceHost)
   }
 }

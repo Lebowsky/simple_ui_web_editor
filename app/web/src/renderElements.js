@@ -1,7 +1,10 @@
 import {selectors} from './conf'
 import { sortableInit } from './handlers';
-import {askFile} from './export'
-import {checkAskFileResult} from './utils'
+import {askFile, loadConfiguration} from './export'
+import {checkAskFileResult, initReadedConf} from './utils'
+import { notificate } from './dialogs';
+import { sendSQLQuery } from './handlers';
+import { selectModalTab } from './handlers';
 
 export class ListElement {
   constructor(items, elementType) {
@@ -102,7 +105,7 @@ export class ModalWindow {
           const lsItem = "modal-" + modalType + "-width";
           localStorage.setItem(lsItem, ui.size.width);
         }
-        main.settings.modalWidth = ui.size.width;
+        document.main.settings.modalWidth = ui.size.width;
       }
     });
 
@@ -128,7 +131,7 @@ export class ModalWindow {
     const elementId = modalDiv.find('.params').attr('data-id');
 
     if (modalDiv.hasClass('type-select-modal')) {
-      const types = main.configGraph.getElementChildrensTypes(elementId)
+      const types = document.main.configGraph.getElementChildrensTypes(elementId)
       modalWindow = new SelectTypeModal(types);
     } else if (modalDiv.hasClass('qr')) {
       modalWindow = new QRImageModal({});
@@ -154,7 +157,7 @@ export class ModalWindow {
       modalWindow = new SearchElementsModal();
       modalWindow.modal = modalDiv;
     } else {
-      const element = main.configGraph.getElementById(elementId);
+      const element = document.main.configGraph.getElementById(elementId);
       modalWindow = new ElementModal(element);
     }
     modalWindow.modal = modalDiv;
@@ -173,7 +176,7 @@ export class ModalWindow {
       let elementId = modalDiv.find('.params').attr('data-id');
 
       if (modalDiv.hasClass('type-select-modal')) {
-        let types = main.configGraph.getElementChildrensTypes(elementId)
+        let types = document.main.configGraph.getElementChildrensTypes(elementId)
         modalWindow = new SelectTypeModal(types);
       } else if (modalDiv.hasClass('qr')) {
         modalWindow = new QRImageModal();
@@ -196,7 +199,7 @@ export class ModalWindow {
         modalWindow = new SearchElementsModal();
         modalWindow.modal = modalDiv;
       } else {
-        let element = main.configGraph.getElementById(elementId);
+        let element = document.main.configGraph.getElementById(elementId);
         modalWindow = new ElementModal(element);
       }
       modalWindow.modal = modalDiv;
@@ -206,7 +209,7 @@ export class ModalWindow {
     return modalsWindow;
   }
 }
-class ElementModal extends ModalWindow {
+export class ElementModal extends ModalWindow {
   constructor(element) {
     super();
     this.element = element;
@@ -214,7 +217,7 @@ class ElementModal extends ModalWindow {
     this.tabs = element.elementConfig.tabs;
     this.params = element.elementConfig;
     this.values = element.elementValues;
-    this.path = main.configGraph.getElementPath(element.id);
+    this.path = document.main.configGraph.getElementPath(element.id);
   }
   render() {
     this.html = `
@@ -261,9 +264,9 @@ class ElementModal extends ModalWindow {
 
     if (arrTabs && (arrTabs).length > 1) {
       html = `<div class='tabs'>`;
-      arrTabs.forEach((el) => {
+      arrTabs.forEach((el, idx) => {
         let [name, value] = Object.entries(el)[0]
-        html += `<div onclick="selectModalTab(this)" class="tab" data-tab="${name}">${value.title}</div>`
+        html += `<div class="tab" data-tab="${name}">${value.title}</div>`
       })
       html += `<div class='tab' id='save-project'>Save Project</div>`
       html += '</div>'
@@ -286,7 +289,7 @@ class ElementModal extends ModalWindow {
     let html = '';
 
     if (['elements', 'handlers'].includes(type)) {
-      const elementsList = main.configGraph.elements.filter(
+      const elementsList = document.main.configGraph.elements.filter(
         (el) => el.parentId == this.element.id && el.parentType == name);
 
       html += `
@@ -437,7 +440,7 @@ class ElementModal extends ModalWindow {
     }
 
     if (this.modal.hasClass('edited') && this.modal.hasClass('new-element')) {
-      main.configGraph.removeElement(this.element);
+      document.main.configGraph.removeElement(this.element);
     }
 
     this.modal.remove();
@@ -468,6 +471,12 @@ class ElementModal extends ModalWindow {
     const tabs = $(this.modal).find('.tab');
     if (tabs.length > 1)
       selectModalTab(tabs[0])
+    
+
+    document.querySelectorAll('.tabs.tab').forEach(item => {
+      item.addEventListener('click', () => selectModalTab(item))
+    })
+    
   }
   static async pickFile(){
     const modalType = modal?.element?.parentType 
@@ -505,7 +514,7 @@ class ElementModal extends ModalWindow {
     };
   }
 }
-class SelectTypeModal extends ModalWindow {
+export class SelectTypeModal extends ModalWindow {
   constructor(types, parentId) {
     super();
     this.types = types;
@@ -545,7 +554,7 @@ class SelectTypeModal extends ModalWindow {
     this.selectedValue = value;
   }
 }
-class QRImageModal extends ModalWindow {
+export class QRImageModal extends ModalWindow {
   constructor({ hostsOptions, uploadModesOptions }) {
     super();
     this.modal = $('');
@@ -608,14 +617,14 @@ class QRImageModal extends ModalWindow {
     })
   }
   static hostOnChange(evt) {
-    modal.currentHost = evt.target.value
-    $('#qr-code').attr("src", modal._getImageByHost())
+    document.modal.currentHost = evt.target.value
+    $('#qr-code').attr("src", document.modal._getImageByHost())
   }
   _getImageByHost() {
     return this.hostsOptions.filter(el => el.value === this.currentHost)?.[0]?.imgSrc
   }
 }
-class SQLQueryModal extends ModalWindow {
+export class SQLQueryModal extends ModalWindow {
   constructor(ipAddress) {
     super();
     this.modal = $('');
@@ -663,12 +672,12 @@ class SQLQueryModal extends ModalWindow {
                 <div class="param">
                     <textarea name="query" cols="80" rows="8" id="sql-query">${this.query}</textarea>
                     <div class="btn-wrap">
-                        <button onclick="sendSQLQuery(this)">select</button>
+                        <button id="send-sql-query-btn">select</button>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="querys-wrap">${SQLQueryModal.renderSqlQueryHistory(main.settings.sqlQuerys)}</div>
+        <div class="querys-wrap">${SQLQueryModal.renderSqlQueryHistory(document.main.settings.sqlQuerys)}</div>
         <div id="sql-table-wrap"> </div>
         `
     return html;
@@ -705,20 +714,25 @@ class SQLQueryModal extends ModalWindow {
       html = `Нет записей`
     }
     this.modal.find('#sql-table-wrap').html(html)
-    this.modal.find('.sql-table').DataTable({
-      responsive: true,
-      pageLength: localStorage.getItem('lengthTable') ? localStorage.getItem('lengthTable') : 10,
-      language: {
-        "lengthMenu": "_MENU_",
-        "url": "https://cdn.datatables.net/plug-ins/1.13.4/i18n/ru.json"
-      }
-    });
+    // this.modal.find('.sql-table').DataTable({
+    //   responsive: true,
+    //   pageLength: localStorage.getItem('lengthTable') ? localStorage.getItem('lengthTable') : 10,
+    //   language: {
+    //     "lengthMenu": "_MENU_",
+    //     "url": "https://cdn.datatables.net/plug-ins/1.13.4/i18n/ru.json"
+    //   }
+    // });
     this.modal.find('.sql-table').on('length.dt', function (e, settings, len) {
       localStorage.setItem('lengthTable', len);
     });
   }
+  show(){
+    super.show()
+    const btn = document.querySelector('#send-sql-query-btn')
+    btn.addEventListener('click', () => sendSQLQuery(btn))
+  }
 }
-class AuthModal extends ModalWindow {
+export class AuthModal extends ModalWindow {
   constructor() {
     super();
     this.modal = $('');
@@ -849,14 +863,14 @@ export class PickFileModal extends ModalWindow {
         localStorage.currentUploadHandlersMode = 'base64'
       }
 
-      modal = ModalWindow.getCurrentModal();
-      modal.close();
+      document.modal = ModalWindow.getCurrentModal();
+      document.modal.close();
     } catch (error){
       notificate (error, 'danger')
     }
   }
 }
-class SendReqModal extends ModalWindow {
+export class SendReqModal extends ModalWindow {
   constructor(ipAddress) {
     super();
     this.modal = $('');
@@ -879,7 +893,7 @@ class SendReqModal extends ModalWindow {
     this.modal.find(selectors.modalContent).html(this.renderContent())
     const data = {};
 
-    main.settings.reqBodyEditor = renderEditor(this.modal.find("#req-body")[0], '');
+    document.main.settings.reqBodyEditor = renderEditor(this.modal.find("#req-body")[0], '');
 
     return this;
   }
@@ -931,7 +945,7 @@ class SendReqModal extends ModalWindow {
     return editor;
   }
 }
-class StartModal extends ModalWindow {
+export class StartModal extends ModalWindow {
   constructor() {
     super();
     this.modal = $('');
@@ -953,13 +967,13 @@ class StartModal extends ModalWindow {
   }
   renderContent() {
     const html = `
-            <button id="new-project" onclick="pickNewFileProject(main)">New Project</button>
+            <button id="new-project" onclick="pickNewFileProject(document.main)">New Project</button>
             <button id="open-project" onclick="showPickFileModal()">Open Project</button>
         `
     return html;
   }
 }
-class JsonModal extends ModalWindow {
+export class JsonModal extends ModalWindow {
   constructor(json) {
     super();
     this.modal = $('');
@@ -990,7 +1004,7 @@ class JsonModal extends ModalWindow {
     return html;
   }
 }
-class SearchElementsModal extends ModalWindow {
+export class SearchElementsModal extends ModalWindow {
   constructor(json) {
     super();
     this.modal = $('');

@@ -42,7 +42,7 @@ export const keys = {
   'shift+ctrl+70': 'showSearchElements', // Ctrl+Shift+F
 }
 
-const newElements = {
+export const newElements = {
   CVOperations: {
     type: "CVOperation",
     CVOperationName: "New CVOperation",

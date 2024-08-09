@@ -1,8 +1,9 @@
-import {listElements, selectors, constants} from './conf'
+import {listElements, selectors, constants, newElements} from './conf'
 import { ModalWindow, ListElement, PickFileModal } from './renderElements';
 import { sortableInit } from './handlers';
 import { getConfParamValue, saveAllPyFilesToDisk } from './utils'
-import { showPickFileModal,  } from './dialogs'
+import { exportConfigData, fileLocationSave, fileLocationSaveAs, showPickFileModal, showQRSettings, showSearchElements, showSqlQueries,  } from './dialogs'
+import { togglePrev } from './handlers';
 
 export const Main = {
   settings: {
@@ -216,7 +217,7 @@ class ClientConfiguration {
     let elementConfig;
 
     try {
-      elementConfig = main.elementParams[elementValues.type] || main.elementParams[listElements[parentType]['type']]
+      elementConfig = document.main.elementParams[elementValues.type] || main.elementParams[listElements[parentType]['type']]
     } catch {
       console.debug('cant add element in graph:', parentType)
     }
@@ -341,7 +342,7 @@ class ClientConfiguration {
   getElementChildrensTypes(elementId) {
     const element = this.getElementById(elementId);
     const elementType = element.parentConfig.type;
-    const types = Object.entries(main.elementParams)
+    const types = Object.entries(document.main.elementParams)
       .filter((el) => el[1]['type_'].find((el) => el['parent'] && el['parent'] == elementType))
       .map((el) => el[0])
     //test

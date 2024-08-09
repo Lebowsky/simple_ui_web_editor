@@ -1,10 +1,9 @@
 import $ from 'jquery'
-import { selectors, keys } from './conf'
-import { Main } from './main';
-import { setConfigUIElements, getNewConfiguration } from './export'
+import { selectors, keys, listElements } from './conf'
+import { setConfigUIElements, getNewConfiguration, loadConfiguration } from './export'
 import { initReadedConf } from './utils'
 import { sortable } from 'webpack-jquery-ui'
-import { sortableInit } from './handlers';
+import { sortableInit, togglePrev } from './handlers';
 import { 
   pickNewFileProject, 
   showPickFileModal,
@@ -13,20 +12,20 @@ import {
   exportConfigData,
   showQRSettings,
   showSqlQueries,
-  showSearchElements
+  showSearchElements,
+  notificate
 } from './dialogs'
-import { ModalWindow } from './renderElements'
+import { ElementModal, ListElement, ModalWindow, SelectTypeModal } from './renderElements'
+import { Main } from './main'
 
 
 
 document.main = Object.create(Main);
 setConfigUIElements();
 
-const main = document.main
-
 $(document).ready(function () {
   sortableInit(selectors.list);
-  main.settings.modalWidth = 820;
+  document.main.settings.modalWidth = 820;
 
   const filePath = localStorage.getItem('file-path');
 
@@ -42,7 +41,7 @@ $(document).ready(function () {
     initReadedConf(conf)
   }
   async function readFile(filePath) {
-    conf = await loadConfiguration(filePath);
+    const conf = await loadConfiguration(filePath);
     initReadedConf(conf, filePath);
   }
   $('#prev').resizable({
@@ -62,7 +61,7 @@ $(document).ready(function () {
     const node = $("#search-result-wrap");
 
     if (q != "") {
-      elements = main.configGraph.elements.filter(element =>
+      elements = document.main.configGraph.elements.filter(element =>
         String(element.elementValues.Value).toLowerCase().includes(q.toLowerCase()) ||
         String(element.elementValues.Variable).toLowerCase().includes(q.toLowerCase()) ||
         String(element.elementValues.alias).toLowerCase().includes(q.toLowerCase()) ||
@@ -75,7 +74,7 @@ $(document).ready(function () {
         let name = item.elementValues[item.parentConfig.rowKeys.filter(key => item.elementValues[key])[0]];
         let value = Object.keys(item.elementValues).find((el) => ['Value', 'method'].includes(el));
         let itemClasses = "";
-        let path = main.configGraph.getElementPath(item.id);
+        let path = document.main.configGraph.getElementPath(item.id);
         name = name || item.elementValues['type'];
 
         if (value)
@@ -109,7 +108,7 @@ $(document).ready(function () {
     if (e.target === this) {
       const elementId = $(this).parent(selectors.listItem).attr('data-id');
 
-      const element = main.configGraph.getElementById(elementId);
+      const element = document.main.configGraph.getElementById(elementId);
       if (element?.parentType === 'Processes') return
 
       editElement(elementId);
@@ -126,33 +125,33 @@ $(document).ready(function () {
     editElement(elementId);
   })
   $(document).on('change', "#ip-address", function () {
-    main.settings.deviceHost = $(this).val();
+    document.main.settings.deviceHost = $(this).val();
   })
   $(document).on('click', selectors.btnDelete, function () {
     if (confirm('Вы уверены?')) {
       const elementId = $(this).parents(selectors.listItem).attr('data-id');
-      const element = main.configGraph.getElementById(elementId);
+      const element = document.main.configGraph.getElementById(elementId);
       const type = element.parentType;
       const node = element.parentConfig['node'];
       const parentId = element.parentId;
 
-      main.configGraph.removeElement(element);
-      main.configGraph.fillListElements(type, node, parentId);
+      document.main.configGraph.removeElement(element);
+      document.main.configGraph.fillListElements(type, node, parentId);
 
       if (element.parentType == "Operations" || element.parentType == "CVFrames") {
         const operationListNode = $(selectors.processList).find("#operations[data-id='" + parentId + "']")
-        main.configGraph.fillListElements(element.parentType, operationListNode, parentId);
+        document.main.configGraph.fillListElements(element.parentType, operationListNode, parentId);
       }
     }
   })
   $(document).on('click', selectors.btnCopy, function (e) {
     const elementId = $(this).parents(selectors.listItem).attr('data-id');
-    elementConf = main.configGraph.getConfigElement(elementId);
+    elementConf = document.main.configGraph.getConfigElement(elementId);
     copyTextToClipboard(JSON.stringify(elementConf));
   })
   $(document).on('click', selectors.btnJson, function (e) {
     const elementId = $(this).parents(selectors.listItem).attr('data-id');
-    elementConf = main.configGraph.getConfigElement(elementId);
+    elementConf = document.main.configGraph.getConfigElement(elementId);
 
     modal = new JsonModal(elementConf);
     modal.render();
@@ -197,6 +196,7 @@ $(document).ready(function () {
   $(document).on('click', selectors.btnPaste, function (e) {
     const parentId = $(this).parents('.list').attr('data-id');
     const childrensType = $(this).attr('data-childrens-type');
+    let elementConf
 
     navigator.clipboard.readText().then(function (text) {
       try {
@@ -204,6 +204,7 @@ $(document).ready(function () {
         elementConf = JSON.parse(text);
       } catch (error) {
         notificate('Элемент не найден в буфере');
+        return
       }
 
       if (elementConf.type == "Process")
@@ -216,9 +217,9 @@ $(document).ready(function () {
         parentType = "Elements";
 
       if (childrensType.toLowerCase() == parentType.toLowerCase()) {
-        elementId = main.configGraph.addElementFromDict(elementConf, parentId, parentType);
+        elementId = document.main.configGraph.addElementFromDict(elementConf, parentId, parentType);
 
-        const element = main.configGraph.getElementById(elementId);
+        const element = document.main.configGraph.getElementById(elementId);
         const type = element.parentType;
 
         if (element.parentType == "Operations" || element.parentType == "CVFrames") {
@@ -227,7 +228,7 @@ $(document).ready(function () {
           node = element.parentConfig['node'];
         }
 
-        main.configGraph.fillListElements(type, node, parentId);
+        document.main.configGraph.fillListElements(type, node, parentId);
       } else {
         notificate('Неверный тип элемента');
       }
@@ -239,7 +240,7 @@ $(document).ready(function () {
   $(document).on('click', selectors.btnDuplicate, function (e) {
     const parentId = $(this).parents('.list').attr('data-id');
     const elementId = $(this).parents(selectors.listItem).attr('data-id');
-    const elementConf = main.configGraph.getConfigElement(elementId);
+    const elementConf = document.main.configGraph.getConfigElement(elementId);
 
     if (elementConf.type == "Process")
       parentType = "Processes";
@@ -250,8 +251,8 @@ $(document).ready(function () {
     else
       parentType = "Elements";
 
-    const newElementId = main.configGraph.addElementFromDict(elementConf, parentId, parentType);
-    const element = main.configGraph.getElementById(newElementId);
+    const newElementId = document.main.configGraph.addElementFromDict(elementConf, parentId, parentType);
+    const element = document.main.configGraph.getElementById(newElementId);
     const type = element.parentType;
 
     if (element.parentType == "Operations" || element.parentType == "CVFrames") {
@@ -260,11 +261,13 @@ $(document).ready(function () {
       node = element.parentConfig['node'];
     }
 
-    main.configGraph.fillListElements(type, node, parentId);
+    document.main.configGraph.fillListElements(type, node, parentId);
   })
   $(document).on('click', selectors.btnAdd, function (e) {
     const listId = $($(this).parents('.list')[0]).attr('id');
     const parentId = $($(this).parents('.list')[0]).attr('data-id');
+
+    let listConfig
 
     if ($(this).hasClass('cv')) {
       listConfig = listElements['CVOperations'];
@@ -277,27 +280,29 @@ $(document).ready(function () {
       listConfig = Object.values(listElements).find(
         (el) => el.node == "#" + listId || el.node == '.modal.active #' + listId);
     }
+    let modal
 
     if (!listConfig) {
       return
     } else if (listConfig['parentType'] == 'Elements') {
-      const types = main.configGraph.getElementChildrensTypes(parentId);
+      const types = document.main.configGraph.getElementChildrensTypes(parentId);
       modal = new SelectTypeModal(types, parentId);
       modal.render().show();
     } else {
-      element = main.configGraph.newElement(parentId, listConfig);
+      const element = document.main.configGraph.newElement(parentId, listConfig);
       modal = new ElementModal(element);
       modal.render().addClass('edited').addClass('new-element').show();
     }
   })
   $(document).on('click', selectors.btnSave, function () {
-    modal = ModalWindow.getCurrentModal();
-    main.configGraph.setConfigValues(modal.element.id, modal.getValues());
+    const modal = ModalWindow.getCurrentModal();
+    document.main.configGraph.setConfigValues(modal.element.id, modal.getValues());
     modal.removeClass('edited');
     modal.close();
 
-    elementId = $(this).parents('.params').attr('data-id');
-    element = main.configGraph.getElementById(elementId);
+    const elementId = $(this).parents('.params').attr('data-id');
+    const element = document.main.configGraph.getElementById(elementId);
+    let node
 
     if (element.parentType == "Operations" || element.parentType == "CVFrames") {
       node = $(selectors.processList).find("#operations[data-id='" + element.parentId + "']")
@@ -305,13 +310,13 @@ $(document).ready(function () {
       node = element.parentConfig['node']
     }
 
-    main.configGraph.fillListElements(element.parentType, node, element.parentId, elementId)
+    document.main.configGraph.fillListElements(element.parentType, node, element.parentId, elementId)
   })
   $(document).on('click', ".tab#save-project", function () {
-    modal = ModalWindow.getCurrentModal();
-    main.configGraph.setConfigValues(modal.element.id, modal.getValues());
+    const modal = ModalWindow.getCurrentModal();
+    document.main.configGraph.setConfigValues(modal.element.id, modal.getValues());
 
-    main.events("fileLocationSave")();
+    document.main.events("fileLocationSave")();
   })
   $(document).on('click', '.btn-type-select', function () {
     const checked = $(this).parents('.params').find('input[name=type]:checked');
@@ -319,14 +324,14 @@ $(document).ready(function () {
 
     if (checked.length) {
       selectedType = checked.val();
-      modal = ModalWindow.getCurrentModal();
+      let modal = ModalWindow.getCurrentModal();
       modal.close();
 
       modal = ModalWindow.getCurrentModal();
 
       const elementValues = Object.fromEntries(
         Object.entries(
-          main.elementParams[[selectedType]])
+          document.main.elementParams[[selectedType]])
           .filter(([k, v]) => v.type)
           .map(([k, v]) => [k, v.default_value == undefined ? '' : v.default_value])
       )
@@ -340,7 +345,7 @@ $(document).ready(function () {
         type: selectedType
       }
 
-      element = main.configGraph.newElement(modal.element.id, parentConfig, elementValues);
+      const element = document.main.configGraph.newElement(modal.element.id, parentConfig, elementValues);
       modal = new ElementModal(element);
       modal.render().addClass('edited').addClass('new-element').show();
     } else {
@@ -353,10 +358,10 @@ $(document).ready(function () {
     modal.close();
 
     if (modal.element) {
-      element = main.configGraph.getElementById(modal.element.id);
+      const element = document.main.configGraph.getElementById(modal.element.id);
       if (!element) return
 
-      fillNode = element.parentConfig['node'] + "[data-id=" + modal.element.id + "]";
+      const fillNode = element.parentConfig['node'] + "[data-id=" + modal.element.id + "]";
       document.main.configGraph.fillListElements(element.parentType, fillNode, element.parentId, modal.element.id)
     }
   });
@@ -371,16 +376,16 @@ $(document).ready(function () {
 
     if ($(e.target).is(".list .item-name")) {
       const elementId = $(this).attr("data-id");
-      const element = main.configGraph.getElementById(elementId);
+      const element = document.main.configGraph.getElementById(elementId);
       const type = element.parentType;
 
       if (element.type != "Process") {
-        elementConf = main.configGraph.getConfigElement(elementId);
+        const elementConf = document.main.configGraph.getConfigElement(elementId);
         sendDataToUpdatePreview(elementConf)
       }
 
       if (type == "Elements") {
-        main.configGraph.fillListElements(type, ".modal.active .list-param.active .element-childs-wrap", elementId, false, false);
+        document.main.configGraph.fillListElements(type, ".modal.active .list-param.active .element-childs-wrap", elementId, false, false);
       }
     }
   })
@@ -392,9 +397,9 @@ $(document).ready(function () {
       const childsNode = processNode.find(".item-childs");
 
       if (processNode.hasClass('cv'))
-        main.configGraph.fillListElements("CVFrames", childsNode, elementId);
+        document.main.configGraph.fillListElements("CVFrames", childsNode, elementId);
       else
-        main.configGraph.fillListElements("Operations", childsNode, elementId);
+        document.main.configGraph.fillListElements("Operations", childsNode, elementId);
 
       childsNode.stop().slideToggle();
     }
@@ -407,7 +412,7 @@ $(document).ready(function () {
       $("#sql-query").val($(this).text());
       $("#query-params").val($(this).attr("data-params"));
     } else if ($(e.target).is("i.fa-times")) {
-      let querys = main.settings.sqlQuerys;
+      let querys = document.main.settings.sqlQuerys;
       const queryText = $(this).text();
       const queryParams = $(this).attr("data-params");
 
@@ -431,7 +436,7 @@ $(document).ready(function () {
     if (paramName) {
       $(this).attr('data-id', 1);
       const value = $(this).prop('type') == 'checkbox' ? $(this).prop('checked') : $(this).val()
-      main.configGraph.setConfigValues(1, { [paramName]: value });
+      document.main.configGraph.setConfigValues(1, { [paramName]: value });
     }
   })
   $(document).on('change', '.textarea-param', function () {
@@ -439,7 +444,7 @@ $(document).ready(function () {
 
     if (paramName) {
       const value = $(this).val()
-      main.configGraph.setConfigValues(1, { [paramName]: value });
+      document.main.configGraph.setConfigValues(1, { [paramName]: value });
     }
   })
   $(window).keydown(function (e) {
@@ -457,7 +462,7 @@ $(document).ready(function () {
 
     if (keys[key]) {
       e.preventDefault();
-      main.events(keys[key])();
+      document.main.events(keys[key])();
       return false;
     };
   });
@@ -472,7 +477,7 @@ $(document).ready(function () {
     let params = {};
     params[paramName] = paramValue;
 
-    main.saveElement(params, "ConfigurationSettings", '');
+    document.main.saveElement(params, "ConfigurationSettings", '');
   });
   $(document).on('change', '#handlers-login, #handlers-password', function () {
     let login = $('#handlers-login').val();
@@ -485,7 +490,7 @@ $(document).ready(function () {
     let params = {};
     params[paramName] = paramValue;
 
-    main.saveElement(params, "ConfigurationSettings", '');
+    document.main.saveElement(params, "ConfigurationSettings", '');
   });
   window.onbeforeunload = function (e) {
     return e
@@ -550,18 +555,16 @@ function copyTextToClipboard(text) {
   });
 }
 function editElement(elementId) {
-  const element = main.configGraph.getElementById(elementId);
+  const element = document.main.configGraph.getElementById(elementId);
 
-  modal = new ElementModal(element);
+  const modal = new ElementModal(element);
   modal.render().show();
 }
 function loadedPrev(prevNode) {
   $(".preload").hide();
   $(prevNode).addClass("load");
 }
-function togglePrev() {
-  $(".prev-wrap").toggleClass("show");
-}
+
 function selectTab(tabNode) {
   $(".tabs .tab").removeClass("active");
   $(tabNode).addClass("active");
@@ -589,7 +592,7 @@ async function sendDataToUpdatePreview(dataToSend) {
     };
   } else {
     //берем заголовки только у не скрытых процессов
-    const processesList = main.configGraph.elements
+    const processesList = document.main.configGraph.elements
       .filter((el) => el.parentType == 'Processes' && el.elementValues['hidden'] == false)
       .map((item) => item.title);
 
@@ -617,23 +620,7 @@ async function sendDataToUpdatePreview(dataToSend) {
     console.error("Ошибка при обмене данными с сервером:", error);
   }
 }
-function selectModalTab(tabNode) {
-  // $(".tabs .tab").removeClass("active");
-  $(tabNode).siblings().removeClass("active");
-  $(tabNode).addClass("active");
 
-  tabID = $(tabNode).attr("data-tab");
-  modal = ModalWindow.getCurrentModal().modal;
-
-  modal.find(".params").find(".param").removeClass("active");
-  const $currentTab = modal.find(".params").find(".param[data-tab=" + tabID + "]")
-  $currentTab.addClass("active");
-
-  if (['elements', 'handlers'].includes(tabID)) {
-    const label = $currentTab.find('label');
-    showList(label, 'down');
-  }
-}
 function hideMain() {
   if ($(".main-conf-wrap").hasClass("hide")) {
     $(".main-conf-wrap section .section-header").find("i").removeClass("fa-angle-down").addClass("fa-angle-up");
@@ -652,89 +639,37 @@ function renderEditor(node, data = '') {
 
   return editor;
 }
-function showList(node, direction = "toggle") {
-  if (direction == "up") {
-    $(node).siblings(selectors.listWrap).slideUp();
-    $(node).find("i").removeClass("fa-angle-up").addClass("fa-angle-down");
-  } else if (direction == "down") {
-    $(node).siblings(selectors.listWrap).slideDown();
-    $(node).find("i").removeClass("fa-angle-down").addClass("fa-angle-up");
-  } else {
-    $(node).siblings(selectors.listWrap).slideToggle();
 
-    if ($(node).find("i").hasClass("fa-angle-down")) {
-      $(node).find("i").removeClass("fa-angle-down").addClass("fa-angle-up");
-    } else if ($(node).find("i").hasClass("fa-angle-up")) {
-      $(node).find("i").removeClass("fa-angle-up").addClass("fa-angle-down");
-    }
-  }
-}
 
-async function sendSQLQuery(node) {
-  let query = $('#sql-query').val();
-  let params = $('#query-params').val();
-  let nodeText = $(node).text();
 
-  if (!main.settings.deviceHost) {
-    notificate('Device connection error');
-    return
-  }
-
-  const query_params = {
-    device_host: main.settings.deviceHost || '',
-    db_name: $('#db-name').val(),
-    query: query,
-    params: params
-  };
-
-  $(node).html(`<i class="fa-solid fa-spinner preloader" aria-hidden="true"></i>`)
-
-  const result = await sendSqlQueryToDevice(query_params);
-
-  $(node).html(nodeText)
-
-  if (result) {
-    if (result.error) {
-      notificate(result.content);
-    } else {
-      if (!main.settings.sqlQuerys.find((el) => el.query == query && el.params == params))
-        main.settings.sqlQuerys.push({ query: query, params: params });
-
-      $(".querys-wrap").html(SQLQueryModal.renderSqlQueryHistory(main.settings.sqlQuerys));
-
-      modal = ModalWindow.getCurrentModal();
-      modal.renderSqlQueryResult(result.data);
-    }
-  }
-}
 async function sendRequest(node) {
   let mode = $('#req-mode').val();
   let params = $('#req-params').val();
   let body = ''
   try {
-    body = JSON.stringify(main.settings.reqBodyEditor.get())
+    body = JSON.stringify(document.main.settings.reqBodyEditor.get())
   }
   catch {
-    console.debug(main.settings.reqBodyEditor)
+    console.debug(document.main.settings.reqBodyEditor)
   }
 
   let nodeText = $(node).text();
 
-  if (!main.settings.deviceHost) {
+  if (!document.main.settings.deviceHost) {
     notificate('Device connection error');
     return
   }
 
   if (mode == 'SyncCommand') {
-    var URI = `${main.settings.deviceHost}?mode=${mode}&listener=${params}`;
+    var URI = `${document.main.settings.deviceHost}?mode=${mode}&listener=${params}`;
   }
   if (mode == 'BackgroundCommand') {
-    var URI = `${main.settings.deviceHost}?mode=${mode}&command=${params}`;
+    var URI = `${document.main.settings.deviceHost}?mode=${mode}&command=${params}`;
   }
 
   const req_params = {
     // URI: URI,
-    host: main.settings.deviceHost,
+    host: document.main.settings.deviceHost,
     mode: mode,
     method: params,
     body: body

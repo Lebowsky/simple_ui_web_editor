@@ -1,19 +1,20 @@
-import { askSaveFile } from './export'
-import { ModalWindow, PickFileModal } from './renderElements';
+import { askDir, askSaveFile, exportData, getQrConfigs } from './export'
+import { AuthModal, ModalWindow, PickFileModal, QRImageModal, SearchElementsModal, SendReqModal, SQLQueryModal } from './renderElements';
+import { checkAskFileResult, initReadedConf, saveConfiguration } from './utils';
+import { getNewConfiguration } from './export';
 
-
-function notificate(text, type) {
+export function notificate(text, type) {
   /*
   type: [danger, info, success]
   */
-  $.toast(text, { sticky: false, type: type });
+  // $.toast(text, { sticky: false, type: type });
   console.log(text)
 };
 
 export async function pickNewFileProject() {
   let result = await askSaveFile()
   if (checkAskFileResult(result)) {
-    conf = await getNewConfiguration()
+    const conf = await getNewConfiguration()
     initReadedConf(conf, result.file_path)
     localStorage.setItem('file-path', result.file_path);
     saveConfiguration()
@@ -22,9 +23,9 @@ export async function pickNewFileProject() {
 }
 
 export const fileLocationSave = async () => {
-  modals = ModalWindow.getModals();
+  const modals = ModalWindow.getModals();
   $.each(modals, (index, modal) => {
-    main.configGraph.setConfigValues(modal.element.id, modal.getValues());
+    document.main.configGraph.setConfigValues(modal.element.id, modal.getValues());
   })
   saveConfiguration();
 };
@@ -32,15 +33,15 @@ export const fileLocationSave = async () => {
 export const fileLocationSaveAs = async () => {
   let result = await askSaveFile()
   if (checkAskFileResult(result)) {
-    modals = ModalWindow.getModals();
+    const modals = ModalWindow.getModals();
     $.each(modals, (index, modal) => {
-      main.configGraph.setConfigValues(modal.element.id, modal.getValues());
+      document.main.configGraph.setConfigValues(modal.element.id, modal.getValues());
     })
 
     const filePath = result.file_path
     localStorage.setItem('file-path', filePath)
     $(".file-path").text(filePath);
-    main.settings.filePath = filePath
+    document.main.settings.filePath = filePath
     await saveConfiguration(result.file_path);
   }
 }
@@ -58,7 +59,7 @@ export const exportConfigData = async () => {
 
   const dirToSave = result.path;
 
-  resultExport = await exportData(uiPath, dirToSave)
+  const resultExport = await exportData(uiPath, dirToSave)
 
   if (resultExport?.result === true)
     notificate('Export success', 'success')
@@ -67,7 +68,7 @@ export const exportConfigData = async () => {
 }
 
 async function pickHandlersFile() {
-  if (!main.conf)
+  if (!document.main.conf)
     return
 
   let filePathText = constants.pyHandlersEmptyPath;
@@ -84,7 +85,7 @@ async function pickHandlersFile() {
 };
 
 export const showQRSettings = async (event) => {
-  settings = await getQrConfigs()
+  const settings = await getQrConfigs()
   if (!settings) return
 
   const hostsOptions = settings.map((el, idx) => ({
@@ -108,13 +109,13 @@ export const showQRSettings = async (event) => {
 }
 
 export const showSqlQueries = async (event) => {
-  document.modal = new SQLQueryModal(main.settings.deviceHost);
+  document.modal = new SQLQueryModal(document.main.settings.deviceHost);
   document.modal.render();
   document.modal.show();
 }
 
 const showSendRequest = async (event) => {
-  document.modal = new SendReqModal(main.settings.deviceHost);
+  document.modal = new SendReqModal(document.main.settings.deviceHost);
   document.modal.render();
   document.modal.show();
 }
