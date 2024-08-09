@@ -1,8 +1,14 @@
 import { askDir, askFile, askSaveFile, exportData, getQrConfigs } from './export'
-import { AuthModal, ModalWindow, PickFileModal, QRImageModal, SearchElementsModal, SendReqModal, SQLQueryModal } from './renderElements';
+import { QRImageModal } from './components/modals/QRImageModal';
+import { SQLQueryModal } from './components/modals/SQLQueryModal';
+import { AuthModal } from './components/modals/AuthModal';
+import { PickFileModal } from './components/modals/PickFileModal';
+import { SendReqModal } from './components/modals/SendReqModal';
+import { SearchElementsModal } from './components/modals/SearchElementsModal';
 import { checkAskFileResult, initReadedConf, saveConfiguration } from './utils';
 import { getNewConfiguration } from './export';
 import { constants } from './conf';
+import { getModals } from './components/modals/modalsRoot';
 
 export function notificate(text, type) {
   /*
@@ -24,7 +30,7 @@ export async function pickNewFileProject() {
 }
 
 export const fileLocationSave = async () => {
-  const modals = ModalWindow.getModals();
+  const modals = getModals();
   $.each(modals, (index, modal) => {
     document.main.configGraph.setConfigValues(modal.element.id, modal.getValues());
   })
@@ -34,7 +40,7 @@ export const fileLocationSave = async () => {
 export const fileLocationSaveAs = async () => {
   let result = await askSaveFile()
   if (checkAskFileResult(result)) {
-    const modals = ModalWindow.getModals();
+    const modals = getModals();
     $.each(modals, (index, modal) => {
       document.main.configGraph.setConfigValues(modal.element.id, modal.getValues());
     })

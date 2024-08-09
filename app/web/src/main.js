@@ -1,9 +1,11 @@
-import {listElements, selectors, constants, newElements} from './conf'
-import { ModalWindow, ListElement, PickFileModal } from './renderElements';
+import { listElements, selectors, constants, newElements } from './conf'
+import { ListElement } from './components/modals/ListElement';
+import { PickFileModal } from './components/modals/PickFileModal';
 import { sortableInit } from './handlers';
 import { getConfParamValue, saveAllPyFilesToDisk } from './utils'
-import { exportConfigData, fileLocationSave, fileLocationSaveAs, showPickFileModal, showQRSettings, showSearchElements, showSqlQueries,  } from './dialogs'
+import { exportConfigData, fileLocationSave, fileLocationSaveAs, showPickFileModal, showQRSettings, showSearchElements, showSqlQueries, } from './dialogs'
 import { togglePrev } from './handlers';
+import { getCurrentModal, getModals } from './components/modals/modalsRoot';
 
 export const Main = {
   settings: {
@@ -25,7 +27,7 @@ export const Main = {
     this.fillConfigSettings();
     this.renderConfiguration();
 
-    document.modal = ModalWindow.getModals('.start');
+    document.modal = getModals('.start');
 
     if (document.modal) {
       document.modal[0].close();
@@ -129,13 +131,13 @@ export const Main = {
   events(event) {
     return {
       closeModal: () => {
-        document.modal = ModalWindow.getCurrentModal();
+        document.modal = getCurrentModal();
         const modal = document.modal
         if (modal)
           modal.close();
       },
       saveElementModal: () => {
-        modal = ModalWindow.getCurrentModal();
+        modal = getCurrentModal();
         if (!modal)
           return
 
@@ -155,7 +157,7 @@ export const Main = {
         pickNewFileProject(main)
       },
       openFile: () => {
-        const currentModal = ModalWindow.getCurrentModal()
+        const currentModal = getCurrentModal()
 
         if (!currentModal) showPickFileModal()
         if (currentModal instanceof PickFileModal) PickFileModal.pickFile('simple_ui', '#ui-config-path')
@@ -170,18 +172,18 @@ export const Main = {
         exportConfigData()
       },
       showQrCode: () => {
-        if (!!ModalWindow.getCurrentModal()) return
+        if (!!getCurrentModal()) return
         showQRSettings()
       },
       togglePreview: () => {
         togglePrev()
       },
       showSqlConsole: () => {
-        if (!!ModalWindow.getCurrentModal()) return
+        if (!!getCurrentModal()) return
         showSqlQueries()
       },
       showSearchElements: () => {
-        if (!!ModalWindow.getCurrentModal()) return
+        if (!!getCurrentModal()) return
         showSearchElements();
       },
     }[event];
@@ -218,11 +220,11 @@ class ClientConfiguration {
 
     try {
       elementConfig = document.main.elementParams[elementValues.type] || document.main.elementParams[listElements[parentType]['type']]
-    } catch (e){
+    } catch (e) {
       console.debug('cant add element in graph:', parentType)
       console.debug(e)
     }
-    
+
     const parentConfig = { ...listElements[parentType] };
     let title = parentConfig && parentConfig.rowKeys && parentConfig.rowKeys.length ? elementValues[parentConfig.rowKeys.filter(key => elementValues[key])[0]] : elementValues['type'];
     title = title || elementValues['type']

@@ -1,8 +1,14 @@
 import $ from 'jquery'
+import { sortable } from 'webpack-jquery-ui'
+
+import { ListElement } from './components/modals/ListElement'
+import { ElementModal } from './components/modals/ElementModal'
+import { JsonModal } from './components/modals/JsonModal'
+import { SelectTypeModal } from './components/modals/SelectTypeModal'
+import { Main } from './main'
 import { selectors, keys, listElements } from './conf'
 import { setConfigUIElements, getNewConfiguration, loadConfiguration } from './export'
 import { initReadedConf } from './utils'
-import { sortable } from 'webpack-jquery-ui'
 import { sortableInit, togglePrev } from './handlers';
 import { 
   pickNewFileProject, 
@@ -16,8 +22,7 @@ import {
   notificate,
   pickHandlersFile
 } from './dialogs'
-import { ElementModal, JsonModal, ListElement, ModalWindow, SelectTypeModal } from './renderElements'
-import { Main } from './main'
+import { getCurrentModal } from './components/modals/modalsRoot'
 
 
 
@@ -159,7 +164,7 @@ $(document).ready(function () {
     modal.show();
   })
   $(document).on('dblclick', ".sql-table tr", function (e) {
-    const modal = ModalWindow.getCurrentModal();
+    const modal = getCurrentModal();
     const table = modal.modal.find('.sql-table').DataTable();
     const rowData = table.row(this).data();
     const data = {};
@@ -174,7 +179,7 @@ $(document).ready(function () {
     modal.show();
   });
   $(document).on('click', ".show-sql-table-json", function (e) {
-    let modal = ModalWindow.getCurrentModal();
+    let modal = getCurrentModal();
     const table = modal.modal.find('.sql-table').DataTable();
     const data = table.rows().data();
     const jsonData = [];
@@ -299,7 +304,7 @@ $(document).ready(function () {
     }
   })
   $(document).on('click', selectors.btnSave, function () {
-    const modal = ModalWindow.getCurrentModal();
+    const modal = getCurrentModal();
     document.main.configGraph.setConfigValues(modal.element.id, modal.getValues());
     modal.removeClass('edited');
     modal.close();
@@ -317,7 +322,7 @@ $(document).ready(function () {
     document.main.configGraph.fillListElements(element.parentType, node, element.parentId, elementId)
   })
   $(document).on('click', ".tab#save-project", function () {
-    const modal = ModalWindow.getCurrentModal();
+    const modal = getCurrentModal();
     document.main.configGraph.setConfigValues(modal.element.id, modal.getValues());
 
     document.main.events("fileLocationSave")();
@@ -328,10 +333,10 @@ $(document).ready(function () {
 
     if (checked.length) {
       selectedType = checked.val();
-      let modal = ModalWindow.getCurrentModal();
+      let modal = getCurrentModal();
       modal.close();
 
-      modal = ModalWindow.getCurrentModal();
+      modal = getCurrentModal();
 
       const elementValues = Object.fromEntries(
         Object.entries(
@@ -357,7 +362,7 @@ $(document).ready(function () {
     }
   })
   $(document).on('click', selectors.btnCloseModal, function () {
-    document.modal = ModalWindow.getCurrentModal();
+    document.modal = getCurrentModal();
     const modal = document.modal
     modal.close();
 
@@ -683,7 +688,7 @@ async function sendRequest(node) {
     if (result.error) {
       notificate(result.content);
     } else {
-      const modal = ModalWindow.getCurrentModal();
+      const modal = getCurrentModal();
       // modal.renderRequestResult(JSON.parse(result.data));
       modal.renderRequestResult(result.data);
     }
@@ -710,7 +715,7 @@ async function auth(node) {
 }
 
 function pickFileApply() {
-  const modal = ModalWindow.getCurrentModal();
+  const modal = getCurrentModal();
   modal.close();
 }
 
