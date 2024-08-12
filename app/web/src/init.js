@@ -520,7 +520,6 @@ $(document).ready(function () {
     e.stopPropagation();
   });
   addTabListeners()
-  addSideMenuListeners()
   document.querySelector('#open-py-handlers-file')?.addEventListener('click', pickHandlersFile)
 });
 
@@ -535,18 +534,6 @@ const addTabListeners = () => {
     const tab = document.querySelector(dataTab)
     tab?.addEventListener('click', () => selectTab(tab))
   })
-}
-
-const addSideMenuListeners = () => {
-  document.querySelector('#new-project')?.addEventListener('click', pickNewFileProject)
-  document.querySelector('#open-project')?.addEventListener('click', showPickFileModal)
-  document.querySelector('#save-project')?.addEventListener('click', fileLocationSave)
-  document.querySelector('#save-project-as')?.addEventListener('click', fileLocationSaveAs)
-  document.querySelector('#export-data')?.addEventListener('click', exportConfigData)
-  document.querySelector('#qr-settings')?.addEventListener('click', showQRSettings)
-  document.querySelector('#preview-button')?.addEventListener('click', togglePrev)
-  document.querySelector('#open-modal-sql-queries')?.addEventListener('click', showSqlQueries)
-  document.querySelector('#open-modal-send-req')?.addEventListener('click', showSearchElements)
 }
 
 function toggleMainMenu() {
