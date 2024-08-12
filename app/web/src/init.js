@@ -9,19 +9,8 @@ import { Main } from './main'
 import { selectors, keys, listElements } from './conf'
 import { setConfigUIElements, getNewConfiguration, loadConfiguration } from './export'
 import { initReadedConf } from './utils'
-import { sortableInit, togglePrev } from './handlers';
-import { 
-  pickNewFileProject, 
-  showPickFileModal,
-  fileLocationSave,
-  fileLocationSaveAs,
-  exportConfigData,
-  showQRSettings,
-  showSqlQueries,
-  showSearchElements,
-  notificate,
-  pickHandlersFile
-} from './dialogs'
+import { sortableInit, toggleMainMenu, togglePrev } from './handlers';
+import { notificate, pickHandlersFile } from './dialogs'
 import { getCurrentModal } from './components/modals/modalsRoot'
 
 
@@ -504,21 +493,11 @@ $(document).ready(function () {
   window.onbeforeunload = function (e) {
     // return e TODO: модалка при обновлении страницы
   };
-  $(document).on('click', '.toggle-mnu', function (e) {
-    toggleMainMenu();
-    e.stopPropagation();
-  })
-  $(document).on('click', '.btn-group.main button', function () {
-    toggleMainMenu();
-  })
   $(document).on('click', function (e) {
     if ($(".btn-group.main").hasClass('active') && !$(e.target).hasClass('toggle-mnu')) {
       toggleMainMenu();
     }
   })
-  $(document).on('click', '.btn-group.main', function (e) {
-    e.stopPropagation();
-  });
   addTabListeners()
   document.querySelector('#open-py-handlers-file')?.addEventListener('click', pickHandlersFile)
 });
@@ -536,10 +515,6 @@ const addTabListeners = () => {
   })
 }
 
-function toggleMainMenu() {
-  $('.toggle-mnu').toggleClass("on");
-  $('.btn-group.main').toggleClass("active");
-}
 function copyTextToClipboard(text) {
   if (!navigator.clipboard) {
     return;

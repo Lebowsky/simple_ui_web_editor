@@ -1,3 +1,5 @@
+import $ from 'jquery'
+
 export function sortableInit(node) {
   $(node).sortable({
     items: "> li",
@@ -30,4 +32,8 @@ export function renderEditor(node, data = '') {
   // editor.set(data);
 
   // return editor;
+}
+export function toggleMainMenu() {
+  $('.toggle-mnu').toggleClass("on")
+  $('.btn-group.main').toggleClass("active")
 }
