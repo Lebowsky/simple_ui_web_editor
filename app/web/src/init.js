@@ -492,11 +492,8 @@ $(document).ready(function () {
   });
   window.onbeforeunload = function (e) {
     // return e TODO: модалка при обновлении страницы
-  };
-  $(document).on('click', function (e) {
-    
-  })
-  
+  };  
+
   document.querySelector('#open-py-handlers-file')?.addEventListener('click', pickHandlersFile)
 });
 
@@ -601,8 +598,4 @@ async function auth(node) {
   }
 }
 
-function pickFileApply() {
-  const modal = getCurrentModal();
-  modal.close();
-}
 

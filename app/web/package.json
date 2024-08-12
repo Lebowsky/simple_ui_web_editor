@@ -28,6 +28,7 @@
     "webpack-dev-server": "^5.0.4"
   },
   "dependencies": {
+    "@blueprintjs/core": "^5.11.0",
     "datatables": "^1.10.18",
     "datatables.net": "^2.1.3",
     "datatables.net-dt": "^2.1.3",

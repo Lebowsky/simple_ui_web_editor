@@ -9,7 +9,6 @@ const App = () => {
     setSideMenuVisible(false)
   }
   return (
-
     <div onClick={onClick} style={{ height: '100vh' }}>
       <SideMenu />
       <ConfigurationContextProvider>
