@@ -1,5 +1,5 @@
-import SideMenu from "./sideMenu"
-import Content from "./content"
+import SideMenu from "./sideMenu/sideMenu"
+import Content from "./content/content"
 
 const App = () => {
   return (
