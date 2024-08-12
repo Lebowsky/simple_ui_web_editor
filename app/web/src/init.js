@@ -9,7 +9,7 @@ import { Main } from './main'
 import { selectors, keys, listElements } from './conf'
 import { setConfigUIElements, getNewConfiguration, loadConfiguration } from './export'
 import { initReadedConf } from './utils'
-import { sortableInit, toggleMainMenu, togglePrev, selectTab, sendDataToUpdatePreview } from './handlers';
+import { sortableInit, sendDataToUpdatePreview } from './handlers';
 import { notificate, pickHandlersFile } from './dialogs'
 import { getCurrentModal } from './components/modals/modalsRoot'
 
@@ -494,9 +494,7 @@ $(document).ready(function () {
     // return e TODO: модалка при обновлении страницы
   };
   $(document).on('click', function (e) {
-    if ($(".btn-group.main").hasClass('active') && !$(e.target).hasClass('toggle-mnu')) {
-      toggleMainMenu();
-    }
+    
   })
   
   document.querySelector('#open-py-handlers-file')?.addEventListener('click', pickHandlersFile)

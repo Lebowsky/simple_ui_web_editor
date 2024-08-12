@@ -6,6 +6,7 @@ interface IConfigurationContextProvider {
   children: React.ReactNode
 }
 export const ConfigurationContextProvider = ({ children }: IConfigurationContextProvider) => {
+  
   return (
     <ConfigurationContext.Provider
       value={{}}
@@ -13,4 +14,8 @@ export const ConfigurationContextProvider = ({ children }: IConfigurationContext
       {children}
     </ConfigurationContext.Provider>
   )
+}
+
+export function useConfigurationContext() {
+  return useContext(ConfigurationContext)
 }

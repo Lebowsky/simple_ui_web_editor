@@ -33,10 +33,6 @@ export function renderEditor(node, data = '') {
 
   // return editor;
 }
-export function toggleMainMenu() {
-  $('.toggle-mnu').toggleClass("on")
-  $('.btn-group.main').toggleClass("active")
-}
 
 export function selectTab(tabNode) {
   $(".tabs .tab").removeClass("active");

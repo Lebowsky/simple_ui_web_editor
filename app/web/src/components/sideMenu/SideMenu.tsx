@@ -1,3 +1,4 @@
+import { IMainContextProvider, useMainContext } from "../../context/MainContext";
 import {
   pickNewFileProject,
   showPickFileModal,
@@ -10,25 +11,25 @@ import {
   showSearchElements
 } from "../../dialogs"
 
-import { toggleMainMenu } from "../../handlers";
 
 
 const SideMenu = () => {
+  const { sideMenuVisible, setSideMenuVisible } = useMainContext() as IMainContextProvider
   type TypeHandler = () => void
 
   const toggleMenuClick = (e: React.MouseEvent<HTMLElement>) => {
     e.stopPropagation();
-    toggleMainMenu()
+    setSideMenuVisible((prev) => !prev)
   }
   const buttonClick = (e: React.MouseEvent<HTMLElement>, handler: TypeHandler) => {
     e.stopPropagation()
-    toggleMainMenu()
+    setSideMenuVisible(false)
     handler()
   }
   return (
     <>
-      <a href="#menu" className="toggle-mnu" onClick={toggleMenuClick}><span></span></a>
-      <div className="btn-group main">
+      <a href="#menu" className={`${sideMenuVisible ? "toggle-mnu on": "toggle-mnu"}`} onClick={toggleMenuClick}><span></span></a>
+      <div className={`${sideMenuVisible ? "btn-group main active" : "btn-group main"}`}>
         <button onClick={(e) => buttonClick(e, pickNewFileProject)}>New Project<span>(Ctrl+N)</span></button>
         <button onClick={(e) => buttonClick(e, showPickFileModal)}>Open Project<span>(Ctrl+O)</span></button>
         <button onClick={(e) => buttonClick(e, fileLocationSave)}>Save Project<span>(Ctrl+S)</span></button>

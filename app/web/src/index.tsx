@@ -4,7 +4,7 @@ import './init'
 import './style.css'
 import App from './components/App'
 import React from 'react'
-
+import { MainContextProvider } from './context/MainContext'
 const root = document.getElementById('root')
 if (!root) throw new Error('root not found')
 
@@ -12,7 +12,9 @@ const container = createRoot(root)
 
 container.render(
   <React.StrictMode>
-    <App />
+    <MainContextProvider>
+      <App />
+    </MainContextProvider>
   </React.StrictMode>
 )
 
