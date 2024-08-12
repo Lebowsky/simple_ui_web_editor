@@ -2,15 +2,15 @@ import { createContext, useContext, useState } from "react";
 
 const ConfigurationContext = createContext({})
 
-interface IConfigurationContextProvider{
+interface IConfigurationContextProvider {
   children: React.ReactNode
 }
-export const ConfigurationContextProvider = ({ children }:IConfigurationContextProvider ) => {
+export const ConfigurationContextProvider = ({ children }: IConfigurationContextProvider) => {
   return (
     <ConfigurationContext.Provider
-      value = {{}}
+      value={{}}
     >
-      { children }
+      {children}
     </ConfigurationContext.Provider>
   )
 }

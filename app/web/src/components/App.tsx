@@ -11,7 +11,6 @@ const App = () => {
         <div className="content-wrapper">
           <Content />
         </div>
-
         <div id="modals-wrap"></div>
         <div className="hidden-conf-json"></div>
         <footer></footer>
