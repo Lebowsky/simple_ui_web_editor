@@ -1,10 +1,10 @@
 import './main'
 import './init'
 import './style.css'
-import App from './components/app'
+import App from './components/App'
 
 const root = document.getElementById('root')
-root.innerHTML = App()
+if (root) root.innerHTML = App()
 
 
 // export const eel = window.eel
