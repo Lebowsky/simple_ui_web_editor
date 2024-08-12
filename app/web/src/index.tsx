@@ -5,6 +5,9 @@ import './style.css'
 import App from './components/App'
 import React from 'react'
 import { MainContextProvider } from './context/MainContext'
+import '@blueprintjs/core/lib/css/blueprint.css'; 
+
+
 const root = document.getElementById('root')
 if (!root) throw new Error('root not found')
 

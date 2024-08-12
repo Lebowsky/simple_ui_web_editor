@@ -9,11 +9,23 @@ import { checkAskFileResult, initReadedConf, saveConfiguration } from './utils';
 import { getNewConfiguration } from './export';
 import { constants } from './conf';
 import { getModals } from './components/modals/modalsRoot';
+import { toast } from './utils/toaster';
 
 export function notificate(text, type) {
   /*
   type: [danger, info, success]
   */
+  switch (type){
+    case 'danger':
+      toast.error(text)
+      break
+    case 'success':
+      toast.success(text)
+      break
+    default:
+      toast(text)
+  }
+  
   // $.toast(text, { sticky: false, type: type });
   console.log(text)
 };
