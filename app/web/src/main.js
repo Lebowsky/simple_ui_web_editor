@@ -53,7 +53,7 @@ export const Main = {
     this.postInit();
   },
   postInit() {
-    const btnPyfilesListButtons = document.getElementById('py-files').getElementsByClassName('btn-group')
+    const btnPyfilesListButtons = document.getElementById('py-files')?.getElementsByClassName('btn-group')
 
     if (btnPyfilesListButtons) {
       const newButton = document.createElement('button');
@@ -310,7 +310,7 @@ class ClientConfiguration {
   getConfigElement(elementId) {
     let firstElement = structuredClone(this.elements.find((el) => el.id == elementId));
     const clientConfig = {
-      parentType: firstElement.parentType,
+      parentType: firstElement?.parentType,
       ...firstElement.elementValues
     };
 

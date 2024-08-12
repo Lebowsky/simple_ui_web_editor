@@ -91,7 +91,7 @@ async function fillBase64Handlers() {
   const filePath = $('#py-handlers-file-path').attr('data-path');
   const conf = document.main.conf.ClientConfiguration;
 
-  if (filePath.length > 0) {
+  if (filePath?.length > 0) {
     result = await getBase64FromFilePath(filePath);
   }
 

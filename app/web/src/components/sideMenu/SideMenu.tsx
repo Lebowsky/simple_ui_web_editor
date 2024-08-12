@@ -1,8 +1,8 @@
 const SideMenu = () => {
   return (
-    `
-      <a href="#menu" class="toggle-mnu"><span></span></a>
-      <div class="btn-group main">
+    <>
+      <a href="#menu" className="toggle-mnu"><span></span></a>
+      <div className="btn-group main">
         <button id="new-project">New Project<span>(Ctrl+N)</span></button>
         <button id="open-project">Open Project<span>(Ctrl+O)</span></button>
         <button id="save-project">Save Project<span>(Ctrl+S)</span></button>
@@ -13,7 +13,7 @@ const SideMenu = () => {
         <button id="open-modal-sql-queries">SQL Query<span>(Ctrl+Alt+K)</span></button>
         <button id="open-modal-send-req">Search Elements<span>(Ctrl+Shift+F)</span></button>
       </div>   
-    `
+    </>
   )
 }
 
