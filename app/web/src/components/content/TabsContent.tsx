@@ -1,106 +1,138 @@
+import { InputParam } from "../core/InputParam"
+import { ParamsRow } from "../core/ParamsRow"
+
 export const TabsContent = () => {
   return (
     <>
-      <section id="main-conf-common" className="active">
-        <div className="section-header">Common<i className="fa fa-angle-up" aria-hidden="true"></i></div>
-        <div className="list-wrap show">
-          <ul className="list form configuration">
-            <li className="param">
-              <div>
-                <label htmlFor="ConfigurationName">Configuration-name</label>
-                <input type="text" name="ConfigurationName" id="ConfigurationName" data-param-name="ConfigurationName" />
-              </div>
-              <div>
-                <label htmlFor="ConfigurationVersion">Version</label>
-                <input type="text" name="ConfigurationVersion" id="ConfigurationVersion" data-param-name="ConfigurationVersion" />
-              </div>
-            </li>
-            <li className="param">
-              <div className="textarea-param-wrapper">
-                <label htmlFor="ConfigurationDescription">Description</label>
-                <textarea className="textarea-param" id="ConfigurationDescription" name="ConfigurationDescription" data-param-name="ConfigurationDescription" rows={10}>
-                </textarea>
-              </div>
-            </li>
-          </ul>
-        </div>
-      </section>
-      <section id="main-conf-process">
-        <div className="section-header">Processes<i className="fa fa-angle-up" aria-hidden="true"></i></div>
-        <div className="list-wrap show">
-          <ul className="list" id="processes">No process</ul>
-        </div>
-      </section>
-      <section id="main-conf-main-menu">
-        <div className="section-header">Main menu<i className="fa fa-angle-up" aria-hidden="true"></i></div>
-        <div className="list-wrap show">
-          <ul className="list" id="main-menu">No Items</ul>
-        </div>
-      </section>
-      <section id="main-conf-properties">
-        <div className="section-header">Properties<i className="fa fa-angle-up" aria-hidden="true"></i></div>
-        <div className="list-wrap show">
-          <ul className="list form configuration">
-            <li className="param">
-              <div>
-                <label htmlFor="vendor">Vendor</label>
-                <input type="text" name="vendor" id="vendor" data-param-name="vendor" />
-              </div>
-              <div>
-                <label htmlFor="vendor_url">Vendor URL</label>
-                <input type="text" name="vendor_url" id="vendor_url" data-param-name="vendor_url" />
-              </div>
-            </li>
-            <li className="param">
-              <div>
-                <label htmlFor="vendor-login">Vendor login (Basic)</label>
-                <input type="text" name="vendor-login" id="vendor-login" />
-              </div>
-              <div>
-                <label htmlFor="vendor-password">Vendor password (Basic)</label>
-                <input type="password" name="vendor-password" id="vendor-password" />
-              </div>
-            </li>
-            <li className="param">
-              <label htmlFor="vendor_auth">Vendor raw authorization string</label>
-              <input type="text" name="vendor-auth" id="vendor_auth" data-param-name="vendor_auth" />
-            </li>
-          </ul>
-        </div>
-      </section>
-      <section id="main-conf-schedulers">
-        <div className="section-header">Shedulers<i className="fa fa-angle-up" aria-hidden="true"></i></div>
-        <div className="list-wrap show">
-          <ul className="list" id="shedulers">No Items</ul>
-        </div>
-      </section>
-      <section id="main-conf-python-files">
-        <div className="section-header">Python files<i className="fa fa-angle-up" aria-hidden="true"></i></div>
-        <div className="list-wrap show">
-          <ul className="list">
-            <li>
-              <button id="open-py-handlers-file">Open file</button>
-              <label>Handlers file (Python)</label>
-              <span className="param"></span >
-              <span id="py-handlers-file-path" data-param-name="pyHandlersPath">&lt;Not selected&gt;</span>
-            </li>
-          </ul>
-          <ul className="list" id="py-files">No Items</ul>
-        </div>
-      </section>
-      <section id="main-conf-media-files">
-        <div className="section-header">Media files<i className="fa fa-angle-up" aria-hidden="true"></i>
-        </div>
-        <div className="list-wrap show">
-          <ul className="list" id="media-files">No Items</ul>
-        </div>
-      </section>
-      <section id="main-conf-common-handlers">
-        <div className="section-header">Common handlers<i className="fa fa-angle-up" aria-hidden="true"></i></div>
-        <div className="list-wrap show">
-          <ul className="list" id="common-handlers">No Items</ul>
-        </div>
-      </section>
+      <CommonSection />
+      <ProcessesSection />
+      <MainMenuSection />
+      <PropertiesSection />
+      <SchedulersSection />
+      <PythonFilesSection />
+      <MediaFilesSection />
+      <CommonHandlersSection />
     </>
+  )
+}
+
+const CommonSection = () => {
+  return (
+    <section id="main-conf-common" className="active">
+      <div className="section-header">Common<i className="fa fa-angle-up" aria-hidden="true"></i></div>
+      <div className="list-wrap show">
+        <ul className="list form configuration">
+          <ParamsRow>
+            <InputParam paramName="ConfigurationName" label='Configuration name'></InputParam>
+            <InputParam paramName="ConfigurationVersion" label='Version'></InputParam>
+          </ParamsRow>
+          <ParamsRow>
+            <div className="textarea-param-wrapper">
+              <label htmlFor="ConfigurationDescription">Description</label>
+              <textarea className="textarea-param" id="ConfigurationDescription" name="ConfigurationDescription" data-param-name="ConfigurationDescription" rows={10}>
+              </textarea>
+            </div>
+          </ParamsRow>
+        </ul>
+      </div>
+    </section>
+  )
+}
+
+const ProcessesSection = () => {
+  return (
+    <section id="main-conf-process">
+      <div className="section-header">Processes<i className="fa fa-angle-up" aria-hidden="true"></i></div>
+      <div className="list-wrap show">
+        <ul className="list" id="processes">No process</ul>
+      </div>
+    </section>
+  )
+}
+
+const MainMenuSection = () => {
+  return (
+    <section id="main-conf-main-menu">
+      <div className="section-header">Main menu<i className="fa fa-angle-up" aria-hidden="true"></i></div>
+      <div className="list-wrap show">
+        <ul className="list" id="main-menu">No Items</ul>
+      </div>
+    </section>
+  )
+}
+
+const PropertiesSection = () => {
+  return (
+    <section id="main-conf-properties">
+      <div className="section-header">Properties<i className="fa fa-angle-up" aria-hidden="true"></i></div>
+      <div className="list-wrap show">
+        <ul className="list form configuration">
+          <ParamsRow>
+            <InputParam paramName="vendor" label='Vendor'></InputParam>
+            <InputParam paramName="vendor_url" label='Vendor URL'></InputParam>
+          </ ParamsRow>
+          <ParamsRow>
+            <InputParam paramName="vendor-login" label='Vendor login (Basic)'></InputParam>
+            <InputParam paramName="vendor-password" label='Vendor password (Basic)'></InputParam>
+          </ ParamsRow>
+          <ParamsRow>
+            <InputParam paramName="vendor_auth" label='Vendor raw authorization string'></InputParam>
+          </ ParamsRow>
+        </ul>
+      </div>
+    </section>
+  )
+}
+
+const SchedulersSection = () => {
+  return (
+    <section id="main-conf-schedulers">
+      <div className="section-header">Shedulers<i className="fa fa-angle-up" aria-hidden="true"></i></div>
+      <div className="list-wrap show">
+        <ul className="list" id="shedulers">No Items</ul>
+      </div>
+    </section>
+  )
+}
+
+const PythonFilesSection = () => {
+  return (
+    <section id="main-conf-python-files">
+      <div className="section-header">Python files<i className="fa fa-angle-up" aria-hidden="true"></i></div>
+      <div className="list-wrap show">
+        <ul className="list">
+          <li>
+            <button id="open-py-handlers-file">Open file</button>
+            <label>Handlers file (Python)</label>
+            <span className="param"></span >
+            <span id="py-handlers-file-path" data-param-name="pyHandlersPath">&lt;Not selected&gt;</span>
+          </li>
+        </ul>
+        <ul className="list" id="py-files">No Items</ul>
+      </div>
+    </section>
+  )
+}
+
+const MediaFilesSection = () => {
+  return (
+    <section id="main-conf-media-files">
+      <div className="section-header">Media files<i className="fa fa-angle-up" aria-hidden="true"></i>
+      </div>
+      <div className="list-wrap show">
+        <ul className="list" id="media-files">No Items</ul>
+      </div>
+    </section>
+  )
+}
+
+const CommonHandlersSection = () => {
+  return (
+    <section id="main-conf-common-handlers">
+      <div className="section-header">Common handlers<i className="fa fa-angle-up" aria-hidden="true"></i></div>
+      <div className="list-wrap show">
+        <ul className="list" id="common-handlers">No Items</ul>
+      </div>
+    </section>
   )
 }
