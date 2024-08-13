@@ -31,6 +31,7 @@ export interface IConfigStorage {
   update(item: IConfigItem): number
   delete(id: number, type: contextTypes): number | null
   getItemsByType(type: contextTypes): IConfigItem[]
+  getItemTree(item: IConfigItem): {[key: string]: any}
 }
 
 export class StorageService implements IConfigStorage{
@@ -101,6 +102,15 @@ export class StorageService implements IConfigStorage{
   }
   public getItemsByType(type: contextTypes): IConfigItem[] {
     return structuredClone(this.__getContextItems(type))
+  }
+  public getItemTree(item: IConfigItem): {[key: string]: any}{
+    
+    if (item.contextType === contextTypes.processes) {
+      return {
+        ...item.content,
+        Operations: this.__getOperations(item.id)
+      }
+    }
   }
   private __getContextItems(type: contextTypes): IConfigItem[] | null {
     return {

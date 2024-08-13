@@ -1,6 +1,5 @@
 import { IConfigurationContext, useConfigurationContext } from "../../context/ConfigurationContext"
 import { InputParam } from "../core/InputParam"
-import { ListItemButtons } from "../core/listItemButtons"
 import { ListItemProcess } from "../core/ListItemProcess"
 import { ParamsRow } from "../core/ParamsRow"
 
@@ -68,7 +67,9 @@ const ProcessesSectionNew = () => {
             <button className="btn-paste" data-childrens-type="Processes">Paste</button>
             <button className="btn-add cv process">Add CVOperation</button>
           </div>
-          {processes.map(el => <ListItemProcess label={el.content.ProcessName} key={el.id}/>)}
+          {processes.map(
+            el => (<ListItemProcess label={el.content.ProcessName} key={el.id} listItem={el}/>)
+          )}
         </ul>
       </div>
     </section>

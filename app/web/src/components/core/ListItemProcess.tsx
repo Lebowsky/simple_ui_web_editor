@@ -1,16 +1,18 @@
-import { ListItemButtons } from "./listItemButtons"
+import { IConfigItem } from "../../adapters/storageService"
+import { ListItemButtons } from "./ListItemButtons"
 import { ListItemOperation } from "./ListItemOperation"
 
 interface IListItemProcess {
+  listItem: IConfigItem
   label: string
 }
 
-export const ListItemProcess = ({ label }: IListItemProcess) => {
+export const ListItemProcess = ({ label, listItem }: IListItemProcess) => {
   return (
-    <li className="list-item active" data-id="2" data-type="Processes">
+    <li className="list-item" data-id="2" data-type="Processes">
       <div className="item-nav">
         <span className="item-name">{ label }</span>
-        <ListItemButtons />
+        <ListItemButtons listItem={listItem} />
       </div>
       <div className="item-childs list ui-sortable" id="operations" data-id="2" style={{ display: 'none' }}>
         <div className="btn-group">

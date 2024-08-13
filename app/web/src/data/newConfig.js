@@ -25,6 +25,28 @@ export const newConfiguration = {
             "Handlers": []
           }
         ]
+      },
+      {
+        "type": "Process",
+        "ProcessName": "Новый процесс",
+        "DefineOnBackPressed": false,
+        "hidden": false,
+        "login_screen": false,
+        "SC": false,
+        "Operations": [
+          {
+            "type": "Operation",
+            "Name": "Новый экран",
+            "Timer": false,
+            "hideToolBarScreen": false,
+            "hideBottomBarScreen": false,
+            "noScroll": false,
+            "handleKeyUp": false,
+            "noConfirmation": false,
+            "Elements": [],
+            "Handlers": []
+          }
+        ]
       }
     ],
     "ConfigurationSettings": {

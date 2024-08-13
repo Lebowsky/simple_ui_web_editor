@@ -1,4 +1,5 @@
 import $ from 'jquery'
+import { notificate } from './dialogs';
 
 export function sortableInit(node) {
   $(node).sortable({
@@ -90,4 +91,15 @@ export async function sendDataToUpdatePreview(dataToSend) {
   } catch (error) {
     console.error("Ошибка при обмене данными с сервером:", error);
   }
+}
+export function copyTextToClipboard(text) {
+  if (!navigator.clipboard) {
+    return
+  }
+  navigator.clipboard.writeText(text).then(function () {
+    console.log('Async: Copying to clipboard was successful!')
+    notificate('Скопировано в буфер', 'success')
+  }, function (err) {
+    console.error('Async: Could not copy text: ', err)
+  })
 }

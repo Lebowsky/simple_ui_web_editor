@@ -9,7 +9,7 @@ import { Main } from './main'
 import { selectors, keys, listElements } from './conf'
 import { setConfigUIElements, getNewConfiguration, loadConfiguration } from './export'
 import { initReadedConf } from './utils'
-import { sortableInit, sendDataToUpdatePreview } from './handlers';
+import { sortableInit, sendDataToUpdatePreview, copyTextToClipboard } from './handlers';
 import { notificate, pickHandlersFile } from './dialogs'
 import { getCurrentModal } from './components/modals/modalsRoot'
 
@@ -495,17 +495,6 @@ $(document).ready(function () {
   document.querySelector('#open-py-handlers-file')?.addEventListener('click', pickHandlersFile)
 });
 
-function copyTextToClipboard(text) {
-  if (!navigator.clipboard) {
-    return;
-  }
-  navigator.clipboard.writeText(text).then(function () {
-    console.log('Async: Copying to clipboard was successful!');
-    notificate('Скопировано в буфер', 'success')
-  }, function (err) {
-    console.error('Async: Could not copy text: ', err);
-  });
-}
 function editElement(elementId) {
   const element = document.main.configGraph.getElementById(elementId);
 

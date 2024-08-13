@@ -1,4 +1,4 @@
-import { ListItemButtons } from "./listItemButtons"
+import { ListItemButtons } from "./ListItemButtons"
 
 export const ListItemOperation = () => {
   
@@ -6,7 +6,7 @@ export const ListItemOperation = () => {
     <li className="list-item" data-id="3" data-type="Operations">
       <div className="item-nav">
         <span className="item-name">Новый экран</span>
-        <ListItemButtons />
+        {/* <ListItemButtons /> */}
       </div>
       <div className="item-childs list ui-sortable"></div>
     </li>
