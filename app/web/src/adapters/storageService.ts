@@ -44,7 +44,7 @@ export class StorageService implements IConfigStorage{
   private __common: IConfigItem[] = []
 
   constructor(rawData: {[key: string]: any}) {
-    this.__rawData = rawData
+    this.__rawData = rawData.ClientConfiguration
     this.__id = 0
     const {
       Processes,

@@ -4,10 +4,10 @@ import { Repository } from "./abstractRepository"
 type ProcessData =  {
   type: 'Process', 
   ProcessName: string, 
-  DefineOnBackPressed: boolean,
-  hidden: boolean,
-  login_screen: boolean
-  Operations: any[]
+  DefineOnBackPressed?: boolean,
+  hidden?: boolean,
+  login_screen?: boolean,
+  Operations: any[],
   [key: string]: any 
 }
 

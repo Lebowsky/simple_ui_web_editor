@@ -14,11 +14,9 @@ import { notificate, pickHandlersFile } from './dialogs'
 import { getCurrentModal } from './components/modals/modalsRoot'
 
 
-
-document.main = Object.create(Main);
-setConfigUIElements();
-
 $(document).ready(function () {
+  document.main = window.main
+  setConfigUIElements();
   sortableInit(selectors.list);
   document.main.settings.modalWidth = 820;
 
