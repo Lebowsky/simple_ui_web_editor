@@ -10,6 +10,7 @@ export const Tabs = () => {
     <div className="tabs">
       <div className="tab active" data-tab-id="main-conf-common" onClick={(e) => onClick(e)}>Common</div>
       <div className="tab" data-tab-id="main-conf-process" onClick={(e) => onClick(e)}>Processes</div>
+      <div className="tab" data-tab-id="main-conf-process-new" onClick={(e) => onClick(e)}>Processes new</div>
       <div className="tab" data-tab-id="main-conf-main-menu" onClick={(e) => onClick(e)}>Main menu</div>
       <div className="tab" data-tab-id="main-conf-properties" onClick={(e) => onClick(e)}>Properties</div>
       <div className="tab" data-tab-id="main-conf-schedulers" onClick={(e) => onClick(e)}>Shedulers</div>

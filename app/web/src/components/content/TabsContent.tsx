@@ -1,4 +1,7 @@
+import { IConfigurationContext, useConfigurationContext } from "../../context/ConfigurationContext"
 import { InputParam } from "../core/InputParam"
+import { ListItemButtons } from "../core/listItemButtons"
+import { ListItemProcess } from "../core/ListItemProcess"
 import { ParamsRow } from "../core/ParamsRow"
 
 export const TabsContent = () => {
@@ -6,6 +9,7 @@ export const TabsContent = () => {
     <>
       <CommonSection />
       <ProcessesSection />
+      <ProcessesSectionNew />
       <MainMenuSection />
       <PropertiesSection />
       <SchedulersSection />
@@ -45,6 +49,27 @@ const ProcessesSection = () => {
       <div className="section-header">Processes<i className="fa fa-angle-up" aria-hidden="true"></i></div>
       <div className="list-wrap show">
         <ul className="list" id="processes">No process</ul>
+      </div>
+    </section>
+  )
+}
+
+const ProcessesSectionNew = () => {
+  const { configManager } = useConfigurationContext() as IConfigurationContext
+  const processes = configManager?.processes.all() || []
+  
+  return (
+    <section id="main-conf-process-new">
+      <div className="section-header">Processes<i className="fa fa-angle-up" aria-hidden="true"></i></div>
+      <div className="list-wrap show">
+        <ul className="list ui-sortable" id="processes" data-id="1">
+          <div className="btn-group">
+            <button className="btn-add process">Add</button>
+            <button className="btn-paste" data-childrens-type="Processes">Paste</button>
+            <button className="btn-add cv process">Add CVOperation</button>
+          </div>
+          {processes.map(el => <ListItemProcess label={el.content.ProcessName} key={el.id}/>)}
+        </ul>
       </div>
     </section>
   )

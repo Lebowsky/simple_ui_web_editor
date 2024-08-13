@@ -30,6 +30,7 @@ export interface IConfigStorage {
   create(item: IConfigItem): number
   update(item: IConfigItem): number
   delete(id: number, type: contextTypes): number | null
+  getItemsByType(type: contextTypes): IConfigItem[]
 }
 
 export class StorageService implements IConfigStorage{

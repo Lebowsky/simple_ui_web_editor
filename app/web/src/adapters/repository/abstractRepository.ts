@@ -5,7 +5,7 @@ export abstract class Repository {
   private __storage: IConfigStorage
   protected __contextType: contextTypes
 
-  constructor (storage: IConfigStorage){
+  constructor(storage: IConfigStorage) {
     this.__storage = storage
   }
 
@@ -19,7 +19,11 @@ export abstract class Repository {
     return this.__storage.get(id, this.__contextType)
   }
 
-  delete(id: number): number | null{
+  delete(id: number): number | null {
     return this.__storage.delete(id, this.__contextType)
+  }
+
+  all(): IConfigItem[] {
+    return this.__storage.getItemsByType(this.__contextType)
   }
 }

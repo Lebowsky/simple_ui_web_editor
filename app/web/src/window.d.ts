@@ -22,4 +22,5 @@ interface IConfigEngine {
 
 interface Window {
   main: IConfigEngine;
+  configManager: any
 }

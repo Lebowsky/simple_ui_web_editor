@@ -32,4 +32,19 @@ export class ProcessesRepository extends Repository{
   delete(id: number){
     return super.delete(id)
   }
+
+  all(): ProcessItem[] {
+    const result = super.all()
+
+    return result.map(el => ({
+        ...el, 
+        content: {
+          type: el.content.type, 
+          ProcessName: el.content.ProcessName,
+          Operations: el.content.Operations,
+          ...el.content
+        }
+      })
+    )
+  }
 }
