@@ -7,7 +7,7 @@ interface IListItemButtonsProps {
 }
 
 export const ListItemButtons = ({ listItem }: IListItemButtonsProps) => {
-  const { globalContext } = useConfigurationContext() as IConfigurationContext
+  const { globalContext, notifyUpdate } = useConfigurationContext() as IConfigurationContext
 
   const onClickJson = () => {
     // const elementId = $(this).parents(selectors.listItem).attr('data-id');
@@ -56,21 +56,12 @@ export const ListItemButtons = ({ listItem }: IListItemButtonsProps) => {
     // editElement(elementId);
   }
   const onClickDelete = () => {
-    // if (confirm('Вы уверены?')) {
-    //   const elementId = $(this).parents(selectors.listItem).attr('data-id');
-    //   const element = document.main.configGraph.getElementById(elementId);
-    //   const type = element.parentType;
-    //   const node = element.parentConfig['node'];
-    //   const parentId = element.parentId;
-
-    //   document.main.configGraph.removeElement(element);
-    //   document.main.configGraph.fillListElements(type, node, parentId);
-
-    //   if (element.parentType == "Operations" || element.parentType == "CVFrames") {
-    //     const operationListNode = $(selectors.processList).find("#operations[data-id='" + parentId + "']")
-    //     document.main.configGraph.fillListElements(element.parentType, operationListNode, parentId);
-    //   }
-    // }
+    if (confirm('Вы уверены?')) {
+      globalContext.processes.delete(listItem.id)
+      const operations = globalContext.operations.all().filter(item => item.parentId === listItem.id)
+      operations.forEach(item => globalContext.operations.delete(item.id))
+      notifyUpdate()
+    }
   }
   return (
     <div className="item-btn">
@@ -78,7 +69,7 @@ export const ListItemButtons = ({ listItem }: IListItemButtonsProps) => {
       <span title="copy" onClick={onClickCopy}><i className="fa fa-clipboard" aria-hidden="true"></i></span>
       <span title="duplicate"><i className="fa fa-copy" aria-hidden="true"></i></span>
       <span title="edit"><i className="fa fa-edit" aria-hidden="true"></i></span>
-      <span title="delete"><i className="fa fa-trash" aria-hidden="true"></i></span>
+      <span title="delete" onClick={onClickDelete}><i className="fa fa-trash" aria-hidden="true"></i></span>
       <span className="move ui-sortable-handle"><i className="fa fa-bars" aria-hidden="true"></i></span>
     </div>
   )
