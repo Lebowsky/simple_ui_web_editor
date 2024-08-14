@@ -12,7 +12,8 @@ export enum contextTypes{
   shedulers='shedulers',
   commonHandlers='commonHandlers',
   pyFiles='pyFiles',
-  mediafiles='mediafiles'
+  mediafiles='mediafiles',
+  clientConfiguration='clientConfiguration'
 }
 
 export interface IConfigItem {
@@ -37,7 +38,7 @@ export interface IConfigStorage {
 export class StorageService implements IConfigStorage{
   private __rawData: {[key: string]: any}
   private __id: number
-  private __root: {[key: string]: any} = {}
+  private __root: IConfigItem[] = []
   private __processes: IConfigItem[] = []
   private __operations: IConfigItem[] = []
   private __handlers: IConfigItem[] = []
@@ -60,8 +61,8 @@ export class StorageService implements IConfigStorage{
       ...root
     } = this.__rawData
 
-    this.__parseProcesses(Processes)
-    this.__root = root
+    // this.__parseProcesses(Processes)
+    // this.__root = root
   }
   public getConfigurationJson(): {[key: string]: any}{
     const confJson = {'ClientConfiguration' : {}}
@@ -104,7 +105,6 @@ export class StorageService implements IConfigStorage{
     return structuredClone(this.__getContextItems(type))
   }
   public getItemTree(item: IConfigItem): {[key: string]: any}{
-    
     if (item.contextType === contextTypes.processes) {
       return {
         ...item.content,
@@ -126,6 +126,7 @@ export class StorageService implements IConfigStorage{
       [contextTypes.commonHandlers]: null,
       [contextTypes.pyFiles]: null,
       [contextTypes.mediafiles]: null,
+      [contextTypes.clientConfiguration]: this.__root,
     }[contextTypes[type]] 
   }
   private __getProcesses(): {[key: string]: any}[]{
@@ -166,7 +167,7 @@ export class StorageService implements IConfigStorage{
       const id = this.__getId()
       this.__processes.push({
         id: id,
-        parentId: 0,
+        parentId: 1,
         contextType: contextTypes.processes,
         content: item
       })

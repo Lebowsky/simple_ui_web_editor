@@ -15,7 +15,9 @@ import { getCurrentModal } from './components/modals/modalsRoot'
 
 
 $(document).ready(function () {
+  window.main = Object.create(Main);
   document.main = window.main
+
   setConfigUIElements();
   sortableInit(selectors.list);
   document.main.settings.modalWidth = 820;
@@ -505,7 +507,6 @@ function loadedPrev(prevNode) {
   $(".preload").hide();
   $(prevNode).addClass("load");
 }
-
 function hideMain() {
   if ($(".main-conf-wrap").hasClass("hide")) {
     $(".main-conf-wrap section .section-header").find("i").removeClass("fa-angle-down").addClass("fa-angle-up");
@@ -515,7 +516,6 @@ function hideMain() {
 
   $(".main-conf-wrap").toggleClass("hide");
 }
-
 async function sendRequest(node) {
   let mode = $('#req-mode').val();
   let params = $('#req-params').val();

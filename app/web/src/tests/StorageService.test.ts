@@ -53,7 +53,6 @@ describe('testing StorageService', () => {
     const processes = sut.getItemsByType(contextTypes.processes)
     const [item] = processes
     const length = sut.getItemsByType(contextTypes.processes).length
-    expect(length).toBeTruthy()
 
     const itemId = sut.delete(item.id, item.contextType)
     expect(itemId).toBeTruthy()

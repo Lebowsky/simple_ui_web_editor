@@ -1,11 +1,8 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { newConfiguration } from "../data/newConfig";
-import { contextTypes, StorageService } from "../adapters/storageService";
 import { ConfigManager } from "../serviceLayer/configManager";
-import { Main } from "../main";
 
 export interface IConfigurationContext {
-  configManager: ConfigManager
+  globalContext: ConfigManager
 }
 
 const ConfigurationContext = createContext<IConfigurationContext | null>(null)
@@ -16,12 +13,8 @@ interface IConfigurationContextProviderProps {
 }
 export const ConfigurationContextProvider = ({ children }: IConfigurationContextProviderProps) => {
   const [globalContext, setGlobalContext] = useState<ConfigManager>(null)
-  window.main = Object.create(Main);
   useEffect(() => {
-    const storage = new StorageService(newConfiguration)
-    configManager = new ConfigManager(storage)
-    window.configManager = configManager
-    setGlobalContext(configManager)
+    setGlobalContext(window.configManager)
     // (async () => {
     //   try {
     // const elementParams = await getConfigUIElements();
@@ -44,7 +37,7 @@ export const ConfigurationContextProvider = ({ children }: IConfigurationContext
   return (
     <ConfigurationContext.Provider
       value={{
-        configManager
+        globalContext
       }}
     >
       {children}

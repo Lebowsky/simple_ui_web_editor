@@ -6,6 +6,8 @@ import { getConfParamValue, saveAllPyFilesToDisk } from './utils'
 import { exportConfigData, fileLocationSave, fileLocationSaveAs, showPickFileModal, showQRSettings, showSearchElements, showSqlQueries, } from './dialogs'
 import { togglePrev } from './handlers';
 import { getCurrentModal, getModals } from './components/modals/modalsRoot';
+import { ConfigManager } from './serviceLayer/configManager';
+import { StorageService } from './adapters/storageService';
 
 export const Main = {
   settings: {
@@ -19,7 +21,11 @@ export const Main = {
   },
   initUIConf(conf, filePath = '', configProjectPath = '') {
     this.conf = conf;
-    this.configGraph = new ClientConfiguration(conf.ClientConfiguration);
+    
+    const storage = new StorageService(conf)
+    const configManager = new ConfigManager(storage)
+    window.configManager = configManager
+    this.configGraph = new ClientConfiguration(conf.ClientConfiguration, storage);
 
     this.clearMainSection();
     this.fillSelectElementsOptions();
@@ -191,23 +197,33 @@ export const Main = {
 }
 
 class ClientConfiguration {
-  constructor(config) {
+  
+  constructor(config, storage) {
     this.elements = [];
     this.lastId = 0;
+    this.storage = storage
     this.addElementFromDict(config)
   }
   addElementFromDict(element, parentId = 0, parentType = 'ClientConfiguration') {
     const elementValues = {}
-    const elementId = this.getNewId()
+    // const elementId = this.getNewId()
+
+    const contextType = this._getContextType(parentType)
+    const newElementStorage = {
+      parentId: parentId,
+      contextType: contextType,
+      content: elementValues
+    }
+    const elementId = this.storage.create(newElementStorage)
+
     $.each(element, (key, value) => {
       if (Array.isArray(value) && value.length)
         this.addElementsFromArray(value, elementId, key);
       else
         elementValues[key] = value
     });
-
+    
     this.addElement(elementId, parentId, parentType, elementValues)
-
     return elementId;
   }
   addElementsFromArray(array, parentId, parentType) {
@@ -242,6 +258,7 @@ class ClientConfiguration {
       elementConfig: elementConfig,
       elementValues: elementValues
     }
+    
     this.elements.push(newElement);
 
     return newElement;
@@ -264,6 +281,7 @@ class ClientConfiguration {
     return newElement;
   }
   removeElement(element) {
+    this.storage.delete(element.id, this._getContextType(element.parentType))
     const index = this.elements.indexOf(element);
     if (index > -1) {
       this.elements.splice(index, 1);
@@ -439,5 +457,8 @@ class ClientConfiguration {
       listElement.addProcessesButton($(node));
 
     sortableInit(selectors.list);
+  }
+  _getContextType(value){
+    return value.charAt(0).toLowerCase() + value.slice(1)
   }
 }

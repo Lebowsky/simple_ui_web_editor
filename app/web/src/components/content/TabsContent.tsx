@@ -54,9 +54,9 @@ const ProcessesSection = () => {
 }
 
 const ProcessesSectionNew = () => {
-  const { configManager } = useConfigurationContext() as IConfigurationContext
-  const processes = configManager?.processes.all() || []
-  
+  const { globalContext } = useConfigurationContext() as IConfigurationContext
+  const processes = globalContext?.processes.all() || []
+
   return (
     <section id="main-conf-process-new">
       <div className="section-header">Processes<i className="fa fa-angle-up" aria-hidden="true"></i></div>
@@ -67,9 +67,11 @@ const ProcessesSectionNew = () => {
             <button className="btn-paste" data-childrens-type="Processes">Paste</button>
             <button className="btn-add cv process">Add CVOperation</button>
           </div>
-          {processes.map(
-            el => (<ListItemProcess label={el.content.ProcessName} key={el.id} listItem={el}/>)
-          )}
+          {
+            processes.length 
+            ? processes.map(el => (<ListItemProcess label={el.content.ProcessName} key={el.id} listItem={el}/>))
+            : <div style={{paddingTop: 15}}><span >No Items</span></div>
+          }
         </ul>
       </div>
     </section>

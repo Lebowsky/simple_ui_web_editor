@@ -7,7 +7,7 @@ interface IListItemButtonsProps {
 }
 
 export const ListItemButtons = ({ listItem }: IListItemButtonsProps) => {
-  const { configManager } = useConfigurationContext() as IConfigurationContext
+  const { globalContext } = useConfigurationContext() as IConfigurationContext
 
   const onClickJson = () => {
     // const elementId = $(this).parents(selectors.listItem).attr('data-id');
@@ -21,7 +21,7 @@ export const ListItemButtons = ({ listItem }: IListItemButtonsProps) => {
     // const elementId = $(this).parents(selectors.listItem).attr('data-id');
     // const elementConf = document.main.configGraph.getConfigElement(elementId);
     
-    copyTextToClipboard(JSON.stringify(configManager.getItemTree(listItem)));
+    copyTextToClipboard(JSON.stringify(globalContext.getItemTree(listItem)));
   }
   const onClickDuplicate = () => {
     // let parentType
