@@ -26,17 +26,19 @@ export class StorageService implements IConfigStorage{
     this.__elements.push({ ...newItem, id: itemId })
     return itemId
   }
-  public update(item: IConfigItemUpdate): number {
+  public update(item: IConfigItemUpdate): number | null {
     const storageItem = this.get(item.id)
-    const index = this.__elements.indexOf(storageItem)
+    if (!storageItem) return null
+
+    const index = this.__getIndex(storageItem)
     this.__elements[index] = { ...storageItem, ...{ content: item.content } }
     return storageItem.id
   }
   public delete(id: number): number | null {
     const storageItem = this.get(id)
     if (!storageItem) return null
-
-    this.__elements.splice(this.__elements.indexOf(storageItem), 1)
+    
+    this.__elements.splice(this.__getIndex(storageItem), 1)
     return storageItem.id
   }
   public getItemsByType(type: contextTypes): IConfigItem[] {
@@ -44,6 +46,10 @@ export class StorageService implements IConfigStorage{
   }
   public getItemsByParentId(parentId: number): IConfigItem[] {
     return this.__elements.filter(el => el.parentId = parentId)
+  }
+  private __getIndex(item: IConfigItem): number | null {
+    const index = this.__elements.findIndex(el => el.id === item.id)
+    return index ?? null
   }
   private __getId(): number {
     return ++this.__id

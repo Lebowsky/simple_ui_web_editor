@@ -15,7 +15,6 @@ interface IConfigurationContextProviderProps {
 export const ConfigurationContextProvider = ({ children }: IConfigurationContextProviderProps) => {
   const [globalContext, setGlobalContext] = useState<ConfigManager>(null)
   const [render, setRender] = useState<boolean> (false)
-
   useEffect(() => {
     setGlobalContext(window.configManager)
   }, []);

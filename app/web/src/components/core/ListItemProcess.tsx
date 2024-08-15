@@ -1,4 +1,4 @@
-import { IConfigItem } from "../../adapters/storageService"
+import { IConfigItem } from "../../models/configurationModels"
 import { ListItemButtons } from "./ListItemButtons"
 import { ListItemOperation } from "./ListItemOperation"
 

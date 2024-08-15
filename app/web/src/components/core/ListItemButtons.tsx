@@ -1,4 +1,4 @@
-import { IConfigItem } from "../../adapters/storageService"
+import { IConfigItem } from "../../models/configurationModels"
 import { IConfigurationContext, useConfigurationContext } from "../../context/ConfigurationContext"
 import { copyTextToClipboard } from "../../handlers"
 
@@ -21,7 +21,7 @@ export const ListItemButtons = ({ listItem }: IListItemButtonsProps) => {
     // const elementId = $(this).parents(selectors.listItem).attr('data-id');
     // const elementConf = document.main.configGraph.getConfigElement(elementId);
     
-    copyTextToClipboard(JSON.stringify(globalContext.getItemTree(listItem)));
+    // copyTextToClipboard(JSON.stringify(globalContext.getItemTree(listItem)));
   }
   const onClickDuplicate = () => {
     // let parentType

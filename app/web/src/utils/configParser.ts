@@ -26,7 +26,7 @@ export class ConfigParser {
 
     this.__parseProcesses()
     this.__parseRoot()
-    expect({}).toStrictEqual(this.__rawData)
+    // expect({}).toStrictEqual(this.__rawData)
     return this.__storage
   }
   public getConfigurationJson(): { [key: string]: any } {

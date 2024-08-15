@@ -14,8 +14,8 @@ export class ConfigManager {
   constructor(storage: IConfigStorage, ){
     this.__storage = storage
     this.__configParser = new ConfigParser(this.__storage)
-    this.processes = new ProcessesRepository(storage)
-    this.operations = new OperationsRepository(storage)
+    this.processes = new ProcessesRepository(this.__storage)
+    this.operations = new OperationsRepository(this.__storage)
   }
 
   public init(rawData: { [key: string]: any }){

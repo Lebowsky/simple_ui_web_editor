@@ -22,10 +22,8 @@ export const Main = {
   initUIConf(conf, filePath = '', configProjectPath = '') {
     this.conf = conf;
     
-    const storage = new StorageService(conf)
-    const configManager = new ConfigManager(storage)
-    window.configManager = configManager
-    this.configGraph = new ClientConfiguration(conf.ClientConfiguration, storage);
+    
+    this.configGraph = new ClientConfiguration(conf);
 
     this.clearMainSection();
     this.fillSelectElementsOptions();
@@ -198,23 +196,25 @@ export const Main = {
 
 class ClientConfiguration {
   
-  constructor(config, storage) {
+  constructor(config) {
     this.elements = [];
     this.lastId = 0;
-    this.storage = storage
-    this.addElementFromDict(config)
+    this.addElementFromDict(config.ClientConfiguration)
+    this.configManager = new ConfigManager(new StorageService())
+    this.configManager.init(config)
+    window.configManager = this.configManager
   }
   addElementFromDict(element, parentId = 0, parentType = 'ClientConfiguration') {
     const elementValues = {}
-    // const elementId = this.getNewId()
+    const elementId = this.getNewId()
 
-    const contextType = this._getContextType(parentType)
-    const newElementStorage = {
-      parentId: parentId,
-      contextType: contextType,
-      content: elementValues
-    }
-    const elementId = this.storage.create(newElementStorage)
+    // const contextType = this._getContextType(parentType)
+    // const newElementStorage = {
+    //   parentId: parentId,
+    //   contextType: contextType,
+    //   content: elementValues
+    // }
+    // const elementId = this.storage.create(newElementStorage)
 
     $.each(element, (key, value) => {
       if (Array.isArray(value) && value.length)
