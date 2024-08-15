@@ -199,10 +199,26 @@ class ClientConfiguration {
   constructor(config) {
     this.elements = [];
     this.lastId = 0;
-    this.addElementFromDict(config.ClientConfiguration)
+    // this.addElementFromDict(config.ClientConfiguration)
     this.configManager = new ConfigManager(new StorageService())
     this.configManager.init(config)
     window.configManager = this.configManager
+    this.initElements()
+  }
+
+  initElements(){
+    
+    const newElement = {
+      id: Number(id),
+      parentId: Number(parentId),
+      parentType: parentType == 'CVOperations' ? 'Processes' : parentType,
+      title: title,
+      parentConfig: parentConfig,
+      elementConfig: elementConfig,
+      elementValues: elementValues
+    }
+    
+    this.elements.push(newElement);
   }
   addElementFromDict(element, parentId = 0, parentType = 'ClientConfiguration') {
     const elementValues = {}

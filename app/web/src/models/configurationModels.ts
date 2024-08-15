@@ -84,6 +84,14 @@ export interface IConfigItem {
   parentId: number
   contextType: contextTypes
   content: DataItem
-}export interface IConfigItemCreate extends Omit<IConfigItem, 'id'> { }
+}
+export interface IConfigItemCreate extends Omit<IConfigItem, 'id'> { }
 export interface IConfigItemUpdate extends Omit<IConfigItem, 'parentId,contextType'> { }
 
+
+export interface IShedulersItem {
+  PyTimerTaskKey: string
+  PyTimerTaskDef: string
+  PyTimerTaskPeriod: string
+  PyTimerTaskBuilIn: string
+}

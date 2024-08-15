@@ -20,6 +20,7 @@ export class ConfigParser {
     this.__parseCommon()
     this.__parseSettings()
     this.__parseMainMenu()
+    this.__parseShedulers()
     this.__parseMediafiles()
     this.__parsePyFiles()
     this.__parseCommonHandlers()
@@ -53,11 +54,19 @@ export class ConfigParser {
     const childs = this.__storage.getItemsByParentId(parentId)
     return childs.map(child => {
       const childsCollection = this.__getChildsCollectionName(child.contextType)
-
-      return {
-        ...child.content,
-        ...{ [childsCollection]: this.__getItemChilds(child.id) }
+      let item
+      if (childsCollection){
+        item = {
+          ...child.content,
+          ...{ [childsCollection]: this.__getItemChilds(child.id) }
+        }
+      } else {
+        item = {
+          ...child.content,
+          ...this.__getItemChilds(child.id)?.[0]
+        }
       }
+      return item 
     })
   }
   private __getChildsCollectionName(type: contextTypes): string | null {
@@ -68,6 +77,20 @@ export class ConfigParser {
         return 'Elements'
       case contextTypes.elements:
         return 'Elements'
+      case contextTypes.configurationSettings:
+        return 'ConfigurationSettings'
+      case contextTypes.handlers:
+        return 'Handlers'
+      case contextTypes.mainMenu:
+        return 'MainMenu'
+      case contextTypes.shedulers:
+        return 'PyTimerTask'
+      case contextTypes.mediafiles:
+        return 'Mediafile'
+      case contextTypes.pyFiles:
+        return 'PyFiles'
+      case contextTypes.commonHandlers:
+        return 'CommonHandlers'
       default:
         return null
     }
@@ -158,6 +181,16 @@ export class ConfigParser {
       content
     })
   }
+  private __parseShedulers(): void {
+    const shedulers = this.__popItem('PyTimerTask', [])
+    shedulers.forEach(({ ...item }) => {
+      this.__create({
+        parentId: this.__rootId,
+        contextType: contextTypes.shedulers,
+        content: item
+      })
+    });
+  }
   private __parseMediafiles(): void {
     const mediafiles = this.__popItem('Mediafile', [])
     mediafiles.forEach(({ ...item }) => {
@@ -169,8 +202,24 @@ export class ConfigParser {
     });
   }
   private __parsePyFiles(): void {
+    const pyFiles = this.__popItem('PyFiles', [])
+    pyFiles.forEach(({ ...item }) => {
+      this.__create({
+        parentId: this.__rootId,
+        contextType: contextTypes.pyFiles,
+        content: item
+      })
+    });
   }
   private __parseCommonHandlers(): void {
+    const commonHandlers = this.__popItem('PyFiles', [])
+    commonHandlers.forEach(({ ...item }) => {
+      this.__create({
+        parentId: this.__rootId,
+        contextType: contextTypes.commonHandlers,
+        content: item
+      })
+    });
   }
   private __setRootId() {
     this.__rootId = this.__storage.create({

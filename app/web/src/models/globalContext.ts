@@ -29,12 +29,10 @@ export enum contextTypes {
   handlers = 'handlers',
   elements = 'elements',
   mainMenu = 'mainMenu',
-  styleTemplates = 'styleTemplates',
-  startScreen = 'startScreen',
   shedulers = 'shedulers',
-  commonHandlers = 'commonHandlers',
-  pyFiles = 'pyFiles',
   mediafiles = 'mediafiles',
+  pyFiles = 'pyFiles',
+  commonHandlers = 'commonHandlers',
 }
 
 export type DataItem = { [key: string]: any }
