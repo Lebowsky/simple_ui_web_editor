@@ -8,6 +8,7 @@ import { togglePrev } from './handlers';
 import { getCurrentModal, getModals } from './components/modals/modalsRoot';
 import { ConfigManager } from './serviceLayer/configManager';
 import { StorageService } from './adapters/storageService';
+import { ConfigModelsFactory } from './utils/configModelsFactory';
 
 export const Main = {
   settings: {
@@ -199,55 +200,25 @@ class ClientConfiguration {
     this.configManager = new ConfigManager(new StorageService())
     this.configManager.init(config)
     window.configManager = this.configManager
-    this.initElements()
     this.repositories = {
       'ClientConfiguration': this.configManager.common,
       'Processes': this.configManager.processes,
       'Operations': this.configManager.operations,
     }
+    this.initElements()
+    this.contextTypes = {
+      'Processes': 'processes'
+    }
   }
 
   initElements(){
     for (const parentType in this.repositories) {
-      const repo = repositories[parentType]
+      const repo = this.repositories[parentType]
       const items = repo.all()
       items.forEach(item => {
-        this.addElementFromStorage(item, parentType)
+        this.addElement(item, parentType)
       })
     }
-  }
-
-  addElementFromStorage(element, parentType){
-    let elementConfig;
-    let title;
-    const elementValues = element.content
-    const parentConfig = { ...listElements[parentType] };
-
-    try {
-      elementConfig = document.main.elementParams[element.content?.type] || document.main.elementParams[listElements[parentType]['type']]
-    } catch (e) {
-      console.debug('cant add element in graph:', parentType)
-      console.debug(e)
-    }
-
-    title = parentConfig?.rowKeys?.length > 0 ? elementValues[parentConfig.rowKeys.filter(key => elementValues[key])[0]] : elementValues['type'];
-    title = title || elementValues['type']
-
-    if (parentConfig.type == 'Element') {
-      parentConfig.type = elementValues['type'];
-    }
-    
-    const newElement = {
-      id: element.id,
-      parentId: element.parentId,
-      parentType,
-      title: '',
-      parentConfig,
-      elementConfig,
-      elementValues,
-    }
-    
-    this.elements.push(newElement);
   }
 
   // addElementFromDict(element, parentId = 0, parentType = 'ClientConfiguration') {
@@ -270,38 +241,40 @@ class ClientConfiguration {
   //     this.addElementFromDict(value, parentId, parentType);
   //   })
   // }
-  // addElement(id = '', parentId, parentType, elementValues) {
-  //   let elementConfig;
+  addElement(element, parentType) {
+    let elementConfig;
+    let title;
+    const elementValues = element.content
+    const parentConfig = { ...listElements[parentType] };
 
-  //   try {
-  //     elementConfig = document.main.elementParams[elementValues.type] || document.main.elementParams[listElements[parentType]['type']]
-  //   } catch (e) {
-  //     console.debug('cant add element in graph:', parentType)
-  //     console.debug(e)
-  //   }
+    try {
+      elementConfig = document.main.elementParams[element.content?.type] || document.main.elementParams[listElements[parentType]['type']]
+    } catch (e) {
+      console.debug('cant add element in graph:', parentType)
+      console.debug(e)
+    }
 
-  //   const parentConfig = { ...listElements[parentType] };
-  //   let title = parentConfig && parentConfig.rowKeys && parentConfig.rowKeys.length ? elementValues[parentConfig.rowKeys.filter(key => elementValues[key])[0]] : elementValues['type'];
-  //   title = title || elementValues['type']
+    title = parentConfig?.rowKeys?.length > 0 ? elementValues[parentConfig.rowKeys.filter(key => elementValues[key])[0]] : elementValues['type'];
+    title = title || elementValues['type']
+  
+    if (parentConfig.type == 'Element') {
+      parentConfig.type = elementValues['type'];
+    }
 
-  //   if (parentConfig.type == 'Element') {
-  //     parentConfig.type = elementValues['type'];
-  //   }
-
-  //   const newElement = {
-  //     id: Number(id),
-  //     parentId: Number(parentId),
-  //     parentType: parentType == 'CVOperations' ? 'Processes' : parentType,
-  //     title: title,
-  //     parentConfig: parentConfig,
-  //     elementConfig: elementConfig,
-  //     elementValues: elementValues
-  //   }
+    const newElement = {
+      id: element.id,
+      parentId: element.parentId,
+      parentType,
+      title: '',
+      parentConfig,
+      elementConfig,
+      elementValues,
+    }
     
-  //   this.elements.push(newElement);
+    this.elements.push(newElement);
 
-  //   return newElement;
-  // }
+    return newElement;
+  }
   newElement(parentId, parentConfig, elementValues) {
     const parentType = parentConfig['parentType'];
 
@@ -323,10 +296,10 @@ class ClientConfiguration {
     const repo = this.__getRepository(element.parentType)
     repo.delete(element.id)
     // this.storage.delete(element.id, this.__getContextType(element.parentType))
-    // const index = this.elements.indexOf(element);
-    // if (index > -1) {
-    //   this.elements.splice(index, 1);
-    // }
+    const index = this.elements.indexOf(element);
+    if (index > -1) {
+      this.elements.splice(index, 1);
+    }
   }
   moveElement(element1Id, element2Id) {
     const element1 = this.getElementById(element1Id);
@@ -391,7 +364,8 @@ class ClientConfiguration {
     return clientConfig
   }
   getElementById(elementId) {
-    return this.elements.find((el) => el.id == elementId)
+    const result = this.elements.find((el) => el.id == elementId)
+    return result
   }
   getElementPath(elementId, path = []) {
     let element = this.getElementById(elementId);
