@@ -2,12 +2,12 @@ import { IConfigItem } from "../../adapters/storageService"
 import { ListItemButtons } from "./ListItemButtons"
 import { ListItemOperation } from "./ListItemOperation"
 
-interface IListItemProcess {
+interface IListItemProcessProps {
   listItem: IConfigItem
   label: string
 }
 
-export const ListItemProcess = ({ label, listItem }: IListItemProcess) => {
+export const ListItemProcess = ({ label, listItem }: IListItemProcessProps) => {
   return (
     <li className="list-item" data-id="2" data-type="Processes">
       <div className="item-nav">

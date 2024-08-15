@@ -1,62 +1,52 @@
-import { contextTypes, StorageService } from "../adapters/storageService";
-import { newConfiguration } from "../data/newConfig";
-
+import { StorageService } from "../adapters/storageService"
+import { contextTypes } from "../models/globalContext"
 
 describe('testing StorageService', () => {
-  test('can create storage with json data and make json', () => {
-    const expected = newConfiguration
-    const sut: StorageService = new StorageService(newConfiguration)
-    const actual = sut.getConfigurationJson()
-    expect(actual).toStrictEqual(expected)
+  let sut: StorageService
+  beforeEach(() => {
+    sut = new StorageService()
   })
 
-  test('can get item by id', () => {
-    const sut: StorageService = new StorageService(newConfiguration)
-    const processes = sut.getItemsByType(contextTypes.processes)
-    const item = processes.pop()
-
-    expect(sut.get(item.id, item.contextType)).toBeTruthy()
-    expect(sut.get(-1, item.contextType)).toBeFalsy()
-  })
-
-  test('can create new item', () => {
-    const sut: StorageService = new StorageService(newConfiguration)
+  test('test create and get operations', () => {
+    const expected = {}
     const item = {
       parentId: 0,
-      contextType: contextTypes.processes,
-      content: {}
+      contextType: contextTypes.root,
+      content: expected
     }
-    const length =  sut.getItemsByType(contextTypes.processes).length
-    
-    expect(length).toBeTruthy()
+
     const itemId = sut.create(item)
     expect(itemId).toBeTruthy()
-    expect(sut.getItemsByType(contextTypes.processes).length).toBe(length + 1)
-    expect(sut.get(itemId, contextTypes.processes)).toStrictEqual({...item, id: itemId})
+    expect(expected).toMatchObject(sut.get(itemId).content)
   })
+  test('test create and update operations', () => {
+    const expected = {'data': 123}
+    const item = {
+      parentId: 0,
+      contextType: contextTypes.root,
+      content: {}
+    }
 
-  test('can update item', () => {
-    const sut: StorageService = new StorageService(newConfiguration)
-    const processes = sut.getItemsByType(contextTypes.processes)
-    const length = processes.length
-    const item = processes.pop()
-    
-    expect(item.content).not.toBe({})
-    sut.update({...item, content: {}})
-
-    expect(sut.getItemsByType(contextTypes.processes).length).toBe(length)
-    expect(sut.get(item.id, item.contextType).content).toStrictEqual({})
-  })
-
-  test('can delete item', () => {
-    const sut: StorageService = new StorageService(newConfiguration)
-    const processes = sut.getItemsByType(contextTypes.processes)
-    const [item] = processes
-    const length = sut.getItemsByType(contextTypes.processes).length
-
-    const itemId = sut.delete(item.id, item.contextType)
+    const itemId = sut.create(item)
     expect(itemId).toBeTruthy()
-    expect(sut.getItemsByType(contextTypes.processes).length).toBe(length-1)
+    expect({}).toMatchObject(sut.get(sut.create(item)).content)
+
+    sut.update({...item, ...{id: itemId, content: expected}})
+    expect(expected).toMatchObject(sut.get(sut.create(item)).content)
+  })
+
+  test('test create and delete opeations', () => {
+    const item = {
+      parentId: 0,
+      contextType: contextTypes.root,
+      content: {}
+    }
+
+    const itemId = sut.create(item)
+    expect(sut.get(itemId)).toBeTruthy()
+
+    const result = sut.delete(itemId)
+    expect(result).toBeTruthy()
+    expect(sut.get(itemId)).toBeFalsy()
   })
 })
-

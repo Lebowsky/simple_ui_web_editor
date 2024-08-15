@@ -1,4 +1,6 @@
-import { contextTypes, IConfigItem, IConfigStorage } from "../storageService"
+import { IConfigItem } from "../../models/configurationModels"
+import { contextTypes } from "../../models/globalContext"
+import { IConfigStorage } from "../storageService"
 
 
 export abstract class Repository {
@@ -10,17 +12,17 @@ export abstract class Repository {
   }
 
   add(item: IConfigItem): number {
-    item = this.__storage.get(item.id, this.__contextType)
+    item = this.__storage.get(item.id)
     if (item) return this.__storage.update(item)
     else return this.__storage.create(item)
   }
 
   get(id: number): IConfigItem | null {
-    return this.__storage.get(id, this.__contextType)
+    return this.__storage.get(id)
   }
 
   delete(id: number): number | null {
-    return this.__storage.delete(id, this.__contextType)
+    return this.__storage.delete(id)
   }
 
   all(): IConfigItem[] {

@@ -1,4 +1,6 @@
-import { contextTypes, IConfigItem, IConfigStorage } from "../storageService"
+import { IConfigItem } from "../../models/configurationModels"
+import { contextTypes } from "../../models/globalContext"
+import { IConfigStorage } from "../storageService"
 import { Repository } from "./abstractRepository"
 
 type ProcessData =  {

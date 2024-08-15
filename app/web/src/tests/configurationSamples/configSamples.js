@@ -18,7 +18,15 @@ export const configurationWithoutProcesses = {
     "ConfigurationDescription": "",
     "ConfigurationVersion": "0.0.1",
     "ConfigurationSettings": {
-      "uid": "dd7ae0a1209a40269d1061892508c8f1"
+      "uid": "a6ce59bc3f714a5284213f6e293e3e92",
+      "vendor": "Simple",
+      "vendor_url": "",
+      "vendor_auth": "",
+      "handler_split_mode": false,
+      "handler_code": "",
+      "handler_url": "",
+      "handler_auth": "",
+      "dictionaries": ""
     },
     "ConfigurationTags": "",
     "RunPython": true,

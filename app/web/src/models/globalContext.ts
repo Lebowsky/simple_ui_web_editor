@@ -19,3 +19,22 @@ export interface IGlobalContext {
   configGraph: { elements: IConfigGraphElements[] }
   elementParams: {[key: string]: any}
 }
+
+export enum contextTypes {
+  root = 'root',
+  common = 'common',
+  configurationSettings = 'configurationSettings',
+  processes = 'processes',
+  operations = 'operations',
+  handlers = 'handlers',
+  elements = 'elements',
+  mainMenu = 'mainMenu',
+  styleTemplates = 'styleTemplates',
+  startScreen = 'startScreen',
+  shedulers = 'shedulers',
+  commonHandlers = 'commonHandlers',
+  pyFiles = 'pyFiles',
+  mediafiles = 'mediafiles',
+}
+
+export type DataItem = { [key: string]: any }
