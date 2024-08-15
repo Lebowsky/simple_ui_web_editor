@@ -29,7 +29,6 @@ export const Main = {
     this.fillSelectElementsOptions();
     this.fillDefaultValues();
     this.fillConfigSettings();
-    this.renderConfiguration();
 
     document.modal = getModals('.start');
 
@@ -125,10 +124,7 @@ export const Main = {
     };
     $('#handlers-login').val(handlersLogin);
     $('#handlers-password').val(handlersPassword);
-  },
-  renderConfiguration: function () {
-    this.configGraph.fillConfigValues('ClientConfiguration');
-  },
+  }, 
   loadPrev() {
     $("#prev .prev-content").html('<div class="preload">Load preview...</div><iframe onload="loadedPrev(this)" id="prev-if" src="http://localhost:5000/flet_preview"></iframe>');
   },
@@ -204,81 +200,108 @@ class ClientConfiguration {
     this.configManager.init(config)
     window.configManager = this.configManager
     this.initElements()
+    this.repositories = {
+      'ClientConfiguration': this.configManager.common,
+      'Processes': this.configManager.processes,
+      'Operations': this.configManager.operations,
+    }
   }
 
   initElements(){
-    
-    const newElement = {
-      id: Number(id),
-      parentId: Number(parentId),
-      parentType: parentType == 'CVOperations' ? 'Processes' : parentType,
-      title: title,
-      parentConfig: parentConfig,
-      elementConfig: elementConfig,
-      elementValues: elementValues
+    for (const parentType in this.repositories) {
+      const repo = repositories[parentType]
+      const items = repo.all()
+      items.forEach(item => {
+        this.addElementFromStorage(item, parentType)
+      })
     }
-    
-    this.elements.push(newElement);
   }
-  addElementFromDict(element, parentId = 0, parentType = 'ClientConfiguration') {
-    const elementValues = {}
-    const elementId = this.getNewId()
 
-    // const contextType = this._getContextType(parentType)
-    // const newElementStorage = {
-    //   parentId: parentId,
-    //   contextType: contextType,
-    //   content: elementValues
-    // }
-    // const elementId = this.storage.create(newElementStorage)
-
-    $.each(element, (key, value) => {
-      if (Array.isArray(value) && value.length)
-        this.addElementsFromArray(value, elementId, key);
-      else
-        elementValues[key] = value
-    });
-    
-    this.addElement(elementId, parentId, parentType, elementValues)
-    return elementId;
-  }
-  addElementsFromArray(array, parentId, parentType) {
-    array.forEach((value) => {
-      this.addElementFromDict(value, parentId, parentType);
-    })
-  }
-  addElement(id = '', parentId, parentType, elementValues) {
+  addElementFromStorage(element, parentType){
     let elementConfig;
+    let title;
+    const elementValues = element.content
+    const parentConfig = { ...listElements[parentType] };
 
     try {
-      elementConfig = document.main.elementParams[elementValues.type] || document.main.elementParams[listElements[parentType]['type']]
+      elementConfig = document.main.elementParams[element.content?.type] || document.main.elementParams[listElements[parentType]['type']]
     } catch (e) {
       console.debug('cant add element in graph:', parentType)
       console.debug(e)
     }
 
-    const parentConfig = { ...listElements[parentType] };
-    let title = parentConfig && parentConfig.rowKeys && parentConfig.rowKeys.length ? elementValues[parentConfig.rowKeys.filter(key => elementValues[key])[0]] : elementValues['type'];
+    title = parentConfig?.rowKeys?.length > 0 ? elementValues[parentConfig.rowKeys.filter(key => elementValues[key])[0]] : elementValues['type'];
     title = title || elementValues['type']
 
     if (parentConfig.type == 'Element') {
       parentConfig.type = elementValues['type'];
     }
-
+    
     const newElement = {
-      id: Number(id),
-      parentId: Number(parentId),
-      parentType: parentType == 'CVOperations' ? 'Processes' : parentType,
-      title: title,
-      parentConfig: parentConfig,
-      elementConfig: elementConfig,
-      elementValues: elementValues
+      id: element.id,
+      parentId: element.parentId,
+      parentType,
+      title: '',
+      parentConfig,
+      elementConfig,
+      elementValues,
     }
     
     this.elements.push(newElement);
-
-    return newElement;
   }
+
+  // addElementFromDict(element, parentId = 0, parentType = 'ClientConfiguration') {
+  //   const elementValues = {}
+  //   const elementId = this.getNewId()
+
+  //   $.each(element, (key, value) => {
+  //     if (Array.isArray(value) && value.length){
+  //       const parentType = key
+  //       this.addElementsFromArray(value, elementId, parentType);
+  //     }
+  //     else elementValues[key] = value
+  //   });
+    
+  //   this.addElement(elementId, parentId, parentType, elementValues)
+  //   return elementId;
+  // }
+  // addElementsFromArray(array, parentId, parentType) {
+  //   array.forEach((value) => {
+  //     this.addElementFromDict(value, parentId, parentType);
+  //   })
+  // }
+  // addElement(id = '', parentId, parentType, elementValues) {
+  //   let elementConfig;
+
+  //   try {
+  //     elementConfig = document.main.elementParams[elementValues.type] || document.main.elementParams[listElements[parentType]['type']]
+  //   } catch (e) {
+  //     console.debug('cant add element in graph:', parentType)
+  //     console.debug(e)
+  //   }
+
+  //   const parentConfig = { ...listElements[parentType] };
+  //   let title = parentConfig && parentConfig.rowKeys && parentConfig.rowKeys.length ? elementValues[parentConfig.rowKeys.filter(key => elementValues[key])[0]] : elementValues['type'];
+  //   title = title || elementValues['type']
+
+  //   if (parentConfig.type == 'Element') {
+  //     parentConfig.type = elementValues['type'];
+  //   }
+
+  //   const newElement = {
+  //     id: Number(id),
+  //     parentId: Number(parentId),
+  //     parentType: parentType == 'CVOperations' ? 'Processes' : parentType,
+  //     title: title,
+  //     parentConfig: parentConfig,
+  //     elementConfig: elementConfig,
+  //     elementValues: elementValues
+  //   }
+    
+  //   this.elements.push(newElement);
+
+  //   return newElement;
+  // }
   newElement(parentId, parentConfig, elementValues) {
     const parentType = parentConfig['parentType'];
 
@@ -297,11 +320,13 @@ class ClientConfiguration {
     return newElement;
   }
   removeElement(element) {
-    this.storage.delete(element.id, this._getContextType(element.parentType))
-    const index = this.elements.indexOf(element);
-    if (index > -1) {
-      this.elements.splice(index, 1);
-    }
+    const repo = this.__getRepository(element.parentType)
+    repo.delete(element.id)
+    // this.storage.delete(element.id, this.__getContextType(element.parentType))
+    // const index = this.elements.indexOf(element);
+    // if (index > -1) {
+    //   this.elements.splice(index, 1);
+    // }
   }
   moveElement(element1Id, element2Id) {
     const element1 = this.getElementById(element1Id);
@@ -392,24 +417,8 @@ class ClientConfiguration {
       element.elementValues[name] = value;
     })
   }
-  fillConfigValues(type) {
-    const element = this.elements.find((element) => element.parentType == type);
-    this.fillElementValuesById(element, element.elementValues);
-  }
-  fillElementValuesById(element, values) {
-    $.each(values, (key, value) => {
-      if (typeof value == 'object') {
-        this.fillElementValuesById(element, value);
-      } else {
-        const inputNode = $("#" + key);
-        if (inputNode.length) {
-          typeof value == 'boolean' ? inputNode.prop('checked', value) : inputNode.val(value);
-          inputNode.attr('data-id', element.id)
-        } else {
-          console.debug(`Property ${key} not filled`);
-        }
-      }
-    })
+  getCommonData() {
+    return this.repositories.ClientConfiguration.all()?.[0]
   }
   fillConfigListElements() {
     Object.entries(listElements).forEach((el) => {
@@ -474,7 +483,9 @@ class ClientConfiguration {
 
     sortableInit(selectors.list);
   }
-  _getContextType(value){
-    return value.charAt(0).toLowerCase() + value.slice(1)
+  __getRepository(parentType){
+    if (parentType in this.repositories)
+      return this.repositories[parentType]
+    else throw new Error(`Repository for ${parentType} is unavailable`)
   }
 }

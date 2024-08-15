@@ -6,11 +6,13 @@ export interface ICommon {
   ConfigurationDescription: string
 }
 
-interface IConfigurationSettingsContent {
+export interface IConfigurationSettingsContent {
   vendor: string
+  vendor_login: string
+  vendor_password: string
   vendor_url: string
   vendor_auth: string
-  dictionaries: string
+  dictionaries?: string
 }
 export interface IConfigurationSettings {
   ConfigurationSettings: IConfigurationSettingsContent | { [key: string]: any }

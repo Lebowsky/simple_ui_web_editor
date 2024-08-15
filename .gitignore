@@ -7,3 +7,4 @@ _ui_files
 node_modules
 build
 *.pyo
+app/web/src/data/fullConfigData.js

@@ -4,6 +4,7 @@ import { qrSettings } from "./data/qrSettings"
 import { qrConfigs } from "./data/qrConfigs";
 import { base64data } from "./data/base64data";
 import { data } from "jquery";
+import { fullConfigData } from "./data/fullConfigData";
 // eel.expose(getCurrentFilePath);
 // function getCurrentFilePath() {
 //   result = $(".file-path").text();
@@ -76,13 +77,13 @@ export async function askSaveFile() {
 };
 
 export async function loadConfiguration(filePath) {
-  return newConfiguration
+  return fullConfigData
   //   return eel.load_configuration(filePath)();
 }
 
 export async function getNewConfiguration() {
   //   return await eel.get_new_configuration()();
-  return newConfiguration
+  return fullConfigData
 }
 
 export async function saveConf(data, filePath) {

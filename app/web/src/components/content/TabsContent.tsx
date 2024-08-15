@@ -1,7 +1,7 @@
-import { IConfigurationContext, useConfigurationContext } from "../../context/ConfigurationContext"
-import { InputParam } from "../core/InputParam"
-import { ListItemProcess } from "../core/ListItemProcess"
-import { ParamsRow } from "../core/ParamsRow"
+import { IConfigurationContext, useConfigurationContext } from '../../context/ConfigurationContext'
+import { InputParam } from '../core/InputParam'
+import { ListItemProcess } from '../core/ListItemProcess'
+import { ParamsRow } from '../core/ParamsRow'
 
 export const TabsContent = () => {
   return (
@@ -20,19 +20,30 @@ export const TabsContent = () => {
 }
 
 const CommonSection = () => {
+  const { globalContext } = useConfigurationContext() as IConfigurationContext
+  const tabData = globalContext?.common.all()?.[0]
   return (
-    <section id="main-conf-common" className="active">
-      <div className="section-header">Common<i className="fa fa-angle-up" aria-hidden="true"></i></div>
-      <div className="list-wrap show">
-        <ul className="list form configuration">
+    <section id='main-conf-common' className='active'>
+      <div className='section-header'>Common<i className='fa fa-angle-up' aria-hidden='true'></i></div>
+      <div className='list-wrap show'>
+        <ul className='list form configuration'>
           <ParamsRow>
-            <InputParam paramName="ConfigurationName" label='Configuration name'></InputParam>
-            <InputParam paramName="ConfigurationVersion" label='Version'></InputParam>
+            <InputParam paramName='ConfigurationName' label='Configuration name' configData={tabData}></InputParam>
+            <InputParam paramName='ConfigurationVersion' label='Version' configData={tabData}></InputParam>
           </ParamsRow>
           <ParamsRow>
-            <div className="textarea-param-wrapper">
-              <label htmlFor="ConfigurationDescription">Description</label>
-              <textarea className="textarea-param" id="ConfigurationDescription" name="ConfigurationDescription" data-param-name="ConfigurationDescription" rows={10}>
+            <div className='textarea-param-wrapper'>
+              <label htmlFor='ConfigurationDescription'>Description</label>
+              <textarea 
+                className='textarea-param' 
+                id='ConfigurationDescription' 
+                name='ConfigurationDescription' 
+                data-param-name='ConfigurationDescription' 
+                data-id={tabData?.id}
+                value={tabData?.content.ConfigurationDescription}
+                rows={10}
+
+              >
               </textarea>
             </div>
           </ParamsRow>
@@ -44,10 +55,10 @@ const CommonSection = () => {
 
 const ProcessesSection = () => {
   return (
-    <section id="main-conf-process">
-      <div className="section-header">Processes<i className="fa fa-angle-up" aria-hidden="true"></i></div>
-      <div className="list-wrap show">
-        <ul className="list" id="processes">No process</ul>
+    <section id='main-conf-process'>
+      <div className='section-header'>Processes<i className='fa fa-angle-up' aria-hidden='true'></i></div>
+      <div className='list-wrap show'>
+        <ul className='list' id='processes'>No process</ul>
       </div>
     </section>
   )
@@ -58,14 +69,14 @@ const ProcessesSectionNew = () => {
   const processes = globalContext?.processes.all() || []
 
   return (
-    <section id="main-conf-process-new">
-      <div className="section-header">Processes<i className="fa fa-angle-up" aria-hidden="true"></i></div>
-      <div className="list-wrap show">
-        <ul className="list ui-sortable" id="processes" data-id="1">
-          <div className="btn-group">
-            <button className="btn-add process">Add</button>
-            <button className="btn-paste" data-childrens-type="Processes">Paste</button>
-            <button className="btn-add cv process">Add CVOperation</button>
+    <section id='main-conf-process-new'>
+      <div className='section-header'>Processes<i className='fa fa-angle-up' aria-hidden='true'></i></div>
+      <div className='list-wrap show'>
+        <ul className='list ui-sortable' id='processes' data-id='1'>
+          <div className='btn-group'>
+            <button className='btn-add process'>Add</button>
+            <button className='btn-paste' data-childrens-type='Processes'>Paste</button>
+            <button className='btn-add cv process'>Add CVOperation</button>
           </div>
           {
             processes.length 
@@ -80,31 +91,33 @@ const ProcessesSectionNew = () => {
 
 const MainMenuSection = () => {
   return (
-    <section id="main-conf-main-menu">
-      <div className="section-header">Main menu<i className="fa fa-angle-up" aria-hidden="true"></i></div>
-      <div className="list-wrap show">
-        <ul className="list" id="main-menu">No Items</ul>
+    <section id='main-conf-main-menu'>
+      <div className='section-header'>Main menu<i className='fa fa-angle-up' aria-hidden='true'></i></div>
+      <div className='list-wrap show'>
+        <ul className='list' id='main-menu'>No Items</ul>
       </div>
     </section>
   )
 }
 
 const PropertiesSection = () => {
+  const { globalContext } = useConfigurationContext() as IConfigurationContext
+  const tabData = globalContext?.settings.all()?.[0]
   return (
-    <section id="main-conf-properties">
-      <div className="section-header">Properties<i className="fa fa-angle-up" aria-hidden="true"></i></div>
-      <div className="list-wrap show">
-        <ul className="list form configuration">
+    <section id='main-conf-properties'>
+      <div className='section-header'>Properties<i className='fa fa-angle-up' aria-hidden='true'></i></div>
+      <div className='list-wrap show'>
+        <ul className='list form configuration'>
           <ParamsRow>
-            <InputParam paramName="vendor" label='Vendor'></InputParam>
-            <InputParam paramName="vendor_url" label='Vendor URL'></InputParam>
+            <InputParam paramName='vendor' label='Vendor' configData={tabData} ></InputParam>
+            <InputParam paramName='vendor_url' label='Vendor URL' configData={tabData} ></InputParam>
           </ ParamsRow>
           <ParamsRow>
-            <InputParam paramName="vendor-login" label='Vendor login (Basic)'></InputParam>
-            <InputParam paramName="vendor-password" label='Vendor password (Basic)'></InputParam>
+            <InputParam paramName='vendor_login' label='Vendor login (Basic)' configData={tabData}></InputParam>
+            <InputParam paramName='vendor_password' label='Vendor password (Basic)' configData={tabData}></InputParam>
           </ ParamsRow>
           <ParamsRow>
-            <InputParam paramName="vendor_auth" label='Vendor raw authorization string'></InputParam>
+            <InputParam paramName='vendor_auth' label='Vendor raw authorization string' configData={tabData}></InputParam>
           </ ParamsRow>
         </ul>
       </div>
@@ -114,10 +127,10 @@ const PropertiesSection = () => {
 
 const SchedulersSection = () => {
   return (
-    <section id="main-conf-schedulers">
-      <div className="section-header">Shedulers<i className="fa fa-angle-up" aria-hidden="true"></i></div>
-      <div className="list-wrap show">
-        <ul className="list" id="shedulers">No Items</ul>
+    <section id='main-conf-schedulers'>
+      <div className='section-header'>Shedulers<i className='fa fa-angle-up' aria-hidden='true'></i></div>
+      <div className='list-wrap show'>
+        <ul className='list' id='shedulers'>No Items</ul>
       </div>
     </section>
   )
@@ -125,18 +138,18 @@ const SchedulersSection = () => {
 
 const PythonFilesSection = () => {
   return (
-    <section id="main-conf-python-files">
-      <div className="section-header">Python files<i className="fa fa-angle-up" aria-hidden="true"></i></div>
-      <div className="list-wrap show">
-        <ul className="list">
+    <section id='main-conf-python-files'>
+      <div className='section-header'>Python files<i className='fa fa-angle-up' aria-hidden='true'></i></div>
+      <div className='list-wrap show'>
+        <ul className='list'>
           <li>
-            <button id="open-py-handlers-file">Open file</button>
+            <button id='open-py-handlers-file'>Open file</button>
             <label>Handlers file (Python)</label>
-            <span className="param"></span >
-            <span id="py-handlers-file-path" data-param-name="pyHandlersPath">&lt;Not selected&gt;</span>
+            <span className='param'></span >
+            <span id='py-handlers-file-path' data-param-name='pyHandlersPath'>&lt;Not selected&gt;</span>
           </li>
         </ul>
-        <ul className="list" id="py-files">No Items</ul>
+        <ul className='list' id='py-files'>No Items</ul>
       </div>
     </section>
   )
@@ -144,11 +157,11 @@ const PythonFilesSection = () => {
 
 const MediaFilesSection = () => {
   return (
-    <section id="main-conf-media-files">
-      <div className="section-header">Media files<i className="fa fa-angle-up" aria-hidden="true"></i>
+    <section id='main-conf-media-files'>
+      <div className='section-header'>Media files<i className='fa fa-angle-up' aria-hidden='true'></i>
       </div>
-      <div className="list-wrap show">
-        <ul className="list" id="media-files">No Items</ul>
+      <div className='list-wrap show'>
+        <ul className='list' id='media-files'>No Items</ul>
       </div>
     </section>
   )
@@ -156,10 +169,10 @@ const MediaFilesSection = () => {
 
 const CommonHandlersSection = () => {
   return (
-    <section id="main-conf-common-handlers">
-      <div className="section-header">Common handlers<i className="fa fa-angle-up" aria-hidden="true"></i></div>
-      <div className="list-wrap show">
-        <ul className="list" id="common-handlers">No Items</ul>
+    <section id='main-conf-common-handlers'>
+      <div className='section-header'>Common handlers<i className='fa fa-angle-up' aria-hidden='true'></i></div>
+      <div className='list-wrap show'>
+        <ul className='list' id='common-handlers'>No Items</ul>
       </div>
     </section>
   )

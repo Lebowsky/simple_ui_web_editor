@@ -1,6 +1,8 @@
 import { Repository } from "../adapters/repository/abstractRepository";
+import { CommonElementsRepository } from "../adapters/repository/commonElementsRepository";
 import { OperationsRepository } from "../adapters/repository/operationsRepository";
 import { ProcessesRepository } from "../adapters/repository/processesRepository";
+import { SettingsElementsRepository } from "../adapters/repository/settingsElementsRepository";
 import { IConfigStorage } from "../adapters/storageService";
 import { ConfigParser } from "../utils/configParser";
 
@@ -10,12 +12,16 @@ export class ConfigManager {
 
   public processes: ProcessesRepository
   public operations: OperationsRepository
+  public common: CommonElementsRepository
+  public settings: SettingsElementsRepository
 
   constructor(storage: IConfigStorage, ){
     this.__storage = storage
     this.__configParser = new ConfigParser(this.__storage)
     this.processes = new ProcessesRepository(this.__storage)
     this.operations = new OperationsRepository(this.__storage)
+    this.common = new CommonElementsRepository(this.__storage)
+    this.settings = new SettingsElementsRepository(this.__storage)
   }
 
   public init(rawData: { [key: string]: any }){
