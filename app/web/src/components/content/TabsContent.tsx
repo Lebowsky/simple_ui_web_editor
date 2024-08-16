@@ -1,4 +1,6 @@
 import { IConfigurationContext, useConfigurationContext } from '../../context/ConfigurationContext'
+import { contextTypes } from '../../models/globalContext'
+import { ConfigModelsFactory } from '../../utils/configModelsFactory'
 import { InputParam } from '../core/InputParam'
 import { ListItemProcess } from '../core/ListItemProcess'
 import { ParamsRow } from '../core/ParamsRow'
@@ -68,13 +70,21 @@ const ProcessesSectionNew = () => {
   const { globalContext } = useConfigurationContext() as IConfigurationContext
   const processes = globalContext?.processes.all() || []
 
+  const btnAddClick = () => {
+    const factory = new ConfigModelsFactory()
+    const newElement = factory.createNew(contextTypes.processes)
+
+    // const modal = new ElementModal(element);
+    // modal.render().addClass('edited').addClass('new-element').show();
+  }
+
   return (
     <section id='main-conf-process-new'>
       <div className='section-header'>Processes<i className='fa fa-angle-up' aria-hidden='true'></i></div>
       <div className='list-wrap show'>
         <ul className='list ui-sortable' id='processes' data-id='1'>
           <div className='btn-group'>
-            <button className='btn-add process'>Add</button>
+            <button>Add</button>
             <button className='btn-paste' data-childrens-type='Processes'>Paste</button>
             <button className='btn-add cv process'>Add CVOperation</button>
           </div>

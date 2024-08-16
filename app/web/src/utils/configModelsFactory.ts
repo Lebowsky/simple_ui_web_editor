@@ -2,7 +2,7 @@ import { IConfigItemCreate } from "../models/configurationModels";
 import { contextTypes } from "../models/globalContext";
 
 export class ConfigModelsFactory {
-  public createNew(type: contextTypes, parentId: number): IConfigItemCreate {
+  public createNew(type: contextTypes, parentId: number=0): IConfigItemCreate {
     switch (type) {
       case contextTypes.processes:
         return {
