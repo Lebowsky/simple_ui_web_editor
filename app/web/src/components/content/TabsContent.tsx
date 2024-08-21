@@ -1,4 +1,5 @@
 import { IConfigurationContext, useConfigurationContext } from '../../context/ConfigurationContext'
+import { IMainContextProvider, useMainContext } from '../../context/MainContext'
 import { contextTypes } from '../../models/globalContext'
 import { ConfigModelsFactory } from '../../utils/configModelsFactory'
 import { InputParam } from '../core/InputParam'
@@ -6,17 +7,17 @@ import { ListItemProcess } from '../core/ListItemProcess'
 import { ParamsRow } from '../core/ParamsRow'
 
 export const TabsContent = () => {
+  const { activeTab } = useMainContext() as IMainContextProvider
   return (
     <>
-      <CommonSection />
-      {/* <ProcessesSection /> */}
-      <ProcessesSectionNew />
-      <MainMenuSection />
-      <PropertiesSection />
-      <SchedulersSection />
-      <PythonFilesSection />
-      <MediaFilesSection />
-      <CommonHandlersSection />
+      {activeTab === contextTypes.common && <CommonSection />}
+      {activeTab === contextTypes.processes && <ProcessesSection />}
+      {activeTab === contextTypes.mainMenu && <MainMenuSection />}
+      {activeTab === contextTypes.configurationSettings && <PropertiesSection />}
+      {activeTab === contextTypes.shedulers && <SchedulersSection />}
+      {activeTab === contextTypes.pyFiles && <PythonFilesSection />}
+      {activeTab === contextTypes.mediafiles && <MediaFilesSection />}
+      {activeTab === contextTypes.commonHandlers && <CommonHandlersSection />}
     </>
   )
 }
@@ -24,6 +25,7 @@ export const TabsContent = () => {
 const CommonSection = () => {
   const { globalContext } = useConfigurationContext() as IConfigurationContext
   const tabData = globalContext?.common.all()?.[0]
+  
   return (
     <section id='main-conf-common' className='active'>
       <div className='section-header'>Common<i className='fa fa-angle-up' aria-hidden='true'></i></div>
@@ -56,17 +58,6 @@ const CommonSection = () => {
 }
 
 const ProcessesSection = () => {
-  return (
-    <section id='main-conf-process'>
-      <div className='section-header'>Processes<i className='fa fa-angle-up' aria-hidden='true'></i></div>
-      <div className='list-wrap show'>
-        <ul className='list' id='processes'>No process</ul>
-      </div>
-    </section>
-  )
-}
-
-const ProcessesSectionNew = () => {
   const { globalContext } = useConfigurationContext() as IConfigurationContext
   const processes = globalContext?.processes.all() || []
 
@@ -79,7 +70,7 @@ const ProcessesSectionNew = () => {
   }
 
   return (
-    <section id='main-conf-process-new'>
+    <section id='main-conf-process-new' className='active'>
       <div className='section-header'>Processes<i className='fa fa-angle-up' aria-hidden='true'></i></div>
       <div className='list-wrap show'>
         <ul className='list ui-sortable'  data-id='1'>
@@ -101,7 +92,7 @@ const ProcessesSectionNew = () => {
 
 const MainMenuSection = () => {
   return (
-    <section id='main-conf-main-menu'>
+    <section id='main-conf-main-menu' className='active'>
       <div className='section-header'>Main menu<i className='fa fa-angle-up' aria-hidden='true'></i></div>
       <div className='list-wrap show'>
         <ul className='list' id='main-menu'>No Items</ul>
@@ -114,7 +105,7 @@ const PropertiesSection = () => {
   const { globalContext } = useConfigurationContext() as IConfigurationContext
   const tabData = globalContext?.settings.all()?.[0]
   return (
-    <section id='main-conf-properties'>
+    <section id='main-conf-properties' className='active'>
       <div className='section-header'>Properties<i className='fa fa-angle-up' aria-hidden='true'></i></div>
       <div className='list-wrap show'>
         <ul className='list form configuration'>
@@ -137,7 +128,7 @@ const PropertiesSection = () => {
 
 const SchedulersSection = () => {
   return (
-    <section id='main-conf-schedulers'>
+    <section id='main-conf-schedulers' className='active'>
       <div className='section-header'>Shedulers<i className='fa fa-angle-up' aria-hidden='true'></i></div>
       <div className='list-wrap show'>
         <ul className='list' id='shedulers'>No Items</ul>
@@ -148,7 +139,7 @@ const SchedulersSection = () => {
 
 const PythonFilesSection = () => {
   return (
-    <section id='main-conf-python-files'>
+    <section id='main-conf-python-files' className='active'>
       <div className='section-header'>Python files<i className='fa fa-angle-up' aria-hidden='true'></i></div>
       <div className='list-wrap show'>
         <ul className='list'>
@@ -167,7 +158,7 @@ const PythonFilesSection = () => {
 
 const MediaFilesSection = () => {
   return (
-    <section id='main-conf-media-files'>
+    <section id='main-conf-media-files' className='active'>
       <div className='section-header'>Media files<i className='fa fa-angle-up' aria-hidden='true'></i>
       </div>
       <div className='list-wrap show'>
@@ -179,7 +170,7 @@ const MediaFilesSection = () => {
 
 const CommonHandlersSection = () => {
   return (
-    <section id='main-conf-common-handlers'>
+    <section id='main-conf-common-handlers' className='active'>
       <div className='section-header'>Common handlers<i className='fa fa-angle-up' aria-hidden='true'></i></div>
       <div className='list-wrap show'>
         <ul className='list' id='common-handlers'>No Items</ul>
