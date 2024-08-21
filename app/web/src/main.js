@@ -23,7 +23,6 @@ export const Main = {
   initUIConf(conf, filePath = '', configProjectPath = '') {
     this.conf = conf;
     
-    
     this.configGraph = new ClientConfiguration(conf);
 
     this.clearMainSection();
@@ -110,7 +109,7 @@ export const Main = {
       try {
         [vendorLogin = '', vendorPassword = ''] = decodeURIComponent(atob(vendorAuth.split(' ')[1])).split(':');
       } catch (error) {
-        console.log(error);
+        // console.log(error);
       };
     };
     $('#vendor-login').val(vendorLogin);
@@ -194,6 +193,7 @@ export const Main = {
 class ClientConfiguration {
   
   constructor(config) {
+    
     this.elements = [];
     this.lastId = 0;
     // this.addElementFromDict(config.ClientConfiguration)

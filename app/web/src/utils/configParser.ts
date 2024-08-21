@@ -12,7 +12,7 @@ export class ConfigParser {
   }
 
   public parseJsonData(rawData: { [key: string]: any }){
-    this.__rawData = rawData.ClientConfiguration
+    this.__rawData = {...rawData.ClientConfiguration}
     if (!this.__rawData) return
 
     this.__setRootId()

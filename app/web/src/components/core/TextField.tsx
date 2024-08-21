@@ -14,7 +14,6 @@ const TextField = (props: ITextFieldProps) => {
       <InputGroup
         placeholder={props.description}
         value={props.value}
-        large={true}
         onChange={(e) => props.onChange(e.target.value)}
       />
     </div>

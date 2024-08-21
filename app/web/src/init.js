@@ -14,7 +14,8 @@ import { notificate, pickHandlersFile } from './dialogs'
 import { getCurrentModal } from './components/modals/modalsRoot'
 
 
-$(document).ready(function () {
+// $(document).ready(function () {
+export const initMain = () => {
   window.main = Object.create(Main);
   document.main = window.main
 
@@ -31,12 +32,12 @@ $(document).ready(function () {
   } else {
     readFile(filePath);
   }
-  async function newFile() {
-    const conf = await getNewConfiguration()
+  function newFile() {
+    const conf = getNewConfiguration()
     initReadedConf(conf)
   }
-  async function readFile(filePath) {
-    const conf = await loadConfiguration(filePath);
+  function readFile(filePath) {
+    const conf = loadConfiguration(filePath);
     initReadedConf(conf, filePath);
   }
   $('#prev').resizable({
@@ -495,7 +496,7 @@ $(document).ready(function () {
   };  
 
   document.querySelector('#open-py-handlers-file')?.addEventListener('click', pickHandlersFile)
-});
+};
 
 function editElement(elementId) {
   const element = document.main.configGraph.getElementById(elementId);

@@ -1,16 +1,23 @@
+import { useState } from 'react'
 import { IConfigurationContext, useConfigurationContext } from '../../context/ConfigurationContext'
 import { IMainContextProvider, useMainContext } from '../../context/MainContext'
-import { contextTypes } from '../../models/globalContext'
+import { contextTypes, DataItem } from '../../models/globalContext'
 import { ConfigModelsFactory } from '../../utils/configModelsFactory'
 import { InputParam } from '../core/InputParam'
 import { ListItemProcess } from '../core/ListItemProcess'
 import { ParamsRow } from '../core/ParamsRow'
+import TextField from '../core/TextField'
+import { IConfigItem } from '../../models/configurationModels'
+import { TextArea } from '@blueprintjs/core'
 
 export const TabsContent = () => {
+  const { globalContext } = useConfigurationContext() as IConfigurationContext
   const { activeTab } = useMainContext() as IMainContextProvider
+
+  const commonData = globalContext?.common.all()?.[0]
   return (
     <>
-      {activeTab === contextTypes.common && <CommonSection />}
+      {activeTab === contextTypes.common && commonData && <CommonSection content={commonData.content}/>}
       {activeTab === contextTypes.processes && <ProcessesSection />}
       {activeTab === contextTypes.mainMenu && <MainMenuSection />}
       {activeTab === contextTypes.configurationSettings && <PropertiesSection />}
@@ -22,35 +29,48 @@ export const TabsContent = () => {
   )
 }
 
-const CommonSection = () => {
-  const { globalContext } = useConfigurationContext() as IConfigurationContext
-  const tabData = globalContext?.common.all()?.[0]
-  
+interface ICommonSectionProps {
+  content: DataItem
+}
+const CommonSection = (props: ICommonSectionProps) => {
+  if (!props.content) return 
+  const [content, setContent] = useState<DataItem>(props.content)  
+  const fields = {
+    ConfigurationName: {
+      value: content.ConfigurationName,
+      name: 'ConfigurationName',
+      text: 'Configuration name',
+      description: 'Configuration name'
+    },
+    ConfigurationVersion: {
+      value: content.ConfigurationVersion,
+      name: 'ConfigurationVersion',
+      text: 'Version',
+      description: 'Version'
+    },
+    ConfigurationDescription: {
+      value: content.ConfigurationDescription,
+      name: 'ConfigurationDescription',
+      text: 'Description',
+      description: 'Description'
+    },
+  }
+  const onChange = (key: string, value: any) => {
+    setContent(prev => ({ ...prev, ...{ [key]: value } }))
+  }
+
   return (
     <section id='main-conf-common' className='active'>
       <div className='section-header'>Common<i className='fa fa-angle-up' aria-hidden='true'></i></div>
       <div className='list-wrap show'>
         <ul className='list form configuration'>
-          <ParamsRow>
-            <InputParam paramName='ConfigurationName' label='Configuration name' configData={tabData}></InputParam>
-            <InputParam paramName='ConfigurationVersion' label='Version' configData={tabData}></InputParam>
-          </ParamsRow>
-          <ParamsRow>
-            <div className='textarea-param-wrapper'>
-              <label htmlFor='ConfigurationDescription'>Description</label>
-              <textarea 
-                className='textarea-param' 
-                id='ConfigurationDescription' 
-                name='ConfigurationDescription' 
-                data-param-name='ConfigurationDescription' 
-                data-id={tabData?.id}
-                value={tabData?.content.ConfigurationDescription}
-                rows={10}
-
-              >
-              </textarea>
-            </div>
-          </ParamsRow>
+        <TextField {...fields.ConfigurationName} onChange={(value) => onChange('ConfigurationName', value)} />
+        <TextField {...fields.ConfigurationVersion} onChange={(value) => onChange('ConfigurationVersion', value)} />
+        <ParamsRow>
+        <div className='textarea-param-wrapper'>
+          <TextArea rows={10} className='textarea-param' value={fields.ConfigurationDescription.value}></TextArea>
+        </div>
+        </ParamsRow>
         </ul>
       </div>
     </section>

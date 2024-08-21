@@ -76,14 +76,15 @@ export async function askSaveFile() {
   // return eel.ask_save_file('simple_ui')();
 };
 
-export async function loadConfiguration(filePath) {
-  return fullConfigData
+export function loadConfiguration(filePath) {
+  const result = {...fullConfigData}
+  return result
   //   return eel.load_configuration(filePath)();
 }
 
-export async function getNewConfiguration() {
+export function getNewConfiguration() {
   //   return await eel.get_new_configuration()();
-  return fullConfigData
+  return {...fullConfigData}
 }
 
 export async function saveConf(data, filePath) {

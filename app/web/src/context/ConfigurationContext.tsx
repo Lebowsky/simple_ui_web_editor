@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { ConfigManager } from "../serviceLayer/configManager";
+import { initMain } from "../init";
 
 export interface IConfigurationContext {
   globalContext: ConfigManager
@@ -16,7 +17,8 @@ export const ConfigurationContextProvider = ({ children }: IConfigurationContext
   const [globalContext, setGlobalContext] = useState<ConfigManager>(null)
   const [render, setRender] = useState<boolean> (false)
   useEffect(() => {
-    setGlobalContext(window.configManager)
+    initMain()
+    setGlobalContext(window.configManager)    
   }, []);
 
   const notifyUpdate = () => {
