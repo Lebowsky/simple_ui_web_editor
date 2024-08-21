@@ -3,6 +3,8 @@ import { createContext, useContext, useState } from "react";
 export interface IMainContextProvider{
   sideMenuVisible: boolean
   setSideMenuVisible: React.Dispatch<React.SetStateAction<boolean>>
+  modalVisible: boolean
+  setModalVisible: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 const MainContext = createContext<IMainContextProvider | null>(null)
@@ -12,12 +14,15 @@ interface IMainContextProviderProps {
 }
 export const MainContextProvider = ({ children }: IMainContextProviderProps) => {
   const [sideMenuVisible, setSideMenuVisible] = useState<boolean>(false)
+  const [modalVisible, setModalVisible] = useState(false)
 
   return (
     <MainContext.Provider
       value={{
         sideMenuVisible,
-        setSideMenuVisible
+        setSideMenuVisible,
+        modalVisible,
+        setModalVisible
       }}
     >
       {children}

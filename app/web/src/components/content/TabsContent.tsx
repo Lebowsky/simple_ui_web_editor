@@ -9,7 +9,7 @@ export const TabsContent = () => {
   return (
     <>
       <CommonSection />
-      <ProcessesSection />
+      {/* <ProcessesSection /> */}
       <ProcessesSectionNew />
       <MainMenuSection />
       <PropertiesSection />
@@ -82,7 +82,7 @@ const ProcessesSectionNew = () => {
     <section id='main-conf-process-new'>
       <div className='section-header'>Processes<i className='fa fa-angle-up' aria-hidden='true'></i></div>
       <div className='list-wrap show'>
-        <ul className='list ui-sortable' id='processes' data-id='1'>
+        <ul className='list ui-sortable'  data-id='1'>
           <div className='btn-group'>
             <button>Add</button>
             <button className='btn-paste' data-childrens-type='Processes'>Paste</button>
