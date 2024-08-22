@@ -60,6 +60,9 @@ section .right {
 .btn-group {
   display: flex;
   flex-wrap: wrap;
+  border-bottom: 1px solid gray;
+  margin-left: 5px;
+  margin-bottom: 5px;
 }
 
 .btn-group.main {
@@ -615,7 +618,7 @@ label i,
   cursor: pointer;
   padding: 11px;
   transition: margin .1s ease, box-shadow .3s;
-  border-radius: 300px 0 0 300px;
+  border-radius: 5px 0 0 5px;
   margin-bottom: 10px;
   padding: 10px 20px;
   font-size: 13.3px;
@@ -757,9 +760,6 @@ div.ui-resizable-e:after {
   resize: none;
 }
 
-#main-conf-properties .param>div {
-  width: 48%;
-}
 
 .prev-wrap {
   width: 45%;

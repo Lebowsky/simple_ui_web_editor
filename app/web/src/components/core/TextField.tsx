@@ -1,4 +1,4 @@
-import { InputGroup } from "@blueprintjs/core"
+import { InputGroup, Tooltip } from "@blueprintjs/core"
 import { useState } from "react"
 
 interface ITextFieldProps {
@@ -10,12 +10,14 @@ interface ITextFieldProps {
 }
 const TextField = (props: ITextFieldProps) => {
   return (
-    <div className="param active" style={{display: 'block'}}>
-      <InputGroup
-        placeholder={props.description}
-        value={props.value}
-        onChange={(e) => props.onChange(e.target.value)}
-      />
+    <div className="param active" style={{ display: 'block' }}>
+      <Tooltip content={props.description}>
+        <InputGroup
+          placeholder={props.description}
+          value={props.value}
+          onChange={(e) => props.onChange(e.target.value)}
+        />
+      </Tooltip>
     </div>
   )
 }
