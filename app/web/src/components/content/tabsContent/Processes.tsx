@@ -3,18 +3,22 @@ import { useConfigurationContext, IConfigurationContext } from '../../../context
 import { contextTypes } from '../../../models/globalContext';
 import { ConfigModelsFactory } from '../../../utils/configModelsFactory';
 import { ListItemProcess } from '../../core/ListItemProcess';
+import { useState } from 'react';
+import { ProcessItem } from '../../../adapters/repository/processesRepository';
 
 
 export const ProcessesSection = () => {
   const { globalContext } = useConfigurationContext() as IConfigurationContext
   const processes = globalContext?.processes.all() || []
 
+  const [activeItem, setActiveItem] = useState<ProcessItem | undefined>(processes?.[0])
   const btnAddClick = () => {
     const factory = new ConfigModelsFactory()
     const newElement = factory.createNew(contextTypes.processes)
+  }
 
-    // const modal = new ElementModal(element);
-    // modal.render().addClass('edited').addClass('new-element').show();
+  const selectItem = (el: ProcessItem) => {
+    setActiveItem(el)
   }
 
   return (
@@ -29,7 +33,15 @@ export const ProcessesSection = () => {
           </div>
           <div style={{ overflow: 'auto', height: '55vh' }}>
             {processes.length
-              ? processes.map(el => (<ListItemProcess label={el.content.ProcessName} key={el.id} listItem={el} />))
+              ? processes.map(el => 
+                (<ListItemProcess 
+                  label={el.content.ProcessName} 
+                  key={el.id} 
+                  listItem={el} 
+                  isActive={activeItem.id == el.id} 
+                  selectItem={() => selectItem(el)}
+                />)
+              )
               : <div style={{ paddingTop: 15 }}><span>No Items</span></div>}
           </div>
         </ul>

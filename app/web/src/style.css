@@ -329,6 +329,13 @@ footer {
   border-bottom: none;
 }
 
+.item-name{
+  border-radius: 2px;
+}
+.item-name:hover {
+  /* border: 1px solid gray; */
+  box-shadow: 2px 2px 2px 2px rgba(0, 0, 0, .5)
+}
 .list-item span.item-name {
   font-weight: 500;
   padding: 5px;
@@ -504,7 +511,7 @@ a.element-path:not(:last-child) {
 }
 
 .modal-head {
-  padding: 20px;
+  padding: 20px 20px 0px 20px;
   border-bottom: 1px #e7e7e7 solid;
   position: relative;
 }

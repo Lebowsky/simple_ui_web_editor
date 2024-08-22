@@ -352,17 +352,17 @@ export const initMain = () => {
     }
   })
   $(document).on('click', selectors.btnCloseModal, function () {
-    document.modal = getCurrentModal();
-    const modal = document.modal
-    modal.close();
+    // document.modal = getCurrentModal();
+    // const modal = document.modal
+    // modal.close();
 
-    if (modal.element) {
-      const element = document.main.configGraph.getElementById(modal.element.id);
-      if (!element) return
+    // if (modal.element) {
+    //   const element = document.main.configGraph.getElementById(modal.element.id);
+    //   if (!element) return
 
-      const fillNode = element.parentConfig['node'] + "[data-id=" + modal.element.id + "]";
-      document.main.configGraph.fillListElements(element.parentType, fillNode, element.parentId, modal.element.id)
-    }
+    //   const fillNode = element.parentConfig['node'] + "[data-id=" + modal.element.id + "]";
+    //   document.main.configGraph.fillListElements(element.parentType, fillNode, element.parentId, modal.element.id)
+    // }
   });
   $(document).on('click', selectors.listItem, function (e) {
     e.stopPropagation();
@@ -374,18 +374,18 @@ export const initMain = () => {
     $(this).toggleClass("active");
 
     if ($(e.target).is(".list .item-name")) {
-      const elementId = $(this).attr("data-id");
-      const element = document.main.configGraph.getElementById(elementId);
-      const type = element.parentType;
+      // const elementId = $(this).attr("data-id");
+      // const element = document.main.configGraph.getElementById(elementId);
+      // const type = element.parentType;
 
-      if (element.type != "Process") {
-        const elementConf = document.main.configGraph.getConfigElement(elementId);
-        sendDataToUpdatePreview(elementConf)
-      }
+      // if (element.type != "Process") {
+      //   const elementConf = document.main.configGraph.getConfigElement(elementId);
+      //   sendDataToUpdatePreview(elementConf)
+      // }
 
-      if (type == "Elements") {
-        document.main.configGraph.fillListElements(type, ".modal.active .list-param.active .element-childs-wrap", elementId, false, false);
-      }
+      // if (type == "Elements") {
+      //   document.main.configGraph.fillListElements(type, ".modal.active .list-param.active .element-childs-wrap", elementId, false, false);
+      // }
     }
   })
   $(document).on('click', '#processes > .list-item > .item-nav', function (e) {

@@ -17,7 +17,6 @@ const CheckBox = (props: ICheckBoxProps) => {
         label={props.text} 
         title={props.description} 
         onChange={(e) => props.onChange(e.target.checked)} 
-        large={true}
       />
     </div>
   )

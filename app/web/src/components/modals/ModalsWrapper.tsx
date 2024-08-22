@@ -1,17 +1,15 @@
+import { useEffect, KeyboardEvent } from "react"
 import { IMainContextProvider, useMainContext } from "../../context/MainContext"
 import { contextTypes } from "../../models/globalContext"
 import { ConfigModelsFactory } from "../../utils/configModelsFactory"
 import { ProcessesItemModal } from "./ProcessesItemModal"
 
 export const ModalsWrapper = () => {
-  const { modalVisible } = useMainContext() as IMainContextProvider
-
-  const factory = new ConfigModelsFactory()
-  const element = factory.createNew(contextTypes.processes)
+  const { modalVisible, currentModalItem } = useMainContext() as IMainContextProvider
 
   return (
     <div id="modals-wrap" className={modalVisible ? "active" : ''}>
-      <ProcessesItemModal title="Process" path="path" element={element}></ProcessesItemModal>
+      {currentModalItem && currentModalItem.contextType == contextTypes.processes && <ProcessesItemModal title="Process" path="path" element={currentModalItem} />}
     </div>
   )
 }

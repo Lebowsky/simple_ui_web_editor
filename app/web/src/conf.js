@@ -28,7 +28,7 @@ export const selectors = {
 };
 
 export const keys = {
-  '27': 'closeModal', // Esc
+  // '27': 'closeModal', // Esc
   'ctrl+13': 'saveElementModal', // Ctrl+Enter
 
   'ctrl+78': 'startNewProject', //Ctrl+N

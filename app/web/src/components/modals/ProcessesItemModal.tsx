@@ -3,8 +3,9 @@ import { IConfigItemCreate, IConfigItemUpdate } from "../../models/configuration
 import TextField from "../core/TextField"
 import CheckBox from "../core/CheckBox"
 import { Button, InputGroup } from "@blueprintjs/core"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { DataItem } from "../../models/globalContext"
+import { IMainContextProvider, useMainContext } from "../../context/MainContext"
 
 interface IProcessesItemModalProps {
   title: string
@@ -12,14 +13,43 @@ interface IProcessesItemModalProps {
   element: IConfigItemCreate | IConfigItemUpdate
 }
 export const ProcessesItemModal = ({ title, path, element }: IProcessesItemModalProps) => {
+  const { closeModal } = useMainContext() as IMainContextProvider
+
+  useEffect(() => {
+    const handleKeyPress = (
+      event: any
+    ) => {
+      if (event.key === 'Escape') {
+        closeModal()
+        return;
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyPress);
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyPress!);
+    };
+  }, []);
+
+  const saveElementData = () => {
+    closeModal()
+  }
+
+  const closeCurrentModal = () => {
+    closeModal()
+  }
   return (
     <div className='modal active' data-modal-type='element'>
-      <div className='close-modal'>
+      <div className='close-modal' onClick={closeCurrentModal}>
         <i className='fa fa-times' aria-hidden='true'></i>
       </div>
       <div className='modal-head'>
-        <div className='top'>
-          <h2 className='modal-title'>{title}<span className='edited'>*</span></h2>
+        <div style={{ display: 'flex' }}>
+          <Button><span style={{ color: '#fff' }} onClick={saveElementData}>Save</span></Button>
+          <div className='top' style={{ width: '100%', justifyContent: 'center' }}>
+            <h2 className='modal-title'>{title}<span className='edited'>*</span></h2>
+          </div>
         </div>
         <span className='path'>{path}</span>
       </div>
@@ -66,20 +96,20 @@ const Params = ({ element }: ParamsProps) => {
     setModalContent(prev => ({ ...prev, ...{ [key]: value } }))
   }
 
-  const saveElementData = () => {
-    console.log('clicked')
-  }
   return (
-    <div className="params" >
-
-      <TextField {...fields.ProcessName} onChange={(value) => onChange('ProcessName', value)} />
-      <CheckBox {...fields.DefineOnBackPressed} onChange={(value) => onChange('DefineOnBackPressed', value)} />
-      <CheckBox {...fields.hidden} onChange={(value) => onChange('hidden', value)} />
-      <CheckBox {...fields.login_screen} onChange={(value) => onChange('login_screen', value)} />
-
-      <div className="btn-group modal-btn">
-        <Button large={true}><span style={{ color: '#fff' }} onClick={saveElementData}>Save</span></Button>
+    <div>
+      <div className="param active" style={{ display: 'block', width: '50%' }}>
+        <InputGroup
+          placeholder={fields.ProcessName.description}
+          value={fields.ProcessName.value}
+          onChange={(value) => onChange('ProcessName', value)}
+        />
       </div>
+      <div style={{ display: 'flex' }}>
+        <CheckBox {...fields.DefineOnBackPressed} onChange={(value) => onChange('DefineOnBackPressed', value)} />
+        <CheckBox {...fields.hidden} onChange={(value) => onChange('hidden', value)} />
+      </div>
+      <CheckBox {...fields.login_screen} onChange={(value) => onChange('login_screen', value)} />
     </div>
   )
 }

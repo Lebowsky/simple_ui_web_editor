@@ -13,7 +13,7 @@ type ProcessData =  {
   [key: string]: any 
 }
 
-interface ProcessItem extends Omit<IConfigItem, 'content'> {
+export interface ProcessItem extends Omit<IConfigItem, 'content'> {
   content: ProcessData
 }
 

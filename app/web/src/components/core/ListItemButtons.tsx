@@ -1,6 +1,7 @@
 import { IConfigItem } from "../../models/configurationModels"
 import { IConfigurationContext, useConfigurationContext } from "../../context/ConfigurationContext"
 import { copyTextToClipboard } from "../../handlers"
+import { IMainContextProvider, useMainContext } from "../../context/MainContext"
 
 interface IListItemButtonsProps {
   listItem: IConfigItem
@@ -8,6 +9,7 @@ interface IListItemButtonsProps {
 
 export const ListItemButtons = ({ listItem }: IListItemButtonsProps) => {
   const { globalContext, notifyUpdate } = useConfigurationContext() as IConfigurationContext
+  const { setModalVisible, setCurrentModalItem } = useMainContext() as IMainContextProvider
 
   const onClickJson = () => {
     // const elementId = $(this).parents(selectors.listItem).attr('data-id');
@@ -52,8 +54,8 @@ export const ListItemButtons = ({ listItem }: IListItemButtonsProps) => {
     // document.main.configGraph.fillListElements(type, node, parentId);
   }
   const onClickEdit = () => {
-    // const elementId = $(this).parents(selectors.listItem).attr('data-id');
-    // editElement(elementId);
+    setModalVisible(true)
+    setCurrentModalItem(listItem)
   }
   const onClickDelete = () => {
     if (confirm('Вы уверены?')) {
@@ -68,7 +70,7 @@ export const ListItemButtons = ({ listItem }: IListItemButtonsProps) => {
       <span title="json"><i className="fa-solid fa-code" aria-hidden="true"></i></span>
       <span title="copy" onClick={onClickCopy}><i className="fa fa-clipboard" aria-hidden="true"></i></span>
       <span title="duplicate"><i className="fa fa-copy" aria-hidden="true"></i></span>
-      <span title="edit"><i className="fa fa-edit" aria-hidden="true"></i></span>
+      <span title="edit" onClick={onClickEdit}><i className="fa fa-edit" aria-hidden="true"></i></span>
       <span title="delete" onClick={onClickDelete}><i className="fa fa-trash" aria-hidden="true"></i></span>
       <span className="move ui-sortable-handle"><i className="fa fa-bars" aria-hidden="true"></i></span>
     </div>
